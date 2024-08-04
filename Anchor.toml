@@ -6,6 +6,7 @@ skip-lint = false
 
 [programs.localnet]
 build = "Fgc4uSFUPnhUpwUu7z4siYiBtnkxrwroYVQ2csDo3Q7P"
+labour = "BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH"
 settlement = "ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ"
 time = "AyMpNWt8uw4nEHReXXEUhbDmgmQQbfG4HZjCSkupbEne"
 

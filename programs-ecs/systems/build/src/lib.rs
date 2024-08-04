@@ -1,8 +1,7 @@
-mod config;
 mod errors;
 
 use bolt_lang::*;
-use config::BuildingConfig;
+use settlement::config::BuildingConfig;
 use settlement::{Balance, Settlement};
 
 declare_id!("Fgc4uSFUPnhUpwUu7z4siYiBtnkxrwroYVQ2csDo3Q7P");
@@ -14,7 +13,7 @@ fn overlap_check(
     new_config: &BuildingConfig,
 ) -> bool {
     for existing_building in &settlement.buildings {
-        let existing_config = &config::BUILDINGS_CONFIG[existing_building.id as usize];
+        let existing_config = &settlement::config::BUILDINGS_CONFIG[existing_building.id as usize];
 
         if (x < existing_building.x + existing_config.width
             || x + new_config.width >= existing_building.x)
@@ -50,14 +49,14 @@ pub mod build {
     use settlement::Building;
 
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
-        let new_building_config = &config::BUILDINGS_CONFIG[args.id as usize];
+        let new_building_config = &settlement::config::BUILDINGS_CONFIG[args.id as usize];
 
         //check map bounds
-        if args.x + new_building_config.width >= config::MAP_WIDTH {
+        if args.x + new_building_config.width >= settlement::config::MAP_WIDTH {
             return err!(errors::BuildError::OutOfBounds);
         }
 
-        if args.y + new_building_config.height >= config::MAP_HEIGHT {
+        if args.y + new_building_config.height >= settlement::config::MAP_HEIGHT {
             return err!(errors::BuildError::OutOfBounds);
         }
 
@@ -73,8 +72,18 @@ pub mod build {
         let new_building = Building {
             x: args.x,
             y: args.y,
-            id: args.id,
-            state: config::PERFECT_STATE,
+            id: match args.id {
+                0 => settlement::config::BuildingType::TownHall,
+                1 => settlement::config::BuildingType::WaterCollector,
+                2 => settlement::config::BuildingType::FoodCollector,
+                3 => settlement::config::BuildingType::WoodCollector,
+                4 => settlement::config::BuildingType::WaterStorage,
+                5 => settlement::config::BuildingType::FoodStorage,
+                6 => settlement::config::BuildingType::WoodStorage,
+                7 => settlement::config::BuildingType::Altar,
+                _ => panic!("unknown building"),
+            },
+            state: settlement::config::PERFECT_STATE,
             level: 1,
         };
 
