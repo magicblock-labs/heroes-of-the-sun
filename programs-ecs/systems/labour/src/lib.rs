@@ -1,3 +1,4 @@
+mod errors;
 use bolt_lang::*;
 
 declare_id!("BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH");
@@ -8,7 +9,16 @@ pub mod labour {
 
     pub fn execute(ctx: Context<Components>, args: LabourArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
-        settlement.labour_allocation[args.labour as usize] = args.building;
+
+        if settlement.buildings.len() <= args.building_index as usize {
+            return err!(errors::AssignLabourError::BuildingIndexOutOfRange);
+        }
+
+        if settlement.buildings[0].level <= args.labour_index {
+            return err!(errors::AssignLabourError::LabourIndexOutOfRange);
+        }
+
+        settlement.labour_allocation[args.labour_index as usize] = args.building_index;
         Ok(ctx.accounts)
     }
 
@@ -19,7 +29,7 @@ pub mod labour {
 
     #[arguments]
     struct LabourArgs {
-        labour: u8,
-        building: i8,
+        labour_index: u8,
+        building_index: i8,
     }
 }

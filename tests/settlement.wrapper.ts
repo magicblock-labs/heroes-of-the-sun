@@ -11,15 +11,21 @@ import { Settlement } from "../target/types/settlement";
 import { Time } from "../target/types/time";
 import { Build } from "../target/types/build";
 import { Labour } from "../target/types/labour";
+import { Upgrade } from "../target/types/upgrade";
 
 
 export type BuildArgs = {
-  x: number, y: number, id: number
+  x: number, y: number, config_index: number
 }
 
 export type AllocateLabourArgs = {
-  building: number, labour: number
+  building_index: number, labour_index: number
 }
+
+export type UpgradeArgs = {
+  index: number
+}
+
 
 export type WaitArgs = {
   days: number
@@ -39,6 +45,7 @@ export class SettlementWrapper {
   timeSystem: Program<Time>;
   buildSystem: Program<Build>;
   labourSystem: Program<Labour>;
+  upgradeSystem: Program<Upgrade>;
 
   async init() {
     this.provider = anchor.AnchorProvider.env();
@@ -48,6 +55,7 @@ export class SettlementWrapper {
     this.timeSystem = anchor.workspace.Time as Program<Time>;
     this.buildSystem = anchor.workspace.Build as Program<Build>;
     this.labourSystem = anchor.workspace.Labour as Program<Labour>;
+    this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
 
 
     const initNewWorld = await InitializeNewWorld({
@@ -76,8 +84,12 @@ export class SettlementWrapper {
     this.componentPda = initializeComponent.componentPda;
     console.log(`Initialized the settlement component. Initialization signature: ${txSign}`);
 
-    return await this.settlementComponent.account.settlement.fetch(this.componentPda);
+    return await this.state();
 
+  }
+
+  async state() {
+    return await this.settlementComponent.account.settlement.fetch(this.componentPda);
   }
 
   async build(args: BuildArgs) {
@@ -94,7 +106,7 @@ export class SettlementWrapper {
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
     console.log(`build tx: ${txSign}`);
 
-    return await this.settlementComponent.account.settlement.fetch(this.componentPda);
+    return await this.state();
   }
 
   async assignLabour(args: AllocateLabourArgs) {
@@ -105,14 +117,31 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      args: {
-        labour: 0,
-        building: 0
-      }
+      args
     }
     );
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    return await this.settlementComponent.account.settlement.fetch(this.componentPda);
+    console.log(`assignLabour: ${txSign}`);
+
+    return await this.state();
+  }
+
+
+  async upgrade(args: UpgradeArgs) {
+    // Run the build system
+    const applySystem = await ApplySystem({
+      authority: this.provider.wallet.publicKey,
+      systemId: this.upgradeSystem.programId,
+      entities: [{
+        entity: this.entityPda,
+        components: [{ componentId: this.settlementComponent.programId }],
+      }],
+      args
+    });
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`build tx: ${txSign}`);
+
+    return await this.state();
   }
 
   async wait(args: WaitArgs) {
@@ -131,7 +160,6 @@ export class SettlementWrapper {
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
     console.log(`Waited a day: ${txSign}`);
 
-    return await this.settlementComponent.account.settlement.fetch(this.componentPda);
-
+    return await this.state();
   }
 };

@@ -8,4 +8,6 @@ pub enum BuildError {
     OutOfBounds,
     #[msg("Not Enough Resources")]
     NotEnoughResources,
+    #[msg("Config Index Out Of Bounds")]
+    ConfigIndexOutOfRange,
 }

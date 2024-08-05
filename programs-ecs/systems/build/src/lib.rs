@@ -1,25 +1,40 @@
 mod errors;
 
 use bolt_lang::*;
-use settlement::config::BuildingConfig;
-use settlement::{Balance, Settlement};
+use settlement::{
+    config::{BuildingConfig, BUILDINGS_CONFIG, MAP_HEIGHT, MAP_WIDTH},
+    Building, Settlement,
+};
 
 declare_id!("Fgc4uSFUPnhUpwUu7z4siYiBtnkxrwroYVQ2csDo3Q7P");
 
-fn overlap_check(
-    settlement: &mut Account<Settlement>,
-    x: u8,
-    y: u8,
-    new_config: &BuildingConfig,
-) -> bool {
+//move to settlement trait?
+fn fits(settlement: &mut Account<Settlement>, x: u8, y: u8, new_config: &BuildingConfig) -> bool {
     for existing_building in &settlement.buildings {
-        let existing_config = &settlement::config::BUILDINGS_CONFIG[existing_building.id as usize];
+        let existing_config = &BUILDINGS_CONFIG[existing_building.id as usize];
 
-        if (x < existing_building.x + existing_config.width
-            || x + new_config.width >= existing_building.x)
-            && (y < existing_building.y + existing_config.height
-                || y + new_config.height >= existing_building.y)
+        if x < existing_building.x + existing_config.width
+            && existing_building.x < x + new_config.width
+            && y < existing_building.y + existing_config.height
+            && existing_building.y < y + new_config.height
         {
+            msg!("collided!");
+            msg!(
+                "new: x {}, y {}, w {}, h {}",
+                x,
+                y,
+                new_config.width,
+                new_config.height
+            );
+
+            msg!(
+                "existing: x {}, y {}, w {}, h {}",
+                existing_building.x,
+                existing_building.y,
+                existing_config.width,
+                existing_config.height
+            );
+
             return false;
         }
     }
@@ -27,67 +42,46 @@ fn overlap_check(
     return true;
 }
 
-pub fn subtract_resource(settlement: &mut Account<Settlement>, cost: Vec<Balance>) -> bool {
-    for cost_elem in cost {
-        for elem in &mut settlement.treasury {
-            if elem.resource_type == cost_elem.resource_type {
-                if elem.amount >= cost_elem.amount {
-                    elem.amount -= cost_elem.amount;
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-    }
-    return false;
-}
-
 #[system]
 pub mod build {
 
-    use settlement::Building;
-
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
-        let new_building_config = &settlement::config::BUILDINGS_CONFIG[args.id as usize];
+        if args.config_index as usize >= BUILDINGS_CONFIG.len() {
+            return err!(errors::BuildError::ConfigIndexOutOfRange);
+        }
+
+        let new_building_config = &BUILDINGS_CONFIG[args.config_index as usize];
 
         //check map bounds
-        if args.x + new_building_config.width >= settlement::config::MAP_WIDTH {
+        if args.x + new_building_config.width >= MAP_WIDTH {
             return err!(errors::BuildError::OutOfBounds);
         }
 
-        if args.y + new_building_config.height >= settlement::config::MAP_HEIGHT {
+        if args.y + new_building_config.height >= MAP_HEIGHT {
             return err!(errors::BuildError::OutOfBounds);
         }
 
         let settlement = &mut ctx.accounts.settlement;
-        if !overlap_check(settlement, args.x, args.y, new_building_config) {
+        if !fits(settlement, args.x, args.y, new_building_config) {
             return err!(errors::BuildError::WontFit);
         }
 
-        if !subtract_resource(settlement, Vec::from(new_building_config.cost)) {
+        if settlement.treasury.wood < new_building_config.cost as u16 {
             return err!(errors::BuildError::NotEnoughResources);
+        } else {
+            settlement.treasury.wood -= new_building_config.cost as u16;
         }
 
         let new_building = Building {
             x: args.x,
             y: args.y,
-            id: match args.id {
-                0 => settlement::config::BuildingType::TownHall,
-                1 => settlement::config::BuildingType::WaterCollector,
-                2 => settlement::config::BuildingType::FoodCollector,
-                3 => settlement::config::BuildingType::WoodCollector,
-                4 => settlement::config::BuildingType::WaterStorage,
-                5 => settlement::config::BuildingType::FoodStorage,
-                6 => settlement::config::BuildingType::WoodStorage,
-                7 => settlement::config::BuildingType::Altar,
-                _ => panic!("unknown building"),
-            },
-            state: settlement::config::PERFECT_STATE,
+            id: new_building_config.r#type,
+            deterioration: 0,
             level: 1,
         };
 
-        ctx.accounts.settlement.buildings.push(new_building);
+        settlement.buildings.push(new_building);
+
         Ok((ctx.accounts))
     }
 
@@ -98,7 +92,7 @@ pub mod build {
 
     #[arguments]
     struct BuildArgs {
-        id: u8,
+        config_index: u8,
         x: u8,
         y: u8,
     }
