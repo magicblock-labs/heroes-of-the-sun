@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 51b19f34b566aa04ea3325e5810f314c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Prefabs/ui/wallet_holder.prefab
+  uploadId: 620774

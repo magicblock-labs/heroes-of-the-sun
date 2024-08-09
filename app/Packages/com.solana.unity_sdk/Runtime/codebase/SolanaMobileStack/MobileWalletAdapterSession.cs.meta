@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e56fe6fcd2d024b6fa26fb7ceb61d166
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/SolanaMobileStack/MobileWalletAdapterSession.cs
+  uploadId: 620774

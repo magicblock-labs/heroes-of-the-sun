@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 6c80ffcac0320fe48a9ea24edc1f0cb4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Editor/Solana/Metaplex/CandyMachineManager/Asset/LocalMetaplexAsset.cs
+  uploadId: 620774

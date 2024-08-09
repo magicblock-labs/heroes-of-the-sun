@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 6a68f3363dee742f5bddb0649a21f17b
+AssemblyDefinitionImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/UniTask/Editor/UniTask.Editor.asmdef
+  uploadId: 620774

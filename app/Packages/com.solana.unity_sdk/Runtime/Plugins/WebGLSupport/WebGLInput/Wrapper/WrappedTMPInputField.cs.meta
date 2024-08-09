@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e1629c3a135d89a45aca880fa8052f5d
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/WebGLSupport/WebGLInput/Wrapper/WrappedTMPInputField.cs
+  uploadId: 620774

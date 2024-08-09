@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 80c410d257c54d37aaf9ee4ee732f8ad
+timeCreated: 1664354072
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/PhantomWallet/PhantomDeepLink.cs
+  uploadId: 620774

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 1762575501ca24b709ef7e688582f07d
+timeCreated: 1532361007
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/UniTask/Runtime/Internal/ArrayPoolUtil.cs
+  uploadId: 620774

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8fdac842abae24a50b2533cd29ad1ad7
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/Prefabs/WalletAdapterButton.prefab
+  uploadId: 620774

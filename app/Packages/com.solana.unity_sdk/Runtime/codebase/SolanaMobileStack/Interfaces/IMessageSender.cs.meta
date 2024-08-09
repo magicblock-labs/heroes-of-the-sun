@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 5bbc52f18aa34b71b8878dcca2d17d7a
+timeCreated: 1679032948
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/SolanaMobileStack/Interfaces/IMessageSender.cs
+  uploadId: 620774

@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: d41289880070433aa49f34521a109e46
+timeCreated: 1683883584
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/Exporters/WebGLTemplatesExporter.cs
+  uploadId: 620774

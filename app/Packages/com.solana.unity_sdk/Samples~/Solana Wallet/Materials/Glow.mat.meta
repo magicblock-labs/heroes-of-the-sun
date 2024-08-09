@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b5c8e5da633fa4b26883552f8ee12021
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Materials/Glow.mat
+  uploadId: 620774

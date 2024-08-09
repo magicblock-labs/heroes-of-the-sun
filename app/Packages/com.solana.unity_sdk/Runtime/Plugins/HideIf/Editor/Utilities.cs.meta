@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: deaa45644e5764318a9204b6e54c6025
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/HideIf/Editor/Utilities.cs
+  uploadId: 620774

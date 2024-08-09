@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d9e5627f76e6d214e95e4cf8d5464f92
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Animations/Solana-In.anim
+  uploadId: 620774

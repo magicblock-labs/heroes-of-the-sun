@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 7fba2b0ba7de485d948df13dfc46f7da
+timeCreated: 1664303366
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/PhantomWallet/PhantomTransactionPayload.cs
+  uploadId: 620774

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c98faab495ea5ad4b80ae3551af1bc70
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Animations/Header-Idle.anim
+  uploadId: 620774

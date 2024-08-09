@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9bcbe9d189b15427db08f41867f277b8
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Prefabs/ui/Loading.prefab
+  uploadId: 620774

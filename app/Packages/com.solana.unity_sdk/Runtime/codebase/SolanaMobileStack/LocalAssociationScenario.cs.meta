@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 8a3a370efda2b49e1b2873dee66634ee
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/SolanaMobileStack/LocalAssociationScenario.cs
+  uploadId: 620774

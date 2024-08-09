@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 7393b8bec49a42bfb4e0a449c34dbfcc
+timeCreated: 1678983165
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/SolanaMobileStack/JsonRpcClient/Responses/Response.cs
+  uploadId: 620774

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 95b24bd8ac51cf14583dbd6358c0d5c9
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/Web3AuthSDK/link.xml
+  uploadId: 620774

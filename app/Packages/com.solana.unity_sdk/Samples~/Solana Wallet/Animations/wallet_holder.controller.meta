@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2020e8f141a0349879ab74b626f77320
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Animations/wallet_holder.controller
+  uploadId: 620774

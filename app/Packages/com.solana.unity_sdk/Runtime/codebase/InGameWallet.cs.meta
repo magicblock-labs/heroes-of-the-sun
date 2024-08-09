@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: ded6f69caa7d4c6aa065c4a7c4b7e42d
+timeCreated: 1659362113
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/InGameWallet.cs
+  uploadId: 620774

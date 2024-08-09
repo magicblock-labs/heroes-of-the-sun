@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 10b7c7e7b7e1b344e8374d4f68299942
+timeCreated: 1584261938
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/Unity-GifDecoder/Decode/GifLzwDictionary.cs
+  uploadId: 620774

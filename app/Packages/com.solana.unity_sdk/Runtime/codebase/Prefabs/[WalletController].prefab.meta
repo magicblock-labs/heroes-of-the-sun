@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 995243122131141d8b049277509ffd5c
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/Prefabs/[WalletController].prefab
+  uploadId: 620774

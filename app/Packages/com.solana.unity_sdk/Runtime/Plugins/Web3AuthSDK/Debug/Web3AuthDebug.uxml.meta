@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: a6efed4df341cc24385dd5e3227d59c3
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 13804, guid: 0000000000000000e000000000000000, type: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/Web3AuthSDK/Debug/Web3AuthDebug.uxml
+  uploadId: 620774

@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: be83d0f36f67fae43ac68bf2871b313d
+timeCreated: 1584375628
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/Unity-GifDecoder/GifStream.cs
+  uploadId: 620774

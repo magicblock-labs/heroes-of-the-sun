@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 3b099d406639b4f8eb92e4e001e11f0f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/UniTask/Runtime/Linq/DefaultIfEmpty.cs
+  uploadId: 620774

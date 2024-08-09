@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 77609fe2aac96604db09982f6c5bc0b4
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Scripts/example/simple_screen_manager/interfaces/ISimpleScreen.cs
+  uploadId: 620774

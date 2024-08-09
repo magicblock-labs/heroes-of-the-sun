@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 9381314b4c9e4554b13c7b33f1169fdc
+timeCreated: 1584700286
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/Unity-GifDecoder/Model/GifGraphicControl.cs
+  uploadId: 620774

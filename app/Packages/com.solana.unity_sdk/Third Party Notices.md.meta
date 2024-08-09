@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: 78228b05af874e92b2e43a514e28be38
+timeCreated: 1677065515
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Third Party Notices.md
+  uploadId: 620774

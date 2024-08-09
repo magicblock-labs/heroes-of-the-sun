@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7c4f1b3b877a59641b4db78aec33af45
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Textures/Circle.mat
+  uploadId: 620774

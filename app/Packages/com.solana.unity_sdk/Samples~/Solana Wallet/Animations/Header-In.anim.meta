@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: edbd5584c35503e4e99c5e51b000623f
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Samples~/Solana Wallet/Animations/Header-In.anim
+  uploadId: 620774

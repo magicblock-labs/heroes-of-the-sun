@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 40ef60b5839a41e3a2631ecae73e97ee
+timeCreated: 1584700393
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/Plugins/Unity-GifDecoder/Model/GifDisposalMethod.cs
+  uploadId: 620774

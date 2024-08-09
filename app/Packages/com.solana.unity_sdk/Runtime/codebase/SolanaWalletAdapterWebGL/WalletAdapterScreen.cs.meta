@@ -1,0 +1,10 @@
+﻿fileFormatVersion: 2
+guid: 5c6f044899034844b7b569b2f1875501
+timeCreated: 1681462286
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/SolanaWalletAdapterWebGL/WalletAdapterScreen.cs
+  uploadId: 620774
