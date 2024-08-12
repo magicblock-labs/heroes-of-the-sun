@@ -10,6 +10,7 @@ labour = "BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH"
 settlement = "ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ"
 time = "AyMpNWt8uw4nEHReXXEUhbDmgmQQbfG4HZjCSkupbEne"
 upgrade = "FrTthTtkfEWa2zZt4YEHGbL9Hz8hpsSW1hsHHnJXPRd4"
+wait = "ECfKKquvf7PWgvCTAQiYkbDGVjaxhqAN4DFZCAjTUpwx"
 
 [registry]
 url = "https://api.apr.dev"

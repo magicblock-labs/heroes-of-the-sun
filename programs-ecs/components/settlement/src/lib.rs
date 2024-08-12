@@ -19,6 +19,7 @@ pub struct Building {
     pub deterioration: u8, //0 is ok, 127 will destroy
     pub id: crate::config::BuildingType,
     pub level: u8,
+    pub timestamp: u16,
 }
 
 #[component]
@@ -45,16 +46,17 @@ impl Default for Settlement {
                 deterioration: 0,
                 id: BuildingType::TownHall,
                 level: 1,
+                timestamp: 0,
             }],
             labour_allocation: vec![-1], //one labour comes as default from town hall
             environment: ResourceBalance {
-                food: 200,
-                water: 500,
+                water: 200,
+                food: 40,
                 wood: 1000,
             },
             treasury: ResourceBalance {
-                food: 20,
-                water: 50,
+                water: 20,
+                food: 40,
                 wood: 100,
             },
             day: 0,

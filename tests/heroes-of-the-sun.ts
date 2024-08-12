@@ -27,7 +27,7 @@ describe("HeroesOfTheSun", () => {
 
   it("Doesn't collect without labour assigned", async () => {
     var waterBefore = (await settlement.state()).treasury.water;
-    const state = await settlement.wait({ days: 1 });
+    const state = await settlement.wait({ time: 1 });
     expect(state.treasury.water).to.eq(waterBefore);
   });
 
@@ -37,15 +37,37 @@ describe("HeroesOfTheSun", () => {
     expect(state.labourAllocation[0]).to.eq(1);
   });
 
+  it("Cant collect resource without storage", async () => {
+    var waterBefore = (await settlement.state()).treasury.water;
+    const state = await settlement.wait({ time: 1 });
+    expect(state.treasury.water).to.eq(waterBefore);
+  });
+
+  it("Builds a water storage", async () => {
+    var lengthBefore = (await settlement.state()).buildings.length;
+    const state = await settlement.build({ x: 1, y: 6, config_index: 4 });
+    expect(state.buildings.length).to.gt(lengthBefore);
+  });
+
+  it("Cant collect resource beyond max storage", async () => {
+    var waterBefore = (await settlement.state()).treasury.water;
+    const state = await settlement.wait({ time: 1 });
+    expect(state.treasury.water).to.eq(waterBefore);
+  });
+
+  it("Upgrades water storage", async () => {
+    const state = await settlement.upgrade({ index: 2 });
+    expect(state.buildings.length).to.gt(1);
+  });
 
   it("Collect water from environment", async () => {
     var waterBefore = (await settlement.state()).treasury.water;
-    const state = await settlement.wait({ days: 1 });
+    const state = await settlement.wait({ time: 1 });
     expect(state.treasury.water).to.gt(waterBefore);
   });
 
-  it("Builds a wood collector", async () => {
-    const state = await settlement.build({ x: 1, y: 3, config_index: 3 });
+  it("Builds a food collector", async () => {
+    const state = await settlement.build({ x: 1, y: 3, config_index: 2 });
     expect(state.buildings.length).to.gt(1);
   });
 
@@ -65,20 +87,31 @@ describe("HeroesOfTheSun", () => {
   });
 
   it("Allocates Labour To Food Collector", async () => {
-    const state = await settlement.assignLabour({ labour_index: 1, building_index: 2 });
+    const state = await settlement.assignLabour({ labour_index: 1, building_index: 3 });
     expect(state.labourAllocation[0]).to.eq(1);
   });
 
+  it("Cant collect food (different resource) from environment without storage", async () => {
+    var foodBefore = (await settlement.state()).treasury.food;
+    const state = await settlement.wait({ time: 1 });
+    expect(state.treasury.food).to.eq(foodBefore);
+  });
 
-  it("Collect wood from environment", async () => {
-    var woodBefore = (await settlement.state()).treasury.wood;
-    const state = await settlement.wait({ days: 1 });
-    expect(state.treasury.wood).to.gt(woodBefore);
+  it("Builds a food storage", async () => {
+    var lengthBefore = (await settlement.state()).buildings.length;
+    const state = await settlement.build({ x: 1, y: 10, config_index: 5 });
+    expect(state.buildings.length).to.gt(lengthBefore);
+  });
+
+  it("Collects food from environment", async () => {
+    var foodBefore = (await settlement.state()).treasury.food;
+    const state = await settlement.wait({ time: 1 });
+    expect(state.treasury.food).to.gt(foodBefore);
   });
 
   it("Time Deteriorates buildings", async () => {
     var deteriorationBefore = (await settlement.state()).buildings[0].deterioration;
-    const state = await settlement.wait({ days: 5 });
+    const state = await settlement.wait({ time: 5 });
     expect(state.buildings[0].deterioration).to.eq(deteriorationBefore + 5);
   });
 

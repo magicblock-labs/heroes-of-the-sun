@@ -78,6 +78,7 @@ pub mod build {
             id: new_building_config.r#type,
             deterioration: 0,
             level: 1,
+            timestamp: settlement.day + 5,
         };
 
         settlement.buildings.push(new_building);

@@ -1,7 +1,8 @@
 use bolt_lang::*;
 
+use crate::ResourceBalance;
+
 //this enum matches the BUILDINGS_CONFIG array indexes (so we don't need to use a map (BuildingType=>BuildingConfig))
-#[repr(u8)]
 #[component_deserialize]
 pub enum BuildingType {
     TownHall = 0,
@@ -23,6 +24,12 @@ pub struct BuildingConfig {
 
 pub const MAP_WIDTH: u8 = 20;
 pub const MAP_HEIGHT: u8 = 20;
+
+pub const ENVIRONMENT_LIMITS: ResourceBalance = ResourceBalance {
+    water: 1000,
+    food: 1000,
+    wood: 1000,
+};
 
 pub const BUILDINGS_CONFIG: [BuildingConfig; 8] = [
     BuildingConfig {

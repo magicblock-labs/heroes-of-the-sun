@@ -8,7 +8,7 @@ import {
   ApplySystem,
 } from "@magicblock-labs/bolt-sdk"
 import { Settlement } from "../target/types/settlement";
-import { Time } from "../target/types/time";
+import { Wait } from "../target/types/wait";
 import { Build } from "../target/types/build";
 import { Labour } from "../target/types/labour";
 import { Upgrade } from "../target/types/upgrade";
@@ -26,11 +26,9 @@ export type UpgradeArgs = {
   index: number
 }
 
-
 export type WaitArgs = {
-  days: number
+  time: number
 }
-
 
 export class SettlementWrapper {
 
@@ -42,7 +40,7 @@ export class SettlementWrapper {
 
 
   settlementComponent: Program<Settlement>;
-  timeSystem: Program<Time>;
+  waitSystem: Program<Wait>;
   buildSystem: Program<Build>;
   labourSystem: Program<Labour>;
   upgradeSystem: Program<Upgrade>;
@@ -52,7 +50,7 @@ export class SettlementWrapper {
     anchor.setProvider(this.provider);
 
     this.settlementComponent = anchor.workspace.Settlement as Program<Settlement>;
-    this.timeSystem = anchor.workspace.Time as Program<Time>;
+    this.waitSystem = anchor.workspace.Wait as Program<Wait>;
     this.buildSystem = anchor.workspace.Build as Program<Build>;
     this.labourSystem = anchor.workspace.Labour as Program<Labour>;
     this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
@@ -149,7 +147,7 @@ export class SettlementWrapper {
     // Run the movement system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
-      systemId: this.timeSystem.programId,
+      systemId: this.waitSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
