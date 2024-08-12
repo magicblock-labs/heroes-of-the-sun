@@ -10,7 +10,7 @@ import {
 import { Settlement } from "../target/types/settlement";
 import { Wait } from "../target/types/wait";
 import { Build } from "../target/types/build";
-import { Labour } from "../target/types/labour";
+import { AssignLabour } from "../target/types/assign_labour";
 import { Upgrade } from "../target/types/upgrade";
 
 
@@ -18,7 +18,7 @@ export type BuildArgs = {
   x: number, y: number, config_index: number
 }
 
-export type AllocateLabourArgs = {
+export type AssignLabourArgs = {
   building_index: number, labour_index: number
 }
 
@@ -42,7 +42,7 @@ export class SettlementWrapper {
   settlementComponent: Program<Settlement>;
   waitSystem: Program<Wait>;
   buildSystem: Program<Build>;
-  labourSystem: Program<Labour>;
+  assignLabourSystem: Program<AssignLabour>;
   upgradeSystem: Program<Upgrade>;
 
   async init() {
@@ -52,9 +52,8 @@ export class SettlementWrapper {
     this.settlementComponent = anchor.workspace.Settlement as Program<Settlement>;
     this.waitSystem = anchor.workspace.Wait as Program<Wait>;
     this.buildSystem = anchor.workspace.Build as Program<Build>;
-    this.labourSystem = anchor.workspace.Labour as Program<Labour>;
+    this.assignLabourSystem = anchor.workspace.AssignLabour as Program<AssignLabour>;
     this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
-
 
     const initNewWorld = await InitializeNewWorld({
       payer: this.provider.wallet.publicKey,
@@ -107,10 +106,10 @@ export class SettlementWrapper {
     return await this.state();
   }
 
-  async assignLabour(args: AllocateLabourArgs) {
+  async assignLabour(args: AssignLabourArgs) {
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
-      systemId: this.labourSystem.programId,
+      systemId: this.assignLabourSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],

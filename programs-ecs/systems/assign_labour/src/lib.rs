@@ -4,10 +4,10 @@ use bolt_lang::*;
 declare_id!("BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH");
 
 #[system]
-pub mod labour {
+pub mod assign_labour {
     use settlement::Settlement;
 
-    pub fn execute(ctx: Context<Components>, args: LabourArgs) -> Result<Components> {
+    pub fn execute(ctx: Context<Components>, args: AssignLabourArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
 
         if settlement.buildings.len() <= args.building_index as usize {
@@ -28,7 +28,7 @@ pub mod labour {
     }
 
     #[arguments]
-    struct LabourArgs {
+    struct AssignLabourArgs {
         labour_index: u8,
         building_index: i8,
     }

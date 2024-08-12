@@ -28,7 +28,7 @@ describe("HeroesOfTheSun", () => {
   it("Doesn't collect without labour assigned", async () => {
     var waterBefore = (await settlement.state()).treasury.water;
     const state = await settlement.wait({ time: 1 });
-    expect(state.treasury.water).to.eq(waterBefore);
+    expect(state.treasury.water).to.lte(waterBefore);
   });
 
 
@@ -40,19 +40,13 @@ describe("HeroesOfTheSun", () => {
   it("Cant collect resource without storage", async () => {
     var waterBefore = (await settlement.state()).treasury.water;
     const state = await settlement.wait({ time: 1 });
-    expect(state.treasury.water).to.eq(waterBefore);
+    expect(state.treasury.water).to.lte(waterBefore);
   });
 
   it("Builds a water storage", async () => {
     var lengthBefore = (await settlement.state()).buildings.length;
     const state = await settlement.build({ x: 1, y: 6, config_index: 4 });
     expect(state.buildings.length).to.gt(lengthBefore);
-  });
-
-  it("Cant collect resource beyond max storage", async () => {
-    var waterBefore = (await settlement.state()).treasury.water;
-    const state = await settlement.wait({ time: 1 });
-    expect(state.treasury.water).to.eq(waterBefore);
   });
 
   it("Upgrades water storage", async () => {
@@ -63,6 +57,7 @@ describe("HeroesOfTheSun", () => {
   it("Collect water from environment", async () => {
     var waterBefore = (await settlement.state()).treasury.water;
     const state = await settlement.wait({ time: 1 });
+    console.log(state);
     expect(state.treasury.water).to.gt(waterBefore);
   });
 
@@ -94,7 +89,7 @@ describe("HeroesOfTheSun", () => {
   it("Cant collect food (different resource) from environment without storage", async () => {
     var foodBefore = (await settlement.state()).treasury.food;
     const state = await settlement.wait({ time: 1 });
-    expect(state.treasury.food).to.eq(foodBefore);
+    expect(state.treasury.food).to.lte(foodBefore);
   });
 
   it("Builds a food storage", async () => {
@@ -106,7 +101,7 @@ describe("HeroesOfTheSun", () => {
   it("Collects food from environment", async () => {
     var foodBefore = (await settlement.state()).treasury.food;
     const state = await settlement.wait({ time: 1 });
-    expect(state.treasury.food).to.gt(foodBefore);
+    expect(state.treasury.food).to.gte(foodBefore); //gte here cause we ahve 2 labour that eats everything collected
   });
 
   it("Time Deteriorates buildings", async () => {

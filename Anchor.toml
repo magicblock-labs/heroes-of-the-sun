@@ -7,6 +7,8 @@ skip-lint = false
 [programs.localnet]
 build = "Fgc4uSFUPnhUpwUu7z4siYiBtnkxrwroYVQ2csDo3Q7P"
 labour = "BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH"
+repair = "FViANCSUgsHJxK3m1J2d41Yq5yJ13BDkA8eiRwQPFHuJ"
+sacrifice = "85CUG48uuz6UYrvWYuDuK5Z79Q7rTGCP4y4CU933A7jd"
 settlement = "ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ"
 time = "AyMpNWt8uw4nEHReXXEUhbDmgmQQbfG4HZjCSkupbEne"
 upgrade = "FrTthTtkfEWa2zZt4YEHGbL9Hz8hpsSW1hsHHnJXPRd4"
