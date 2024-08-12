@@ -12,13 +12,13 @@ using Solana.Unity.Rpc.Core.Http;
 using Solana.Unity.Rpc.Core.Sockets;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.Wallet;
-using Settlementcomponent;
-using Settlementcomponent.Program;
-using Settlementcomponent.Errors;
-using Settlementcomponent.Accounts;
-using Settlementcomponent.Types;
+using Settlement;
+using Settlement.Program;
+using Settlement.Errors;
+using Settlement.Accounts;
+using Settlement.Types;
 
-namespace Settlementcomponent
+namespace Settlement
 {
     namespace Accounts
     {
@@ -46,11 +46,11 @@ namespace Settlementcomponent
             }
         }
 
-        public partial class SettlementComponent
+        public partial class Settlement
         {
-            public static ulong ACCOUNT_DISCRIMINATOR => 12867611429926918130UL;
-            public static ReadOnlySpan<byte> ACCOUNT_DISCRIMINATOR_BYTES => new byte[]{242, 215, 140, 132, 107, 240, 146, 178};
-            public static string ACCOUNT_DISCRIMINATOR_B58 => "hcsYewA26N5";
+            public static ulong ACCOUNT_DISCRIMINATOR => 13125890802739514167UL;
+            public static ReadOnlySpan<byte> ACCOUNT_DISCRIMINATOR_BYTES => new byte[]{55, 11, 219, 33, 36, 136, 40, 182};
+            public static string ACCOUNT_DISCRIMINATOR_B58 => "AD24AwEsvU5";
             public Building[] Buildings { get; set; }
 
             public ResourceBalance Environment { get; set; }
@@ -65,7 +65,7 @@ namespace Settlementcomponent
 
             public BoltMetadata BoltMetadata { get; set; }
 
-            public static SettlementComponent Deserialize(ReadOnlySpan<byte> _data)
+            public static Settlement Deserialize(ReadOnlySpan<byte> _data)
             {
                 int offset = 0;
                 ulong accountHashValue = _data.GetU64(offset);
@@ -75,7 +75,7 @@ namespace Settlementcomponent
                     return null;
                 }
 
-                SettlementComponent result = new SettlementComponent();
+                Settlement result = new Settlement();
                 int resultBuildingsLength = (int)_data.GetU32(offset);
                 offset += 4;
                 result.Buildings = new Building[resultBuildingsLength];
@@ -111,7 +111,7 @@ namespace Settlementcomponent
 
     namespace Errors
     {
-        public enum SettlementcomponentErrorKind : uint
+        public enum SettlementErrorKind : uint
         {
         }
     }
@@ -152,6 +152,8 @@ namespace Settlementcomponent
 
             public byte Level { get; set; }
 
+            public ushort Timestamp { get; set; }
+
             public int Serialize(byte[] _data, int initialOffset)
             {
                 int offset = initialOffset;
@@ -165,6 +167,8 @@ namespace Settlementcomponent
                 offset += 1;
                 _data.WriteU8(Level, offset);
                 offset += 1;
+                _data.WriteU16(Timestamp, offset);
+                offset += 2;
                 return offset - initialOffset;
             }
 
@@ -182,6 +186,8 @@ namespace Settlementcomponent
                 offset += 1;
                 result.Level = _data.GetU8(offset);
                 offset += 1;
+                result.Timestamp = _data.GetU16(offset);
+                offset += 2;
                 return offset - initialOffset;
             }
         }
@@ -233,9 +239,9 @@ namespace Settlementcomponent
         }
     }
 
-    public partial class SettlementcomponentClient : TransactionalBaseClient<SettlementcomponentErrorKind>
+    public partial class SettlementClient : TransactionalBaseClient<SettlementErrorKind>
     {
-        public SettlementcomponentClient(IRpcClient rpcClient, IStreamingRpcClient streamingRpcClient, PublicKey programId) : base(rpcClient, streamingRpcClient, programId)
+        public SettlementClient(IRpcClient rpcClient, IStreamingRpcClient streamingRpcClient, PublicKey programId) : base(rpcClient, streamingRpcClient, programId)
         {
         }
 
@@ -250,15 +256,15 @@ namespace Settlementcomponent
             return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Entity>>(res, resultingAccounts);
         }
 
-        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SettlementComponent>>> GetSettlementComponentsAsync(string programAddress, Commitment commitment = Commitment.Confirmed)
+        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Settlement.Accounts.Settlement>>> GetSettlementsAsync(string programAddress, Commitment commitment = Commitment.Confirmed)
         {
-            var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = SettlementComponent.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
+            var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = Settlement.Accounts.Settlement.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
             var res = await RpcClient.GetProgramAccountsAsync(programAddress, commitment, memCmpList: list);
             if (!res.WasSuccessful || !(res.Result?.Count > 0))
-                return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SettlementComponent>>(res);
-            List<SettlementComponent> resultingAccounts = new List<SettlementComponent>(res.Result.Count);
-            resultingAccounts.AddRange(res.Result.Select(result => SettlementComponent.Deserialize(Convert.FromBase64String(result.Account.Data[0]))));
-            return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SettlementComponent>>(res, resultingAccounts);
+                return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Settlement.Accounts.Settlement>>(res);
+            List<Settlement.Accounts.Settlement> resultingAccounts = new List<Settlement.Accounts.Settlement>(res.Result.Count);
+            resultingAccounts.AddRange(res.Result.Select(result => Settlement.Accounts.Settlement.Deserialize(Convert.FromBase64String(result.Account.Data[0]))));
+            return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Settlement.Accounts.Settlement>>(res, resultingAccounts);
         }
 
         public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<Entity>> GetEntityAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
@@ -270,13 +276,13 @@ namespace Settlementcomponent
             return new Solana.Unity.Programs.Models.AccountResultWrapper<Entity>(res, resultingAccount);
         }
 
-        public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<SettlementComponent>> GetSettlementComponentAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
+        public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<Settlement.Accounts.Settlement>> GetSettlementAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
         {
             var res = await RpcClient.GetAccountInfoAsync(accountAddress, commitment);
             if (!res.WasSuccessful)
-                return new Solana.Unity.Programs.Models.AccountResultWrapper<SettlementComponent>(res);
-            var resultingAccount = SettlementComponent.Deserialize(Convert.FromBase64String(res.Result.Value.Data[0]));
-            return new Solana.Unity.Programs.Models.AccountResultWrapper<SettlementComponent>(res, resultingAccount);
+                return new Solana.Unity.Programs.Models.AccountResultWrapper<Settlement.Accounts.Settlement>(res);
+            var resultingAccount = Settlement.Accounts.Settlement.Deserialize(Convert.FromBase64String(res.Result.Value.Data[0]));
+            return new Solana.Unity.Programs.Models.AccountResultWrapper<Settlement.Accounts.Settlement>(res, resultingAccount);
         }
 
         public async Task<SubscriptionState> SubscribeEntityAsync(string accountAddress, Action<SubscriptionState, Solana.Unity.Rpc.Messages.ResponseValue<Solana.Unity.Rpc.Models.AccountInfo>, Entity> callback, Commitment commitment = Commitment.Finalized)
@@ -291,21 +297,21 @@ namespace Settlementcomponent
             return res;
         }
 
-        public async Task<SubscriptionState> SubscribeSettlementComponentAsync(string accountAddress, Action<SubscriptionState, Solana.Unity.Rpc.Messages.ResponseValue<Solana.Unity.Rpc.Models.AccountInfo>, SettlementComponent> callback, Commitment commitment = Commitment.Finalized)
+        public async Task<SubscriptionState> SubscribeSettlementAsync(string accountAddress, Action<SubscriptionState, Solana.Unity.Rpc.Messages.ResponseValue<Solana.Unity.Rpc.Models.AccountInfo>, Settlement.Accounts.Settlement> callback, Commitment commitment = Commitment.Finalized)
         {
             SubscriptionState res = await StreamingRpcClient.SubscribeAccountInfoAsync(accountAddress, (s, e) =>
             {
-                SettlementComponent parsingResult = null;
+                Settlement.Accounts.Settlement parsingResult = null;
                 if (e.Value?.Data?.Count > 0)
-                    parsingResult = SettlementComponent.Deserialize(Convert.FromBase64String(e.Value.Data[0]));
+                    parsingResult = Settlement.Accounts.Settlement.Deserialize(Convert.FromBase64String(e.Value.Data[0]));
                 callback(s, e, parsingResult);
             }, commitment);
             return res;
         }
 
-        protected override Dictionary<uint, ProgramError<SettlementcomponentErrorKind>> BuildErrorsDictionary()
+        protected override Dictionary<uint, ProgramError<SettlementErrorKind>> BuildErrorsDictionary()
         {
-            return new Dictionary<uint, ProgramError<SettlementcomponentErrorKind>>{};
+            return new Dictionary<uint, ProgramError<SettlementErrorKind>>{};
         }
     }
 
@@ -335,7 +341,7 @@ namespace Settlementcomponent
             public PublicKey InstructionSysvarAccount { get; set; }
         }
 
-        public static class SettlementcomponentProgram
+        public static class SettlementProgram
         {
             public const string ID = "11111111111111111111111111111111";
             public static Solana.Unity.Rpc.Models.TransactionInstruction Initialize(InitializeAccounts accounts, PublicKey programId)

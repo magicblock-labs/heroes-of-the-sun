@@ -1260,7 +1260,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1379487708}
-  - component: {fileID: 1379487709}
   m_Layer: 0
   m_Name: Root
   m_TagString: Untagged
@@ -1286,18 +1285,6 @@ Transform:
   - {fileID: 1176402572}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1379487709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1379487707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7ec6140085bb44f9b612c4228b00ad4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1390052515
 GameObject:
   m_ObjectHideFlags: 0
@@ -1463,6 +1450,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1517763382}
   - component: {fileID: 1517763381}
+  - component: {fileID: 1517763384}
+  - component: {fileID: 1517763383}
   m_Layer: 0
   m_Name: Bootstrap
   m_TagString: Untagged
@@ -1498,6 +1487,58 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1517763383
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517763380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b75a4e92c14884ea6bf3e46d07a33eb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rpcCluster: 1
+  customRpc: http://127.0.0.1:8899
+  webSocketsRpc: ws://127.0.0.1:8900
+  autoConnectOnStartup: 1
+  web3AuthWalletOptions:
+    appName: Web3Auth Sample App
+    logoLight: 
+    logoDark: 
+    defaultLanguage: en
+    dark: 1
+    themeName: primary
+    themeColor: '#123456'
+    redirectUrl: torusapp://com.torus.Web3AuthUnity/auth
+    clientId: BAwFgL-r7wzQKmtcdiz2uHJKNZdK7gzEf2q-m55xfzSZOw8jLOyIi4AVvvzaEQO5nv2dFLEmf9LBkF8kaq3aErg
+    network: 1
+  solanaWalletAdapterOptions:
+    solanaMobileWalletAdapterOptions:
+      identityUri: https://solana.unity-sdk.gg/
+      iconUri: /favicon.ico
+      name: Solana.Unity-SDK
+      keepConnectionAlive: 1
+    solanaWalletAdapterWebGLOptions:
+      walletAdapterButtonPrefab: {fileID: 0}
+      walletAdapterUIPrefab: {fileID: 0}
+    phantomWalletOptions:
+      phantomApiVersion: v1
+      appMetaDataUrl: https://github.com/garbles-labs/Solana.Unity-SDK
+      deeplinkUrlScheme: unitydl
+--- !u!114 &1517763384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1517763380}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbd7daddfbeaa44729a122a269ac8fb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1559825032
 GameObject:
   m_ObjectHideFlags: 0
@@ -1747,74 +1788,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1881166287}
   m_CullTransparentMesh: 1
---- !u!1001 &348878791407326606
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3793560819121442931, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_Name
-      value: Altar
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 9097705655109721460, guid: f1170c222d9e24cbd98be5025dd07bc0,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: f1170c222d9e24cbd98be5025dd07bc0, type: 3}
 --- !u!1 &1988885982952711231
 GameObject:
   m_ObjectHideFlags: 0
@@ -1945,4 +1918,3 @@ SceneRoots:
   - {fileID: 572435604}
   - {fileID: 1349779263}
   - {fileID: 909670177}
-  - {fileID: 348878791407326606}

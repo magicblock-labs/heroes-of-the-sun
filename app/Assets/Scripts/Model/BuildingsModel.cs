@@ -1,6 +1,6 @@
 using System;
 using Service;
-using Settlementcomponent.Types;
+using Settlement.Types;
 using Utils.Injection;
 using Utils.Signal;
 using BuildingType = Service.BuildingType;

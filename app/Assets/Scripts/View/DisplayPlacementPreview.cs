@@ -10,7 +10,6 @@ namespace View
     {
         [Inject] private InteractionStateModel _interaction;
         [Inject] private BuildingsModel _buildings;
-        [Inject] private BuilderService _builder;
         [Inject] private ConfigModel _config;
 
         [SerializeField] private GameObject gridElement;

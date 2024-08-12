@@ -1,17 +1,15 @@
 using Model;
 using Service;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utils.Injection;
-using View.UI;
 
-namespace View
+namespace View.UI
 {
     public class PlacementUI : BuildingUI
     {
         [Inject] private InteractionStateModel _interaction;
         [Inject] private BuildingsModel _buildings;
-        [Inject] private BuilderService _builder;
+        [Inject] private ProgramConnector _connector;
         [Inject] private ConfigModel _config;
 
         public void OnTryDragStart()
@@ -29,11 +27,11 @@ namespace View
         {
             if (_interaction.ValidPlacement)
             {
-                if (!await _builder.PlaceBuilding((byte)_interaction.CellPosX, (byte)_interaction.CellPosZ,
+                if (!await _connector.PlaceBuilding((byte)_interaction.CellPosX, (byte)_interaction.CellPosZ,
                         (byte)_interaction.SelectedBuildingType))
                     Debug.LogError("cant place building!");
 
-                await _builder.ReloadData();
+                await _connector.ReloadData();
 
                 if (_config.Buildings.ContainsKey(_interaction.SelectedBuildingType))
                     _interaction.FinishPlacement();

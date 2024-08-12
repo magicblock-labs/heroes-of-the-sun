@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
-using Build.Types;
-using Data;
+using Settlement.Types;
 using Service;
 using UnityEngine;
 using UnityEngine.UI;
 using View.UI;
-using BuildingType = Service.BuildingType;
 
 namespace View
 {
@@ -23,7 +21,7 @@ namespace View
             if (value == null)
                 return;
 
-            nameLabel.text = ((BuildingType)value.Id).ToString();
+            nameLabel.text = value.Id.ToString();
             if (levelLabel)
                 levelLabel.text = "Level: " + value.Level;
 

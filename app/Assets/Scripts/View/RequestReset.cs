@@ -6,7 +6,7 @@ namespace View
 {
     public class RequestReset : InjectableBehaviour
     {
-        [Inject] private RemoteConnectorMock _connectorMock;
+        [Inject] private ProgramConnector _connectorMock;
 
         public async void Reset()
         {
