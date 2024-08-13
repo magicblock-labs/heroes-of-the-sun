@@ -1,18 +1,15 @@
 // #define FTUE_TESTING
 
-using System;
 using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Service;
-using Solana.Unity.Rpc.Models;
-using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using Solana.Unity.Wallet.Bip39;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Utils.Injection;
 
 namespace Utils
@@ -37,8 +34,8 @@ namespace Utils
                 if (Web3.Account == null)
                 {
                     Web3.OnLogin += HandleSignIn;
-                
-                    var password = PlayerPrefs.GetString(PwdPrefKey, null);
+
+                    string password = null;//PlayerPrefs.GetString(PwdPrefKey, null);
 
                     if (!string.IsNullOrEmpty(password)){
                         var account = await  Web3.Instance.LoginInGameWallet(password);
@@ -46,8 +43,7 @@ namespace Utils
                         {
                             PlayerPrefs.DeleteAll();
                             Login();
-                        }else 
-                            HandleSignIn(account);   
+                        }  
                     }
                     
                     else
@@ -57,12 +53,9 @@ namespace Utils
 
                         PlayerPrefs.SetString(PwdPrefKey, password);
 
-                        var account = await Web3.Instance.CreateAccount(mnemonic.ToString(), password);
-                        HandleSignIn(account);   
+                        await Web3.Instance.CreateAccount(mnemonic.ToString(), password);   
                     }
-                }
-                // else
-                //     HandleSignIn(Web3.Account);            
+                }          
             }
     
         
@@ -89,6 +82,7 @@ namespace Utils
 #endif
 
             await _connector.Initialise();
+            // await _connector.ReloadData();
             return;
             if (!await _connector.ReloadData())
             {
@@ -109,8 +103,17 @@ namespace Utils
         
         public async Task EnsureBalance()
         {
-            if ((await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey)).Result.Value < 500000000)
-                await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 1000000000);
+            var requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
+            if (requestResult.Result.Value < 500000000)
+            {
+                var airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 1000000000);
+                Debug.Log(JsonConvert.SerializeObject(airdropResult));
+                await Task.Delay(5000);
+            }
+            
+            requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
+            
+            Debug.Log(JsonConvert.SerializeObject(requestResult));
         }
     }
 }
