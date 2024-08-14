@@ -8,7 +8,7 @@ namespace View
     [RequireComponent(typeof(Text))]
     public class DisplayCredits : InjectableBehaviour
     {
-        [Inject] private BalanceModel _model;
+        [Inject] private SettlementModel _model;
         private Text _text;
 
         void Start()
@@ -20,7 +20,8 @@ namespace View
 
         private void OnUpdated()
         {
-            _text.text = _model.Get().ToString();
+            if (_model.HasData)
+                _text.text = $"Water: {_model.Get().Treasury.Water}; Food: {_model.Get().Treasury.Food}; Wood: {_model.Get().Treasury.Wood}";
         }
 
         private void OnDestroy()

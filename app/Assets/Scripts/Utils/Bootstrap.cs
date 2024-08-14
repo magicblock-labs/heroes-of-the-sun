@@ -35,7 +35,7 @@ namespace Utils
                 {
                     Web3.OnLogin += HandleSignIn;
 
-                    string password = null;//PlayerPrefs.GetString(PwdPrefKey, null);
+                    string password = PlayerPrefs.GetString(PwdPrefKey, null);
 
                     if (!string.IsNullOrEmpty(password)){
                         var account = await  Web3.Instance.LoginInGameWallet(password);
@@ -81,8 +81,8 @@ namespace Utils
             await _connector.ResetAccounts();
 #endif
 
-            await _connector.Initialise();
-            // await _connector.ReloadData();
+            // await _connector.Initialise();
+            await _connector.ReloadData();
             return;
             if (!await _connector.ReloadData())
             {

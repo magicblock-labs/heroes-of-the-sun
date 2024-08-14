@@ -1,22 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Threading.Tasks;
-using Solana.Unity;
+using Settlement.Accounts;
+using Settlement.Errors;
+using Settlement.Types;
 using Solana.Unity.Programs.Abstract;
 using Solana.Unity.Programs.Utilities;
 using Solana.Unity.Rpc;
-using Solana.Unity.Rpc.Builders;
-using Solana.Unity.Rpc.Core.Http;
 using Solana.Unity.Rpc.Core.Sockets;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.Wallet;
-using Settlement;
-using Settlement.Program;
-using Settlement.Errors;
-using Settlement.Accounts;
-using Settlement.Types;
+
 
 namespace Settlement
 {
@@ -256,15 +251,15 @@ namespace Settlement
             return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Entity>>(res, resultingAccounts);
         }
 
-        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Settlement.Accounts.Settlement>>> GetSettlementsAsync(string programAddress, Commitment commitment = Commitment.Confirmed)
+        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Accounts.Settlement>>> GetSettlementsAsync(string programAddress, Commitment commitment = Commitment.Confirmed)
         {
-            var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = Settlement.Accounts.Settlement.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
+            var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = Accounts.Settlement.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
             var res = await RpcClient.GetProgramAccountsAsync(programAddress, commitment, memCmpList: list);
             if (!res.WasSuccessful || !(res.Result?.Count > 0))
-                return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Settlement.Accounts.Settlement>>(res);
-            List<Settlement.Accounts.Settlement> resultingAccounts = new List<Settlement.Accounts.Settlement>(res.Result.Count);
-            resultingAccounts.AddRange(res.Result.Select(result => Settlement.Accounts.Settlement.Deserialize(Convert.FromBase64String(result.Account.Data[0]))));
-            return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Settlement.Accounts.Settlement>>(res, resultingAccounts);
+                return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Accounts.Settlement>>(res);
+            List<Accounts.Settlement> resultingAccounts = new List<Accounts.Settlement>(res.Result.Count);
+            resultingAccounts.AddRange(res.Result.Select(result => Accounts.Settlement.Deserialize(Convert.FromBase64String(result.Account.Data[0]))));
+            return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Accounts.Settlement>>(res, resultingAccounts);
         }
 
         public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<Entity>> GetEntityAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
@@ -276,13 +271,13 @@ namespace Settlement
             return new Solana.Unity.Programs.Models.AccountResultWrapper<Entity>(res, resultingAccount);
         }
 
-        public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<Settlement.Accounts.Settlement>> GetSettlementAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
+        public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<Accounts.Settlement>> GetSettlementAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
         {
             var res = await RpcClient.GetAccountInfoAsync(accountAddress, commitment);
             if (!res.WasSuccessful)
-                return new Solana.Unity.Programs.Models.AccountResultWrapper<Settlement.Accounts.Settlement>(res);
-            var resultingAccount = Settlement.Accounts.Settlement.Deserialize(Convert.FromBase64String(res.Result.Value.Data[0]));
-            return new Solana.Unity.Programs.Models.AccountResultWrapper<Settlement.Accounts.Settlement>(res, resultingAccount);
+                return new Solana.Unity.Programs.Models.AccountResultWrapper<Accounts.Settlement>(res);
+            var resultingAccount = Accounts.Settlement.Deserialize(Convert.FromBase64String(res.Result.Value.Data[0]));
+            return new Solana.Unity.Programs.Models.AccountResultWrapper<Accounts.Settlement>(res, resultingAccount);
         }
 
         public async Task<SubscriptionState> SubscribeEntityAsync(string accountAddress, Action<SubscriptionState, Solana.Unity.Rpc.Messages.ResponseValue<Solana.Unity.Rpc.Models.AccountInfo>, Entity> callback, Commitment commitment = Commitment.Finalized)
@@ -297,13 +292,13 @@ namespace Settlement
             return res;
         }
 
-        public async Task<SubscriptionState> SubscribeSettlementAsync(string accountAddress, Action<SubscriptionState, Solana.Unity.Rpc.Messages.ResponseValue<Solana.Unity.Rpc.Models.AccountInfo>, Settlement.Accounts.Settlement> callback, Commitment commitment = Commitment.Finalized)
+        public async Task<SubscriptionState> SubscribeSettlementAsync(string accountAddress, Action<SubscriptionState, Solana.Unity.Rpc.Messages.ResponseValue<Solana.Unity.Rpc.Models.AccountInfo>, Accounts.Settlement> callback, Commitment commitment = Commitment.Finalized)
         {
             SubscriptionState res = await StreamingRpcClient.SubscribeAccountInfoAsync(accountAddress, (s, e) =>
             {
-                Settlement.Accounts.Settlement parsingResult = null;
+                Accounts.Settlement parsingResult = null;
                 if (e.Value?.Data?.Count > 0)
-                    parsingResult = Settlement.Accounts.Settlement.Deserialize(Convert.FromBase64String(e.Value.Data[0]));
+                    parsingResult = Accounts.Settlement.Deserialize(Convert.FromBase64String(e.Value.Data[0]));
                 callback(s, e, parsingResult);
             }, commitment);
             return res;

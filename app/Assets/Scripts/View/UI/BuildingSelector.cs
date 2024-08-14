@@ -11,7 +11,7 @@ namespace View
     public class BuildingSelector : InjectableBehaviour
     {
         [Inject] private ConfigModel _config;
-        [Inject] private BuildingsModel _model;
+        [Inject] private SettlementModel _model;
         [Inject] private InteractionStateModel _interaction;
         
         [SerializeField] private RawImage snapshot;

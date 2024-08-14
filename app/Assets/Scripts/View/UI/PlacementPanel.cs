@@ -8,7 +8,7 @@ namespace View.UI
     public class PlacementUI : BuildingUI
     {
         [Inject] private InteractionStateModel _interaction;
-        [Inject] private BuildingsModel _buildings;
+        [Inject] private SettlementModel _settlement;
         [Inject] private ProgramConnector _connector;
         [Inject] private ConfigModel _config;
 

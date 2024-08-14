@@ -9,7 +9,7 @@ namespace View
     public class DisplayPlacementPreview : InjectableBehaviour
     {
         [Inject] private InteractionStateModel _interaction;
-        [Inject] private BuildingsModel _buildings;
+        [Inject] private SettlementModel _settlement;
         [Inject] private ConfigModel _config;
 
         [SerializeField] private GameObject gridElement;
@@ -58,10 +58,10 @@ namespace View
         private void LazyInit()
         {
             if (_cells == null)
-                _cells = new GameObject[_buildings.OccupiedData.GetLength(0), _buildings.OccupiedData.GetLength(1)];
+                _cells = new GameObject[_settlement.OccupiedData.GetLength(0), _settlement.OccupiedData.GetLength(1)];
 
-            for (var i = 0; i < _buildings.OccupiedData.GetLength(0); i++)
-            for (var j = 0; j < _buildings.OccupiedData.GetLength(1); j++)
+            for (var i = 0; i < _settlement.OccupiedData.GetLength(0); i++)
+            for (var j = 0; j < _settlement.OccupiedData.GetLength(1); j++)
             {
                 if (_cells[i, j] == null)
                 {
@@ -123,7 +123,7 @@ namespace View
                 cellPosX,
                 cellPosZ,
                 buildingDimensions,
-                _buildings.OccupiedData);
+                _settlement.OccupiedData);
 
             var previewMaterial = _interaction.ValidPlacement ? available : blocked;
 
@@ -142,7 +142,7 @@ namespace View
                     _cells[i, j].GetComponent<MeshRenderer>().material =
                         cellBelongsToBuilding
                             ? previewMaterial
-                            : _buildings.OccupiedData[i, j] == 0
+                            : _settlement.OccupiedData[i, j] == 0
                                 ? cell
                                 : blocked;
                 }
