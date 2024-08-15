@@ -6,6 +6,8 @@ using Utils.Injection;
 
 namespace View
 {
+    [RequireComponent(typeof(BoxCollider))]
+    
     public class DisplayPlacementPreview : InjectableBehaviour
     {
         [Inject] private InteractionStateModel _interaction;
@@ -25,9 +27,13 @@ namespace View
         private BuildingPreview _preview;
         private GameObject[,] _cells;
         private BuildingConfig _selectedBuildingConfig;
+        private BoxCollider _collider;
 
         private IEnumerator Start()
         {
+            _collider = GetComponent<BoxCollider>();
+            _collider.size = new Vector3(_config.Width, 1, _config.Height) * CellSize;
+            _collider.center = _collider.size / 2;
             _interaction.Updated.Add(OnModeUpdated);
             yield return new WaitForSeconds(1);
         }
@@ -37,18 +43,20 @@ namespace View
             if (_interaction.SelectedBuildingType != BuildingType.None)
             {
                 LazyInit();
-                
+
                 _selectedBuildingConfig = _config.Buildings[_interaction.SelectedBuildingType];
                 _preview.SetBuildingPrefab(_selectedBuildingConfig);
-                
-                if (!_preview.gameObject.activeSelf){
+
+                if (!_preview.gameObject.activeSelf)
+                {
                     _preview.gameObject.SetActive(true);
-                    
-                    
+
+
                     var buildingDimensions =
                         new Vector3(_selectedBuildingConfig.width, 0, _selectedBuildingConfig.height);
-                    
-                    ApplyWorldPoint(new Vector3(_config.Width/2 * CellSize, 0, _config.Height/2 * CellSize), buildingDimensions);
+
+                    ApplyWorldPoint(new Vector3(_config.Width / 2 * CellSize, 0, _config.Height / 2 * CellSize),
+                        buildingDimensions);
                 }
             }
             else
@@ -73,10 +81,10 @@ namespace View
                 else
                     _cells[i, j].SetActive(true);
             }
-            
-            
 
-            if (_preview == null){
+
+            if (_preview == null)
+            {
                 _preview = Instantiate(previewPrefab, transform);
                 _preview.gameObject.SetActive(false);
             }
@@ -88,14 +96,13 @@ namespace View
             {
                 var mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                
+
                 var buildingDimensions =
                     new Vector3(_selectedBuildingConfig.width, 0, _selectedBuildingConfig.height);
-                
+
                 if (_interaction.State == InteractionState.Dragging)
                 {
-                    
-                    if (!transform.GetComponent<Collider>().bounds.IntersectRay(mouseRay, out var distance)) return;
+                    if (!_collider.bounds.IntersectRay(mouseRay, out var distance)) return;
 
                     var intersectionPoint = mouseRay.origin + mouseRay.direction * distance;
                     var worldPoint = transform.InverseTransformPoint(intersectionPoint);
@@ -103,8 +110,6 @@ namespace View
                     ApplyWorldPoint(worldPoint, buildingDimensions);
                 }
 
-                
-                
 
                 _preview.transform.localPosition =
                     (new Vector3(_interaction.CellPosX, 0, _interaction.CellPosZ) + buildingDimensions / 2) * CellSize;
@@ -113,7 +118,6 @@ namespace View
 
         private void ApplyWorldPoint(Vector3 worldPoint, Vector3 buildingDimensions)
         {
-
             var cellPos = worldPoint / CellSize - buildingDimensions / 2;
 
             var cellPosX = Mathf.RoundToInt(cellPos.x);

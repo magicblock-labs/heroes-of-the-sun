@@ -21,7 +21,10 @@ namespace View
         private void OnUpdated()
         {
             if (_model.HasData)
-                _text.text = $"Water: {_model.Get().Treasury.Water}; Food: {_model.Get().Treasury.Food}; Wood: {_model.Get().Treasury.Wood}";
+            {
+                var settlement = _model.Get();
+                _text.text = $"Water: {settlement.Treasury.Water}; Food: {settlement.Treasury.Food}; Wood: {settlement.Treasury.Wood} DAY[{settlement.Day}]";
+            }
         }
 
         private void OnDestroy()

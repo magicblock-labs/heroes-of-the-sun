@@ -6,6 +6,8 @@ using Model;
 using Newtonsoft.Json;
 using Settlement;
 using Settlement.Program;
+using Solana.Unity.Rpc.Core.Sockets;
+using Solana.Unity.Rpc.Messages;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
@@ -26,10 +28,6 @@ namespace Service
         private SettlementClient Settlement =>
             _client ?? (_client = new(Web3.Rpc, Web3.WsRpc, new PublicKey(SettlementProgram.ID)));
 
-        public async Task ResetAccounts()
-        {
-            throw new NotImplementedException();
-        }
 
         private string dataOfTheComponentAddress = "DwLoUS41vpHQ6oCLpinaXWzbNja7NmmQfTk1z6FiycEz";
 
@@ -141,7 +139,14 @@ namespace Service
             // {
             //     Debug.Log("!!!: " + GetWorldPda(Web3.Account.PublicKey));
             // }
+
+            // await Settlement.SubscribeSettlementAsync(dataOfTheComponentAddress, OnSettlementUpdated);
         }
+
+        // private void OnSettlementUpdated(SubscriptionState state, ResponseValue<AccountInfo> info, Settlement.Accounts.Settlement value)
+        // {
+        //     _settlement.Set(value);
+        // }
 
         public async Task<bool> ReloadData()
         {
@@ -182,7 +187,49 @@ namespace Service
 
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
             Debug.Log(JsonConvert.SerializeObject(result));
+            
+            await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
             return result.WasSuccessful;
+        }
+        
+        
+        public async Task<bool> Wait(int time)
+        {
+            var extraSeed = Web3.Account.PublicKey.Key.Substring(0, 20);
+            var entityPda = Pda.FindEntityPda(2, 0, extraSeed);
+            var tx = new Transaction
+            {
+                FeePayer = Web3.Account,
+                Instructions = new List<TransactionInstruction>
+                {
+                    WorldProgram.ApplySystem(
+                        new PublicKey("ECfKKquvf7PWgvCTAQiYkbDGVjaxhqAN4DFZCAjTUpwx"),
+                        new[]
+                        {
+                            new WorldProgram.EntityType(entityPda, new[]
+                            {
+                                new PublicKey("ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ")
+                            })
+                        },
+                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { time })),
+                        Web3.Account.PublicKey
+                    )
+                },
+                RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
+            };
+
+            var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
+            Debug.Log(JsonConvert.SerializeObject(result));
+            
+            await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
+            
+            return result.WasSuccessful;
+        }
+        
+        
+        public async Task<bool> ResetAccounts()
+        {
+            throw new NotImplementedException();
         }
     }
 }

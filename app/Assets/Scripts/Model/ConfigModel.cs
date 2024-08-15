@@ -37,8 +37,8 @@ namespace Service
     {
         private readonly BuildConfig _buildConfig = new()
         {
-            width = 48,
-            height = 48,
+            width = 20,
+            height = 20,
             buildings = new Dictionary<BuildingType, BuildingConfig>
             {
                 {
