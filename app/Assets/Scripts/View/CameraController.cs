@@ -9,7 +9,6 @@ namespace View
     {
         [Inject] private InteractionStateModel _interaction;
 
-        [SerializeField] private Vector2 panSpeed = new(3f, 2f);
         [SerializeField] private float zoomSpeedTouch = 0.1f;
         [SerializeField] private float zoomSpeedMouse = 0.5f;
 
@@ -22,17 +21,10 @@ namespace View
         private bool _wasZoomingLastFrame; // Touch mode only
         private Vector2[] _lastZoomPositions; // Touch mode only
 
-        private float _yCos;
-        private float _ySin;
 
         private void Start()
         {
             _cam = GetComponent<Camera>();
-            var eulerAngles = transform.rotation.eulerAngles;
-            var camRotationY = eulerAngles.y * (float)Math.PI / 180f;
-
-            _yCos = (float)Math.Cos(camRotationY);
-            _ySin = (float)Math.Sin(camRotationY);
         }
 
         private void Update()
@@ -129,14 +121,26 @@ namespace View
 
         private void PanCamera(Vector3 value)
         {
-            // Determine how much to move the camera
-            var diff = _cam.ScreenToViewportPoint(_lastPanPosition - value) *
-                       (panSpeed * _cam.orthographicSize);
+            
+            var eulerAngles = transform.rotation.eulerAngles;
+            var radRotation = eulerAngles * (float)Math.PI / 180f;
 
+            
+            //rewrite while we can resize (no need on device if no rotation enabled)
+            var screenVector = new Vector2(Screen.width, Screen.height).normalized;
+            
+            var diff = _cam.ScreenToViewportPoint(_lastPanPosition - value) * screenVector * (2 * _cam.orthographicSize * (1/screenVector.y));
+            
+            // var rotated = new Vector3(
+            //     diff.x - diff.y * (float)Math.Sin(radRotation.y), 
+            //     0,
+            //     diff.y / (float)Math.Cos(radRotation.x) - diff.x * (float)Math.Cos(radRotation.y)
+            // );
+            
             var rotated = new Vector3(
-                -diff.y * _yCos - diff.x * _ySin,
+                -diff.y * (float)Math.Sin(radRotation.x) + diff.x, 
                 0,
-                -diff.y * _ySin + diff.x * _yCos
+                diff.y * (float)Math.Sin(radRotation.x) + diff.x
             );
 
             // Perform the movement

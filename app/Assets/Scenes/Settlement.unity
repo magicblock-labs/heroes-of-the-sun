@@ -475,7 +475,7 @@ Transform:
   m_GameObject: {fileID: 572435598}
   serializedVersion: 2
   m_LocalRotation: {x: 0.42660013, y: -0.33944437, z: 0.17670354, w: 0.8194912}
-  m_LocalPosition: {x: 65, y: 35, z: 15}
+  m_LocalPosition: {x: 50.309273, y: 35, z: 17.7837}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -537,7 +537,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd5a51db34047477e91abbe8bdab43c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panSpeed: {x: 4, y: 2.4}
   zoomSpeedTouch: 0.03
   zoomSpeedMouse: 10
   zoomBounds:
@@ -1583,7 +1582,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -50, y: 0}
+  m_AnchoredPosition: {x: -50.000122, y: 0}
   m_SizeDelta: {x: -100, y: 30}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1881166289
