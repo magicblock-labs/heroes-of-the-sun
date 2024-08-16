@@ -61,7 +61,9 @@ export class SettlementWrapper {
     });
     let txSign = await this.provider.sendAndConfirm(initNewWorld.transaction);
     this.worldPda = initNewWorld.worldPda;
-    console.log(`Initialized a new world (ID=${this.worldPda}). Initialization signature: ${txSign}`);
+
+    console.log(`Initialized a new world \x1b[31m (PDA = ${this.worldPda}, ID = ${initNewWorld.worldId}\x1b[0m).`);
+    console.log(`Initialization signature: ${txSign}`);
 
     const addEntity = await AddEntity({
       payer: this.provider.wallet.publicKey,

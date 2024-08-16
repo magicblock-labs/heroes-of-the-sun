@@ -42,8 +42,8 @@ namespace View.UI
 
         private async void TryAssignLabour(int index)
         {
-            await _connector.AssignLabour(index, _buildingIndex);
-            await _connector.ReloadData();
+            if (await _connector.AssignLabour(index, _buildingIndex))
+                await _connector.ReloadData();
         }
 
         public void OnDestroy()
