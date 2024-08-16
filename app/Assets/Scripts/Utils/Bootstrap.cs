@@ -30,35 +30,40 @@ namespace Utils
         }
 
         async void Login()
+        {
+            if (Web3.Account == null)
             {
-                if (Web3.Account == null)
+                Web3.OnLogin += HandleSignIn;
+
+
+                string password = PlayerPrefs.GetString(PwdPrefKey, null);
+
+#if FTUE_TESTING
+                password = null;
+#endif
+
+                if (!string.IsNullOrEmpty(password))
                 {
-                    Web3.OnLogin += HandleSignIn;
-
-                    string password = PlayerPrefs.GetString(PwdPrefKey, null);
-
-                    if (!string.IsNullOrEmpty(password)){
-                        var account = await  Web3.Instance.LoginInGameWallet(password);
-                        if (account == null) //password corrupt - recreate
-                        {
-                            PlayerPrefs.DeleteAll();
-                            Login();
-                        }  
-                    }
-                    
-                    else
+                    var account = await Web3.Instance.LoginInGameWallet(password);
+                    if (account == null) //password corrupt - recreate
                     {
-                        var mnemonic = new Mnemonic(WordList.English, WordCount.Twelve);
-                        password = RandomString(10);
-
-                        PlayerPrefs.SetString(PwdPrefKey, password);
-
-                        await Web3.Instance.CreateAccount(mnemonic.ToString(), password);   
+                        PlayerPrefs.DeleteAll();
+                        Login();
                     }
-                }          
+                }
+
+                else
+                {
+                    var mnemonic = new Mnemonic(WordList.English, WordCount.Twelve);
+                    password = RandomString(10);
+
+                    PlayerPrefs.SetString(PwdPrefKey, password);
+
+                    await Web3.Instance.CreateAccount(mnemonic.ToString(), password);
+                }
             }
-    
-        
+        }
+
 
         private static string RandomString(int length)
         {
@@ -77,9 +82,6 @@ namespace Utils
 
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
 
-#if FTUE_TESTING
-            await _connector.ResetAccounts();
-#endif
 
             // await _connector.Initialise();
             await _connector.ReloadData();
@@ -100,7 +102,7 @@ namespace Utils
 
             label.text = $"[{Web3.Account.PublicKey}] Loaded ";
         }
-        
+
         public async Task EnsureBalance()
         {
             var requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
@@ -110,9 +112,9 @@ namespace Utils
                 Debug.Log(JsonConvert.SerializeObject(airdropResult));
                 await Task.Delay(5000);
             }
-            
+
             requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
-            
+
             Debug.Log(JsonConvert.SerializeObject(requestResult));
         }
     }

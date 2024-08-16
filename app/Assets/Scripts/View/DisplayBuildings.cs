@@ -2,6 +2,7 @@ using Model;
 using Service;
 using UnityEngine;
 using Utils.Injection;
+using View.UI;
 
 namespace View
 {
@@ -22,24 +23,24 @@ namespace View
         {
             if (!_model.HasData)
                 return;
-            
+
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
+            var i = 0;
             foreach (var building in _model.Get().Buildings)
             {
                 var conf = _config.Buildings[(BuildingType)building.Id];
                 var buildingDimensions = new Vector3(conf.width, 0, conf.height);
-                
+
                 var centerPos = (new Vector3(building.X, 0, building.Y) + buildingDimensions / 2) *
-                            DisplayPlacementPreview.CellSize;
+                                DisplayPlacementPreview.CellSize;
 
                 var obj = Instantiate(prefab, transform);
                 obj.SetBuildingPrefab(conf);
                 obj.transform.localPosition = centerPos;
-                var info = obj.GetComponentInChildren<BuildingInfo>();
-                if (info)
-                    info.SetData(building, conf);
+                
+                obj.GetComponent<BuildingControls>().SetData(i++, building, conf);
             }
         }
 

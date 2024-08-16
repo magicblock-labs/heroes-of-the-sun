@@ -6,8 +6,6 @@ using Model;
 using Newtonsoft.Json;
 using Settlement;
 using Settlement.Program;
-using Solana.Unity.Rpc.Core.Sockets;
-using Solana.Unity.Rpc.Messages;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
@@ -30,6 +28,7 @@ namespace Service
 
 
         private string dataOfTheComponentAddress = "DwLoUS41vpHQ6oCLpinaXWzbNja7NmmQfTk1z6FiycEz";
+        private int _worldIndex = 2;
 
         public async Task Initialise()
         {
@@ -40,7 +39,7 @@ namespace Service
             var worldPDA = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";
             //
             var extraSeed = Web3.Account.PublicKey.Key.Substring(0, 20);
-            var entityPda = Pda.FindEntityPda(2, 0, extraSeed);
+            var entityPda = Pda.FindEntityPda(_worldIndex, 0, extraSeed);
             // var createEntity = new AddEntityAccounts()
             // {
             //     Payer = Web3.Account.PublicKey,
@@ -98,55 +97,7 @@ namespace Service
             var rawData = await Settlement.GetSettlementAsync(dataOfTheComponentAddress, Commitment.Processed);
 
             Debug.Log(JsonConvert.SerializeObject(rawData.ParsedResult));
-
-
-            // var initializeNewWorldAccounts = new InitializeNewWorldAccounts
-            // {
-            //     Payer = Web3.Account.PublicKey,
-            //     World = GetWorldPda(Web3.Account.PublicKey),
-            //     Registry = new PublicKey("EHLkWwAT9oebVv9ht3mtqrvHhRVMKrt54tF3MfHTey2K"),
-            //     SystemProgram = SystemProgram.ProgramIdKey
-            // };
-            //
-            // Debug.Log("initializeNewWorldAccounts :" + JsonConvert.SerializeObject(initializeNewWorldAccounts));
-            //
-            // var tx = new Transaction
-            // {
-            //     FeePayer = Web3.Account,
-            //     Instructions = new List<TransactionInstruction>
-            //     {
-            //         WorldProgram.InitializeNewWorld(initializeNewWorldAccounts)
-            //     },
-            //     RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
-            // };
-            //
-            // PublicKey GetWorldPda(PublicKey accountId)
-            // {
-            //     PublicKey.TryFindProgramAddress(new[]
-            //         {
-            //             Encoding.UTF8.GetBytes("world"),
-            //             accountId.KeyBytes
-            //         },
-            //         new(WorldProgram.ID), out var pda, out _);
-            //
-            //     Debug.Log(pda);
-            //     return pda;
-            // }
-            //
-            // var result = await walletBase.SignAndSendTransaction(tx);
-            //
-            // if (result.WasSuccessful)
-            // {
-            //     Debug.Log("!!!: " + GetWorldPda(Web3.Account.PublicKey));
-            // }
-
-            // await Settlement.SubscribeSettlementAsync(dataOfTheComponentAddress, OnSettlementUpdated);
         }
-
-        // private void OnSettlementUpdated(SubscriptionState state, ResponseValue<AccountInfo> info, Settlement.Accounts.Settlement value)
-        // {
-        //     _settlement.Set(value);
-        // }
 
         public async Task<bool> ReloadData()
         {
@@ -163,7 +114,7 @@ namespace Service
         public async Task<bool> PlaceBuilding(byte x, byte y, byte type)
         {
             var extraSeed = Web3.Account.PublicKey.Key.Substring(0, 20);
-            var entityPda = Pda.FindEntityPda(2, 0, extraSeed);
+            var entityPda = Pda.FindEntityPda(_worldIndex, 0, extraSeed);
             var tx = new Transaction
             {
                 FeePayer = Web3.Account,
@@ -178,7 +129,7 @@ namespace Service
                                 new PublicKey("ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ")
                             })
                         },
-                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { x, y, config_index=type })),
+                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { x, y, config_index = type })),
                         Web3.Account.PublicKey
                     )
                 },
@@ -187,16 +138,15 @@ namespace Service
 
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
             Debug.Log(JsonConvert.SerializeObject(result));
-            
+
             await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
             return result.WasSuccessful;
         }
-        
-        
+
         public async Task<bool> Wait(int time)
         {
             var extraSeed = Web3.Account.PublicKey.Key.Substring(0, 20);
-            var entityPda = Pda.FindEntityPda(2, 0, extraSeed);
+            var entityPda = Pda.FindEntityPda(_worldIndex, 0, extraSeed);
             var tx = new Transaction
             {
                 FeePayer = Web3.Account,
@@ -220,13 +170,46 @@ namespace Service
 
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
             Debug.Log(JsonConvert.SerializeObject(result));
-            
+
             await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
-            
+
             return result.WasSuccessful;
         }
-        
-        
+
+        public async Task<bool> AssignLabour(int labour_index, int building_index)
+        {
+            var extraSeed = Web3.Account.PublicKey.Key.Substring(0, 20);
+            var entityPda = Pda.FindEntityPda(_worldIndex, 0, extraSeed);
+            var tx = new Transaction
+            {
+                FeePayer = Web3.Account,
+                Instructions = new List<TransactionInstruction>
+                {
+                    WorldProgram.ApplySystem(
+                        new PublicKey("BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH"),
+                        new[]
+                        {
+                            new WorldProgram.EntityType(entityPda, new[]
+                            {
+                                new PublicKey("ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ")
+                            })
+                        },
+                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new { labour_index, building_index })),
+                        Web3.Account.PublicKey
+                    )
+                },
+                RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
+            };
+
+            var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
+            Debug.Log(JsonConvert.SerializeObject(result));
+
+            await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
+
+            return result.WasSuccessful;
+        }
+
+
         public async Task<bool> ResetAccounts()
         {
             throw new NotImplementedException();

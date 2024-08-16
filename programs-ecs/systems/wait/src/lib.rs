@@ -139,11 +139,13 @@ pub mod wait {
             settlement.faith -= u8::min(settlement.faith, args.time as u8);
         }
 
+        //todo check overflow subtraction
         settlement.treasury.water -= u16::min(
             settlement.environment.water,
             args.time * (settlement.labour_allocation).len() as u16,
         );
 
+        //todo check overflow subtraction
         settlement.treasury.food -= u16::min(
             settlement.environment.water,
             args.time * (settlement.labour_allocation).len() as u16,

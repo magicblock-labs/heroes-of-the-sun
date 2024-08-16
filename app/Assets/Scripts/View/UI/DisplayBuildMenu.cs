@@ -1,18 +1,20 @@
 using System;
 using Service;
 using UnityEngine;
-using View;
 
-public class DisplayBuildMenu : MonoBehaviour
+namespace View.UI
 {
-    [SerializeField] private BuildingSelector prefab;
-
-    void Start()
+    public class DisplayBuildMenu : MonoBehaviour
     {
-        foreach (BuildingType type in Enum.GetValues(typeof(BuildingType)))
+        [SerializeField] private BuildingSelector prefab;
+
+        void Start()
         {
-            if (type != BuildingType.None)
-                Instantiate(prefab, transform).SetData(type);
+            foreach (BuildingType type in Enum.GetValues(typeof(BuildingType)))
+            {
+                if (type is not BuildingType.None or BuildingType.TownHall)
+                    Instantiate(prefab, transform).SetData(type);
+            }
         }
     }
 }

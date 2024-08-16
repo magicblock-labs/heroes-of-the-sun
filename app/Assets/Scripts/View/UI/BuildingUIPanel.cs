@@ -1,11 +1,13 @@
+using Service;
+using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 
 namespace View.UI
 {
-    public class BuildingUI : InjectableBehaviour
+    public abstract class BuildingUIPanel : InjectableBehaviour
     {
-        [SerializeField] private Transform worldAnchor;
+        [SerializeField] protected Transform worldAnchor;
         private Camera _camera;
 
         private void LateUpdate()

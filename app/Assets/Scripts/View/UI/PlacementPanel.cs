@@ -5,7 +5,7 @@ using Utils.Injection;
 
 namespace View.UI
 {
-    public class PlacementUI : BuildingUI
+    public class PlacementPanel : BuildingUIPanel
     {
         [Inject] private InteractionStateModel _interaction;
         [Inject] private SettlementModel _settlement;

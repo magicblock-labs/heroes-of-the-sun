@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
 
-namespace View
+namespace View.UI
 {
     [RequireComponent(typeof(Text))]
     public class DisplayCredits : InjectableBehaviour

@@ -4,9 +4,8 @@ using Service;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
-using Vector3 = System.Numerics.Vector3;
 
-namespace View
+namespace View.UI
 {
     public class BuildingSelector : InjectableBehaviour
     {

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace View
+namespace View.UI
 {
     [RequireComponent(typeof(Image))]
     public class Dimmer : MonoBehaviour
