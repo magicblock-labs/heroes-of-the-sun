@@ -131,16 +131,11 @@ namespace View
             
             var diff = _cam.ScreenToViewportPoint(_lastPanPosition - value) * screenVector * (2 * _cam.orthographicSize * (1/screenVector.y));
             
-            // var rotated = new Vector3(
-            //     diff.x - diff.y * (float)Math.Sin(radRotation.y), 
-            //     0,
-            //     diff.y / (float)Math.Cos(radRotation.x) - diff.x * (float)Math.Cos(radRotation.y)
-            // );
-            
+            // this math is a bit flaky, recheck
             var rotated = new Vector3(
-                -diff.y * (float)Math.Sin(radRotation.x) + diff.x, 
+                -diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.x), 
                 0,
-                diff.y * (float)Math.Sin(radRotation.x) + diff.x
+                diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.x)
             );
 
             // Perform the movement

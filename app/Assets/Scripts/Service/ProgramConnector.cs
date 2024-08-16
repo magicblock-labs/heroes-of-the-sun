@@ -120,7 +120,7 @@ namespace Service
                 _dataAddress = dataAddress;
             }
 
-            var rawData = await Settlement.GetSettlementAsync(_dataAddress);
+            var rawData = await Settlement.GetSettlementAsync(_dataAddress, Commitment.Processed);
 
             if (rawData.ParsedResult == null)
                 return false;
@@ -146,6 +146,16 @@ namespace Service
         {
             return await ApplySystem(new PublicKey("BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH"),
                 new { labour_index, building_index });
+        }
+        
+        
+        public async Task<bool> Repair(int index)
+        {
+            return await ApplySystem(new PublicKey("FViANCSUgsHJxK3m1J2d41Yq5yJ13BDkA8eiRwQPFHuJ"), new { index });
+        }
+        public async Task<bool> Upgrade(int index)
+        {
+            return await ApplySystem(new PublicKey("FrTthTtkfEWa2zZt4YEHGbL9Hz8hpsSW1hsHHnJXPRd4"), new { index });
         }
 
         private async Task<bool> ApplySystem(PublicKey system, object args)
@@ -178,5 +188,6 @@ namespace Service
             Dimmer.Visible = false;
             return result.WasSuccessful;
         }
+
     }
 }
