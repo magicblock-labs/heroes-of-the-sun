@@ -57,7 +57,7 @@ impl Default for Settlement {
             treasury: ResourceBalance {
                 water: 20,
                 food: 40,
-                wood: 100,
+                wood: 200,
             },
             day: 0,
             faith: 50,
