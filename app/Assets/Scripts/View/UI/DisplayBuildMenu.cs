@@ -12,7 +12,7 @@ namespace View.UI
         {
             foreach (BuildingType type in Enum.GetValues(typeof(BuildingType)))
             {
-                if (type is not BuildingType.None or BuildingType.TownHall)
+                if (type is not (BuildingType.None or BuildingType.TownHall))
                     Instantiate(prefab, transform).SetData(type);
             }
         }

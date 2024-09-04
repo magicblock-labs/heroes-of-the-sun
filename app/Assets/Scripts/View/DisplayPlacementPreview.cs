@@ -7,7 +7,6 @@ using Utils.Injection;
 namespace View
 {
     [RequireComponent(typeof(BoxCollider))]
-    
     public class DisplayPlacementPreview : InjectableBehaviour
     {
         [Inject] private InteractionStateModel _interaction;
@@ -20,9 +19,6 @@ namespace View
         [SerializeField] private Material blocked;
         [SerializeField] private Material available;
 
-
-        public const int CellSize = 2; //units per cell
-
         [SerializeField] private BuildingPreview previewPrefab;
         private BuildingPreview _preview;
         private GameObject[,] _cells;
@@ -32,7 +28,7 @@ namespace View
         private IEnumerator Start()
         {
             _collider = GetComponent<BoxCollider>();
-            _collider.size = new Vector3(_config.Width, 1, _config.Height) * CellSize;
+            _collider.size = new Vector3(_config.Width, 1, _config.Height) * ConfigModel.CellSize;
             _collider.center = _collider.size / 2;
             _interaction.Updated.Add(OnModeUpdated);
             yield return new WaitForSeconds(1);
@@ -51,11 +47,12 @@ namespace View
                 {
                     _preview.gameObject.SetActive(true);
 
-
                     var buildingDimensions =
                         new Vector3(_selectedBuildingConfig.width, 0, _selectedBuildingConfig.height);
 
-                    ApplyWorldPoint(new Vector3(_config.Width / 2 * CellSize, 0, _config.Height / 2 * CellSize),
+                    ApplyWorldPoint(
+                        new Vector3(_config.Width / 2 * ConfigModel.CellSize, 0,
+                            _config.Height / 2 * ConfigModel.CellSize),
                         buildingDimensions);
                 }
             }
@@ -74,15 +71,16 @@ namespace View
                 if (_cells[i, j] == null)
                 {
                     var obj = Instantiate(gridElement, transform, true);
-                    obj.transform.localPosition = new Vector3((i + 0.5f) * CellSize, 0.5f, (j + 0.5f) * CellSize);
-                    obj.transform.localScale *= CellSize;
+                    obj.transform.localPosition = new Vector3(
+                        (i + 0.5f) * ConfigModel.CellSize, .15f,
+                        (j + 0.5f) * ConfigModel.CellSize);
+                    obj.transform.localScale *= ConfigModel.CellSize;
                     _cells[i, j] = obj;
                 }
                 else
                     _cells[i, j].SetActive(true);
             }
-
-
+            
             if (_preview == null)
             {
                 _preview = Instantiate(previewPrefab, transform);
@@ -95,7 +93,6 @@ namespace View
             if (_interaction.SelectedBuildingType != BuildingType.None)
             {
                 var mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-
 
                 var buildingDimensions =
                     new Vector3(_selectedBuildingConfig.width, 0, _selectedBuildingConfig.height);
@@ -112,13 +109,13 @@ namespace View
 
 
                 _preview.transform.localPosition =
-                    (new Vector3(_interaction.CellPosX, 0, _interaction.CellPosZ) + buildingDimensions / 2) * CellSize;
+                    (new Vector3(_interaction.CellPosX, 0, _interaction.CellPosZ) + buildingDimensions / 2) * ConfigModel.CellSize;
             }
         }
 
         private void ApplyWorldPoint(Vector3 worldPoint, Vector3 buildingDimensions)
         {
-            var cellPos = worldPoint / CellSize - buildingDimensions / 2;
+            var cellPos = worldPoint / ConfigModel.CellSize - buildingDimensions / 2;
 
             var cellPosX = Mathf.RoundToInt(cellPos.x);
             var cellPosZ = Mathf.RoundToInt(cellPos.z);
@@ -133,6 +130,8 @@ namespace View
 
             if (!_preview.gameObject.activeSelf) //maybe lets add an explicit flag
                 return;
+            
+            _preview.SetMaterialOverride(_interaction.ValidPlacement ? cell : blocked);
 
             for (var i = 0; i < _cells.GetLength(0); i++)
             for (var j = 0; j < _cells.GetLength(1); j++)

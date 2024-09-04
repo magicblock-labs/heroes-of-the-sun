@@ -133,9 +133,9 @@ namespace View
             
             // this math is a bit flaky, recheck
             var rotated = new Vector3(
-                -diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.x), 
+                -diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.y), 
                 0,
-                diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.x)
+                diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.y)
             );
 
             // Perform the movement

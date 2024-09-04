@@ -2,10 +2,7 @@
 
 using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Service;
-using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using Solana.Unity.Wallet.Bip39;

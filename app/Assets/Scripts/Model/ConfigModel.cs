@@ -35,6 +35,8 @@ namespace Service
     [Singleton]
     public class ConfigModel : InjectableObject<ConfigModel>
     {
+        public const int CellSize = 2; //units per cell
+        
         private readonly BuildConfig _buildConfig = new()
         {
             width = 20,

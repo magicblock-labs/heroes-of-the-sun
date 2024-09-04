@@ -34,7 +34,7 @@ namespace View
                 var buildingDimensions = new Vector3(conf.width, 0, conf.height);
 
                 var centerPos = (new Vector3(building.X, 0, building.Y) + buildingDimensions / 2) *
-                                DisplayPlacementPreview.CellSize;
+                                ConfigModel.CellSize;
 
                 var obj = Instantiate(prefab, transform);
                 obj.SetBuildingPrefab(conf);
