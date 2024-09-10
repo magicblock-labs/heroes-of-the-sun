@@ -12,8 +12,8 @@ pub mod wait {
     use std::u16;
 
     use settlement::{
-        config::{self, BuildingType},
         Settlement,
+        {self, config::BuildingType, config::ENVIRONMENT_LIMITS},
     };
 
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
@@ -26,7 +26,7 @@ pub mod wait {
 
         //todo move all rates to config
 
-        //calc current storage capacity
+        //calc current storage capacity for all resources
         for building in settlement.buildings.to_vec() {
             match building.id {
                 BuildingType::WaterStorage => {
@@ -42,26 +42,10 @@ pub mod wait {
             }
         }
 
-        msg!("water_storage {} ", water_storage);
-
-        //process all buildings with allocated labour
-        let labour_allocation = settlement.labour_allocation.to_vec();
-        for building_index in labour_allocation {
-            if building_index < 0 {
-                //labour unallocated
-                continue;
-            }
-
-            if settlement.buildings[building_index as usize].deterioration == u8::MAX {
-                //building broken unallocated
-                continue;
-            }
-
-            let building = settlement.buildings[building_index as usize];
-            let building_type = building.id;
-
-            match building_type {
-                config::BuildingType::WaterCollector => {
+        //wells generate water without labour asigned
+        for building in settlement.buildings.to_vec() {
+            match building.id {
+                BuildingType::WaterCollector => {
                     //todo check if this code can be reused (across 3 different resources)
                     let mut collected = 0;
 
@@ -78,7 +62,38 @@ pub mod wait {
                         settlement.treasury.water += collected;
                     }
                 }
-                config::BuildingType::FoodCollector => {
+                _ => {}
+            }
+        }
+
+        //process all buildings with allocated labour
+        let labour_allocation = settlement.labour_allocation.to_vec();
+        let mut alive_labour: u16 = 0;
+        for building_index in labour_allocation {
+            if building_index > -1 {
+                alive_labour += 1;
+            }
+
+            if building_index < 0 {
+                //labour unallocated
+                continue;
+            }
+
+            if settlement.buildings[building_index as usize].deterioration == u8::MAX {
+                //allocated building broken
+                continue;
+            }
+
+            let mut building = settlement.buildings[building_index as usize];
+
+            if (building.days_to_build > 0) {
+                building.days_to_build -= u8::min(args.time as u8, building.days_to_build);
+            }
+
+            let building_type = building.id;
+
+            match building_type {
+                BuildingType::FoodCollector => {
                     let mut collected = 0;
 
                     if food_storage > settlement.treasury.food {
@@ -94,7 +109,7 @@ pub mod wait {
                         settlement.treasury.food += collected;
                     }
                 }
-                config::BuildingType::WoodCollector => {
+                BuildingType::WoodCollector => {
                     let mut collected = 0;
 
                     if food_storage > settlement.treasury.wood {
@@ -116,15 +131,15 @@ pub mod wait {
         //regen sources in environment
         settlement.environment.water += u16::min(
             args.time,
-            config::ENVIRONMENT_LIMITS.water - settlement.environment.water,
+            ENVIRONMENT_LIMITS.water - settlement.environment.water,
         );
         settlement.environment.food += u16::min(
             args.time,
-            config::ENVIRONMENT_LIMITS.water - settlement.environment.food,
+            ENVIRONMENT_LIMITS.water - settlement.environment.food,
         );
         settlement.environment.wood += u16::min(
             args.time,
-            config::ENVIRONMENT_LIMITS.water - settlement.environment.wood,
+            ENVIRONMENT_LIMITS.water - settlement.environment.wood,
         );
 
         //deteriorate buildings
@@ -135,23 +150,28 @@ pub mod wait {
         }
 
         //eat/drink
-        if settlement.treasury.water == 0 || settlement.treasury.food == 0 {
+        if settlement.treasury.food == 0 {
             settlement.faith -= u8::min(settlement.faith, args.time as u8);
         }
 
-        //todo check overflow subtraction
-        settlement.treasury.water -= u16::min(
-            settlement.environment.water,
-            args.time * (settlement.labour_allocation).len() as u16,
-        );
+        if settlement.treasury.water < alive_labour {
+            //kill one
+            for i in 0..settlement.labour_allocation.len() {
+                if (settlement.labour_allocation[i]) > -1 {
+                    settlement.labour_allocation[i] = -10;
 
-        //todo check overflow subtraction
-        settlement.treasury.food -= u16::min(
-            settlement.environment.water,
-            args.time * (settlement.labour_allocation).len() as u16,
-        );
+                    alive_labour -= 1;
+                    break;
+                }
+            }
+        }
+
+        settlement.treasury.water -= u16::min(settlement.treasury.water, args.time * alive_labour);
+
+        settlement.treasury.food -= u16::min(settlement.treasury.water, args.time * alive_labour);
 
         let mut i: usize = 0;
+
         //restore sacrificed labour
         for building_index in settlement.labour_allocation.to_vec() {
             if building_index < -1 {

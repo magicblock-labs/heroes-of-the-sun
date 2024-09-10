@@ -16,10 +16,10 @@ pub struct ResourceBalance {
 pub struct Building {
     pub x: u8,
     pub y: u8,
-    pub deterioration: u8, //0 is ok, 127 will destroy
+    pub deterioration: u8, //0 is ok, 127 will disable
     pub id: crate::config::BuildingType,
     pub level: u8,
-    pub timestamp: u16,
+    pub days_to_build: u8,
 }
 
 #[component]
@@ -46,7 +46,7 @@ impl Default for Settlement {
                 deterioration: 0,
                 id: BuildingType::TownHall,
                 level: 1,
-                timestamp: 0,
+                days_to_build: 0,
             }],
             labour_allocation: vec![-1], //one labour comes as default from town hall
             environment: ResourceBalance {

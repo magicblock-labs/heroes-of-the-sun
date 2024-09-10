@@ -25,18 +25,6 @@ describe("HeroesOfTheSun", () => {
     }
   });
 
-  it("Doesn't collect without labour assigned", async () => {
-    var waterBefore = (await settlement.state()).treasury.water;
-    const state = await settlement.wait({ time: 1 });
-    expect(state.treasury.water).to.lte(waterBefore);
-  });
-
-
-  it("Allocates Labour to Water Collector", async () => {
-    const state = await settlement.assignLabour({ labour_index: 0, building_index: 1 });
-    expect(state.labourAllocation[0]).to.eq(1);
-  });
-
   it("Cant collect resource without storage", async () => {
     var waterBefore = (await settlement.state()).treasury.water;
     const state = await settlement.wait({ time: 1 });
@@ -83,7 +71,7 @@ describe("HeroesOfTheSun", () => {
 
   it("Allocates Labour To Food Collector", async () => {
     const state = await settlement.assignLabour({ labour_index: 1, building_index: 3 });
-    expect(state.labourAllocation[0]).to.eq(1);
+    expect(state.labourAllocation[1]).to.eq(3);
   });
 
   it("Cant collect food (different resource) from environment without storage", async () => {
