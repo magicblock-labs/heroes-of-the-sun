@@ -19,7 +19,7 @@ using World.Program;
 
 namespace Service
 {
-    [Unity.VisualScripting.Singleton]
+    [Singleton]
     public class ProgramConnector : InjectableObject<ProgramConnector>
     {
         [Inject] private SettlementModel _settlement;

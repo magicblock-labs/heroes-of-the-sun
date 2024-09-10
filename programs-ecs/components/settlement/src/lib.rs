@@ -51,8 +51,8 @@ impl Default for Settlement {
             labour_allocation: vec![-1], //one labour comes as default from town hall
             environment: ResourceBalance {
                 water: 200,
-                food: 40,
-                wood: 1000,
+                food: 200,
+                wood: 200,
             },
             treasury: ResourceBalance {
                 water: 20,

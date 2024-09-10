@@ -1,9 +1,8 @@
-using System;
 using Model;
 using Service;
+using Unity.AI.Navigation;
 using UnityEngine;
 using Utils.Injection;
-using Random = UnityEngine.Random;
 
 namespace View
 {
@@ -12,8 +11,8 @@ namespace View
         [Inject] private SettlementModel _settlement;
 
         [SerializeField] private GameObject tilePrefab;
-        [SerializeField] private GameObject[] bushPrefabs;
         [SerializeField] private GameObject occupiedTilePrefab;
+        [SerializeField] private GameObject surroundingTile;
         [SerializeField] private float scaleFactor = 0.95f;
 
         private void Start()
@@ -26,27 +25,31 @@ namespace View
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
-            for (var i = 0; i < _settlement.OccupiedData.GetLength(0); i++)
-            for (var j = 0; j < _settlement.OccupiedData.GetLength(1); j++)
+            for (var i = -2; i < _settlement.OccupiedData.GetLength(0) + 2; i++)
+            for (var j = -2; j < _settlement.OccupiedData.GetLength(1) + 2; j++)
             {
-                var isFree = _settlement.OccupiedData[i, j] == 0;
+                GameObject prefab;
 
-                CreatePrefab(isFree
-                    ? tilePrefab
-                    : occupiedTilePrefab, i, j);
+                if (i < 0 || j < 0 || i >= _settlement.OccupiedData.GetLength(0) ||
+                    j >= _settlement.OccupiedData.GetLength(1))
+                    prefab = surroundingTile;
+                else if (_settlement.OccupiedData[i, j] == 0)
 
-                if (isFree && Random.value < 0.08f)
-                    CreatePrefab(bushPrefabs[Random.Range(0, bushPrefabs.Length)], i, j);
+                    prefab = tilePrefab;
+                else
+                    prefab = occupiedTilePrefab;
+
+                CreatePrefab(prefab, i, j);
             }
+            
+            GetComponent<NavMeshSurface>().BuildNavMesh();
         }
 
         private void CreatePrefab(GameObject prefab, int i, int j)
         {
             var obj = Instantiate(prefab, transform, true);
 
-            obj.transform.localPosition = new Vector3(
-                (i + 0.5f) * ConfigModel.CellSize, 0,
-                (j + 0.5f) * ConfigModel.CellSize);
+            obj.transform.localPosition = ConfigModel.GetWorldCellPosition(i, j);
             obj.transform.localScale *= ConfigModel.CellSize * scaleFactor;
         }
 

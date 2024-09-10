@@ -1,6 +1,7 @@
 using Model;
 using Service;
 using Settlement.Types;
+using Unity.AI.Navigation;
 using UnityEngine;
 using Utils.Injection;
 
@@ -18,16 +19,21 @@ namespace View.UI
 
         private Camera _camera;
         private BoxCollider _collider;
+        private NavMeshModifierVolume _obstacle;
 
         public void SetData(int index, Building value, BuildingConfig config)
         {
             _camera = Camera.main;
+            
             _collider = gameObject.GetComponent<BoxCollider>();
-
             if (_collider == null)
                 _collider = gameObject.AddComponent<BoxCollider>();
-
             _collider.size = new Vector3(config.width * 2, .1f, config.height * 2);
+            
+            _obstacle = gameObject.GetComponent<NavMeshModifierVolume>();
+            if (_obstacle == null)
+                _obstacle = gameObject.AddComponent<NavMeshModifierVolume>();
+            _obstacle.size = _collider.size * 0.9f;
 
             progress.SetData(value, config);
             info.SetData(index, value, config);

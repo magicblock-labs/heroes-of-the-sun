@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 using Utils.Injection;
 
 namespace Service
@@ -129,5 +130,12 @@ namespace Service
         public int Width => _buildConfig.width;
         public int Height => _buildConfig.height;
         public Dictionary<BuildingType, BuildingConfig> Buildings => _buildConfig.buildings;
+
+        public static Vector3 GetWorldCellPosition(int i, int j)
+        {
+            return new Vector3(
+                (i + 0.5f) * CellSize, 0,
+                (j + 0.5f) * CellSize);
+        }
     }
 }
