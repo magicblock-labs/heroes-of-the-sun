@@ -37,9 +37,14 @@ namespace View
                                 ConfigModel.CellSize;
 
                 var obj = Instantiate(prefab, transform);
-                obj.SetBuildingPrefab(conf);
+
+                if (building.DaysToBuild > 0)
+                    obj.ShowConstructionSite();
+                else
+                    obj.SetBuildingPrefab(conf);
+                    
                 obj.transform.localPosition = centerPos;
-                
+
                 obj.GetComponent<BuildingControls>().SetData(i++, building, conf);
             }
         }
