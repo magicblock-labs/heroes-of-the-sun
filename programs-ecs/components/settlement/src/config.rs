@@ -20,6 +20,7 @@ pub struct BuildingConfig {
     pub width: u8,
     pub height: u8,
     pub cost: u8,
+    pub build_time: u8,
 }
 
 pub const MAP_WIDTH: u8 = 20;
@@ -37,47 +38,55 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 8] = [
         width: 4,
         height: 4,
         cost: 50,
+        build_time: 3,
     },
     BuildingConfig {
         r#type: BuildingType::WaterCollector,
         width: 1,
         height: 1,
         cost: 10,
+        build_time: 2,
     },
     BuildingConfig {
         r#type: BuildingType::FoodCollector,
         width: 2,
         height: 2,
         cost: 10,
+        build_time: 1,
     },
     BuildingConfig {
         r#type: BuildingType::WoodCollector,
         width: 1,
         height: 3,
         cost: 5,
+        build_time: 3,
     },
     BuildingConfig {
         r#type: BuildingType::WaterStorage,
         width: 2,
         height: 2,
         cost: 5,
+        build_time: 2,
     },
     BuildingConfig {
         r#type: BuildingType::FoodStorage,
         width: 2,
         height: 2,
         cost: 8,
+        build_time: 2,
     },
     BuildingConfig {
         r#type: BuildingType::WoodStorage,
         width: 2,
         height: 2,
         cost: 8,
+        build_time: 4,
     },
     BuildingConfig {
         r#type: BuildingType::Altar,
         width: 3,
         height: 3,
         cost: 60,
+        build_time: 5,
     },
 ];

@@ -35,7 +35,7 @@ namespace View.UI
 
                 var percentage =
                     config.buildTime > 0
-                        ? Mathf.Clamp((float)(nowUnix - value.Timestamp) / config.buildTime, 0, 1)
+                        ? Mathf.Clamp((float)(config.buildTime - value.DaysToBuild) / config.buildTime, 0, 1)
                         : 1;
 
                 fill.fillAmount = percentage;

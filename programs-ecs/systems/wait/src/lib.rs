@@ -79,15 +79,17 @@ pub mod wait {
                 continue;
             }
 
-            if settlement.buildings[building_index as usize].deterioration == u8::MAX {
+            let building = settlement.buildings[building_index as usize];
+
+            if building.deterioration == u8::MAX {
                 //allocated building broken
                 continue;
             }
 
-            let mut building = settlement.buildings[building_index as usize];
-
-            if (building.days_to_build > 0) {
-                building.days_to_build -= u8::min(args.time as u8, building.days_to_build);
+            if building.days_to_build > 0 {
+                settlement.buildings[building_index as usize].days_to_build -=
+                    u8::min(args.time as u8, building.days_to_build);
+                continue;
             }
 
             let building_type = building.id;
@@ -144,7 +146,7 @@ pub mod wait {
 
         //deteriorate buildings
         for building in &mut settlement.buildings {
-            if building.deterioration < u8::MAX {
+            if building.days_to_build == 0 && building.deterioration < u8::MAX {
                 building.deterioration += args.time as u8;
             }
         }
