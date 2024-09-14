@@ -157,6 +157,11 @@ namespace Service
         {
             return await ApplySystem(new PublicKey("FrTthTtkfEWa2zZt4YEHGbL9Hz8hpsSW1hsHHnJXPRd4"), new { index });
         }
+        
+        public async Task<bool> ClaimTime()
+        {
+            return await ApplySystem(new PublicKey("HM794G8VuTSaYv1oNGxNhxAAJVp4UoVdM1QApdT7C9UU"), new {  });
+        }
 
         private async Task<bool> ApplySystem(PublicKey system, object args)
         {

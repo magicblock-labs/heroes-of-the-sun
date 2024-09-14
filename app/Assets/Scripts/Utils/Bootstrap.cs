@@ -75,12 +75,17 @@ namespace Utils
         {
             Web3.OnLogin -= HandleSignIn;
             label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
-            
+
             await _connector.EnsureBalance();
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
 
             await _connector.ReloadData();
             label.text = $"[{Web3.Account.PublicKey}] Loaded ";
+
+            if (!await _connector.ClaimTime()) return;
+            
+            await _connector.ReloadData();
+            label.text = $"[{Web3.Account.PublicKey}] Energy refreshed ";
         }
     }
 }

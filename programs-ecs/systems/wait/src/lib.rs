@@ -18,7 +18,9 @@ pub mod wait {
 
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
-        settlement.day += args.time;
+
+        let time_to_wait = u16::min(args.time, settlement.time_units);
+        settlement.time_units -= time_to_wait;
 
         let mut water_storage: u16 = 0;
         let mut food_storage: u16 = 0;
@@ -51,7 +53,7 @@ pub mod wait {
 
                     if water_storage > settlement.treasury.water {
                         collected = u16::min(
-                            args.time * get_level_multiplier(building.level),
+                            time_to_wait * get_level_multiplier(building.level),
                             settlement.environment.water,
                         );
                         collected = u16::min(collected, water_storage - settlement.treasury.water);
@@ -70,7 +72,7 @@ pub mod wait {
         let labour_allocation = settlement.labour_allocation.to_vec();
         let mut alive_labour: u16 = 0;
         for building_index in labour_allocation {
-            if building_index > -1 {
+            if building_index >= -1 {
                 alive_labour += 1;
             }
 
@@ -88,7 +90,7 @@ pub mod wait {
 
             if building.days_to_build > 0 {
                 settlement.buildings[building_index as usize].days_to_build -=
-                    u8::min(args.time as u8, building.days_to_build);
+                    u8::min(time_to_wait as u8, building.days_to_build);
                 continue;
             }
 
@@ -100,7 +102,7 @@ pub mod wait {
 
                     if food_storage > settlement.treasury.food {
                         collected = u16::min(
-                            args.time * get_level_multiplier(building.level),
+                            time_to_wait * get_level_multiplier(building.level),
                             settlement.environment.food,
                         );
                         collected = u16::min(collected, food_storage - settlement.treasury.food);
@@ -114,9 +116,9 @@ pub mod wait {
                 BuildingType::WoodCollector => {
                     let mut collected = 0;
 
-                    if food_storage > settlement.treasury.wood {
+                    if wood_storage > settlement.treasury.wood {
                         collected = u16::min(
-                            args.time * get_level_multiplier(building.level),
+                            time_to_wait * get_level_multiplier(building.level),
                             settlement.environment.wood,
                         );
                         collected = u16::min(collected, wood_storage - settlement.treasury.wood);
@@ -132,31 +134,26 @@ pub mod wait {
 
         //regen sources in environment
         settlement.environment.water += u16::min(
-            args.time,
+            time_to_wait,
             ENVIRONMENT_LIMITS.water - settlement.environment.water,
         );
         settlement.environment.food += u16::min(
-            args.time,
+            time_to_wait,
             ENVIRONMENT_LIMITS.water - settlement.environment.food,
         );
         settlement.environment.wood += u16::min(
-            args.time,
+            time_to_wait,
             ENVIRONMENT_LIMITS.water - settlement.environment.wood,
         );
 
         //deteriorate buildings
         for building in &mut settlement.buildings {
             if building.days_to_build == 0 && building.deterioration < u8::MAX {
-                building.deterioration += args.time as u8;
+                building.deterioration += time_to_wait as u8;
             }
         }
 
-        //eat/drink
-        if settlement.treasury.food == 0 {
-            settlement.faith -= u8::min(settlement.faith, args.time as u8);
-        }
-
-        if settlement.treasury.water < alive_labour {
+        if settlement.treasury.water < alive_labour || settlement.treasury.food < alive_labour {
             //kill one
             for i in 0..settlement.labour_allocation.len() {
                 if (settlement.labour_allocation[i]) > -1 {
@@ -168,22 +165,36 @@ pub mod wait {
             }
         }
 
-        settlement.treasury.water -= u16::min(settlement.treasury.water, args.time * alive_labour);
+        let consumption_rate: u16 = alive_labour * time_to_wait;
 
-        settlement.treasury.food -= u16::min(settlement.treasury.water, args.time * alive_labour);
+        settlement.treasury.water -= u16::min(settlement.treasury.water, consumption_rate);
+        settlement.treasury.food -= u16::min(settlement.treasury.food, consumption_rate);
 
         let mut i: usize = 0;
 
         //restore sacrificed labour
         for building_index in settlement.labour_allocation.to_vec() {
             if building_index < -1 {
-                settlement.labour_allocation[i] += args.time as i8;
+                settlement.labour_allocation[i] += time_to_wait as i8;
                 if settlement.labour_allocation[i] > -1 {
                     settlement.labour_allocation[i] = -1;
                 }
             }
 
             i += 1;
+        }
+
+        //calc faith as a lerp to 'runway'
+        let mut runway = 0;
+        if alive_labour > 0 {
+            runway =
+                u16::min(settlement.treasury.food, settlement.treasury.water) / alive_labour as u16;
+        }
+
+        if settlement.faith > 0 && runway > settlement.faith as u16 {
+            settlement.faith -= 1;
+        } else if settlement.faith < u8::MAX && runway < settlement.faith as u16 {
+            settlement.faith += 1;
         }
 
         Ok(ctx.accounts)

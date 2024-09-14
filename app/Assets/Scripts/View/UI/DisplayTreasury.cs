@@ -23,7 +23,7 @@ namespace View.UI
             if (_model.HasData)
             {
                 var settlement = _model.Get();
-                _text.text = $"Water: {settlement.Treasury.Water}; Food: {settlement.Treasury.Food}; Wood: {settlement.Treasury.Wood} DAY[{settlement.Day}]";
+                _text.text = $"Water: {settlement.Treasury.Water}; Food: {settlement.Treasury.Food}; Wood: {settlement.Treasury.Wood} ENERGY:[{settlement.TimeUnits}] FAITH:[{settlement.Faith}]";
             }
         }
 

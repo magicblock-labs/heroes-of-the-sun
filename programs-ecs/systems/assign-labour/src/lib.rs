@@ -18,6 +18,10 @@ pub mod assign_labour {
             return err!(errors::AssignLabourError::LabourIndexOutOfRange);
         }
 
+        if settlement.labour_allocation[args.labour_index as usize] < -1 {
+            return err!(errors::AssignLabourError::NotRestoredYet);
+        }
+
         settlement.labour_allocation[args.labour_index as usize] = args.building_index;
         Ok(ctx.accounts)
     }

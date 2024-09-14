@@ -57,9 +57,11 @@ namespace Settlement
 
             public ResourceBalance Treasury { get; set; }
 
-            public ushort Day { get; set; }
-
             public byte Faith { get; set; }
+
+            public ushort TimeUnits { get; set; }
+
+            public long LastTimeClaim { get; set; }
 
             public sbyte[] LabourAllocation { get; set; }
 
@@ -89,10 +91,12 @@ namespace Settlement
                 result.Environment = resultEnvironment;
                 offset += ResourceBalance.Deserialize(_data, offset, out var resultTreasury);
                 result.Treasury = resultTreasury;
-                result.Day = _data.GetU16(offset);
-                offset += 2;
                 result.Faith = _data.GetU8(offset);
                 offset += 1;
+                result.TimeUnits = _data.GetU16(offset);
+                offset += 2;
+                result.LastTimeClaim = _data.GetS64(offset);
+                offset += 8;
                 int resultLabourAllocationLength = (int)_data.GetU32(offset);
                 offset += 4;
                 result.LabourAllocation = new sbyte[resultLabourAllocationLength];

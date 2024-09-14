@@ -6,4 +6,6 @@ pub enum AssignLabourError {
     LabourIndexOutOfRange,
     #[msg("Supplied Building index out range")]
     BuildingIndexOutOfRange,
+    #[msg("Not Restored Yet")]
+    NotRestoredYet,
 }

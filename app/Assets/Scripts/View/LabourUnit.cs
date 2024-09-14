@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Model;
@@ -31,6 +32,7 @@ namespace View
             ResetLogic();
         }
 
+
         public void SetIndex(int value)
         {
             _index = value;
@@ -40,7 +42,25 @@ namespace View
         private void ResetLogic()
         {
             StopAllCoroutines();
+
+            StartCoroutine(ResetObstacleAvoidance());
             StartCoroutine(ResetLogicCoroutine());
+        }
+
+
+        private IEnumerator ResetObstacleAvoidance()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(1);
+
+                _agent.obstacleAvoidanceType =
+                    _agent.obstacleAvoidanceType switch
+                    {
+                        ObstacleAvoidanceType.NoObstacleAvoidance => ObstacleAvoidanceType.LowQualityObstacleAvoidance,
+                        _ => ObstacleAvoidanceType.NoObstacleAvoidance
+                    };
+            }
         }
 
         private IEnumerator ResetLogicCoroutine()
@@ -54,9 +74,9 @@ namespace View
                             ConfigModel.GetWorldCellPosition(target.x, target.y))).First()
                     : null;
             }
-            
-            yield return null;//allow locations to be populated
-            
+
+            yield return null; //allow locations to be populated
+
             var settlement = _model.Get();
             var labourAllocation = settlement.LabourAllocation[_index];
 
@@ -98,7 +118,7 @@ namespace View
             if (!_collectionPoint.HasValue && !_actionPoint.HasValue)
                 yield break;
 
-            //set uyor first target
+            //set yor first target
             if (_actionPoint.HasValue)
                 currentTarget = _actionPoint.Value;
             else if (_collectionPoint.HasValue)
@@ -109,7 +129,7 @@ namespace View
                 _agent.SetDestination(
                     ConfigModel.GetWorldCellPosition(currentTarget.x, currentTarget.y));
 
-                yield return null;//allow to recalculate the distance
+                yield return null; //allow to recalculate the distance
                 var distance = _agent.remainingDistance;
                 _anim.SetFloat(TargetDistance, distance);
 
@@ -132,8 +152,8 @@ namespace View
                 }
                 else if (_actionPoint.HasValue)
                     currentTarget = _actionPoint.Value;
-                
-                yield return null; 
+
+                yield return null;
             }
         }
 

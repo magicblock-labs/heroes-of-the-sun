@@ -26,14 +26,10 @@ namespace View.UI
             _camera = Camera.main;
             
             _collider = gameObject.GetComponent<BoxCollider>();
-            if (_collider == null)
-                _collider = gameObject.AddComponent<BoxCollider>();
             _collider.size = new Vector3(config.width * 2, .1f, config.height * 2);
             
             _obstacle = gameObject.GetComponent<NavMeshModifierVolume>();
-            if (_obstacle == null)
-                _obstacle = gameObject.AddComponent<NavMeshModifierVolume>();
-            _obstacle.size = _collider.size * 0.9f;
+            _obstacle.size = (new Vector3(_collider.size.x, 2, _collider.size.z));
 
             progress.SetData(value, config);
             info.SetData(index, value, config);
