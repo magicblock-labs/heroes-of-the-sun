@@ -13,15 +13,15 @@ pub mod wait {
 
     use settlement::{
         self,
-        config::{get_research_level, BuildingType, ResearchType, ENVIRONMENT_LIMITS},
+        config::{self, get_research_level, BuildingType, ResearchType, ENVIRONMENT_LIMITS},
         Settlement,
     };
 
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
 
-        let time_to_wait = u16::min(args.time, settlement.time_units);
-        settlement.time_units -= time_to_wait;
+        let time_to_wait = u16::min(args.time, settlement.time_units as u16);
+        settlement.time_units -= time_to_wait as u8;
 
         let mut water_storage: u16 = 0;
         let mut food_storage: u16 = 0;
@@ -33,13 +33,16 @@ pub mod wait {
         for building in settlement.buildings.to_vec() {
             match building.id {
                 BuildingType::WaterStorage => {
-                    water_storage += 10 * get_level_multiplier(building.level);
+                    water_storage +=
+                        config::WATER_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
                 }
                 BuildingType::FoodStorage => {
-                    food_storage += 25 * get_level_multiplier(building.level);
+                    food_storage +=
+                        config::FOOD_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
                 }
                 BuildingType::WoodStorage => {
-                    wood_storage += 50 * get_level_multiplier(building.level);
+                    wood_storage +=
+                        config::WOOD_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
                 }
                 _ => {}
             }
@@ -47,7 +50,8 @@ pub mod wait {
 
         let storage_research =
             get_research_level(settlement.research, ResearchType::StorageCapacity);
-        let storage_multiplier = 1.0 + 0.1 * storage_research as f32;
+        let storage_multiplier =
+            1.0 + config::STORAGE_CAPACITY_RESEARCH_MULTIPLIER * storage_research as f32;
         if storage_multiplier > 1.0 {
             water_storage = (water_storage as f32 * storage_multiplier).floor() as u16;
             food_storage = (food_storage as f32 * storage_multiplier).floor() as u16;
@@ -96,19 +100,20 @@ pub mod wait {
             }
 
             let building = settlement.buildings[building_index as usize];
-            let max_deterioration =
-                50 + 5 * get_research_level(settlement.research, ResearchType::DeteriorationCap);
+            let max_deterioration = config::BASE_DETERIORATION_CAP
+                + config::DETERIORATION_CAP_RESEARCH_MULTIPLIER
+                    * get_research_level(settlement.research, ResearchType::DeteriorationCap);
 
             if building.deterioration >= max_deterioration {
                 //allocated building broken
 
-                //todo deallocate?
+                //todo deallocate labour?
                 continue;
             }
 
-            if building.days_to_build > 0 {
-                settlement.buildings[building_index as usize].days_to_build -=
-                    u8::min(time_to_wait as u8, building.days_to_build);
+            if building.turns_to_build > 0 {
+                settlement.buildings[building_index as usize].turns_to_build -=
+                    u8::min(time_to_wait as u8, building.turns_to_build);
                 continue;
             }
 
@@ -168,7 +173,7 @@ pub mod wait {
 
         //deteriorate buildings
         for building in &mut settlement.buildings {
-            if building.days_to_build == 0 && building.deterioration < u8::MAX {
+            if building.turns_to_build == 0 && building.deterioration < u8::MAX {
                 building.deterioration += time_to_wait as u8;
             }
         }
@@ -177,8 +182,10 @@ pub mod wait {
             //kill one
             for i in 0..settlement.labour_allocation.len() {
                 if (settlement.labour_allocation[i]) >= -1 {
-                    settlement.labour_allocation[i] = -10
-                        + get_research_level(settlement.research, ResearchType::DeathTimeout) as i8;
+                    settlement.labour_allocation[i] = config::BASE_DEATH_TIMEOUT
+                        + (config::DEATH_TIMEOUT_RESEARCH_MULTIPLIER
+                            * get_research_level(settlement.research, ResearchType::DeathTimeout))
+                            as i8;
 
                     alive_labour -= 1;
                     break;
@@ -217,10 +224,14 @@ pub mod wait {
                 u16::min(settlement.treasury.food, settlement.treasury.water) / alive_labour as u16;
         }
 
-        if settlement.faith > 0 && runway > settlement.faith as u16 {
-            settlement.faith -= 1;
-        } else if settlement.faith < u8::MAX && runway < settlement.faith as u16 {
-            settlement.faith += 1;
+        if settlement.faith >= config::FAITH_TO_RUNWAY_LERP_PER_TURN
+            && runway > settlement.faith as u16
+        {
+            settlement.faith -= config::FAITH_TO_RUNWAY_LERP_PER_TURN;
+        } else if settlement.faith < u8::MAX - config::FAITH_TO_RUNWAY_LERP_PER_TURN
+            && runway < settlement.faith as u16
+        {
+            settlement.faith += config::FAITH_TO_RUNWAY_LERP_PER_TURN;
         }
 
         Ok(ctx.accounts)

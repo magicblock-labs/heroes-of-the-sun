@@ -6,7 +6,7 @@ declare_id!("85CUG48uuz6UYrvWYuDuK5Z79Q7rTGCP4y4CU933A7jd");
 #[system]
 pub mod sacrifice {
     use settlement::{
-        config::{get_research_level, ResearchType},
+        config::{self, get_research_level, ResearchType},
         Settlement,
     };
 
@@ -21,9 +21,11 @@ pub mod sacrifice {
             return err!(errors::SacrificeError::NotRestoredYet);
         }
 
-        settlement.labour_allocation[args.index as usize] =
-            -10 + get_research_level(settlement.research, ResearchType::DeathTimeout) as i8;
-        settlement.faith += 10;
+        settlement.labour_allocation[args.index as usize] = config::BASE_DEATH_TIMEOUT
+            + (config::DEATH_TIMEOUT_RESEARCH_MULTIPLIER
+                * get_research_level(settlement.research, ResearchType::DeathTimeout))
+                as i8;
+        settlement.faith += config::SACRIFICE_FAITH_BOOST;
         Ok(ctx.accounts)
     }
 

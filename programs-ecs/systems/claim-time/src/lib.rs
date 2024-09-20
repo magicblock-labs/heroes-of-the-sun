@@ -2,11 +2,13 @@ use bolt_lang::*;
 
 declare_id!("HM794G8VuTSaYv1oNGxNhxAAJVp4UoVdM1QApdT7C9UU");
 
+const SECONDS_IN_MINUTE: i64 = 60;
+
 #[system]
 pub mod claim_time {
 
     use settlement::{
-        config::{get_research_level, ResearchType},
+        config::{self, get_research_level, ResearchType},
         Settlement,
     };
 
@@ -15,17 +17,21 @@ pub mod claim_time {
 
         //todo balance faith dependency
         let faith = (settlement.faith
-            + get_research_level(settlement.research, ResearchType::FaithBonus))
+            + config::FAITH_BONUS_RESEARCH_MULTIPLIER
+                * get_research_level(settlement.research, ResearchType::FaithBonus))
             as u16;
 
-        let cap: u16 = 10
-            + faith / 10
-            + get_research_level(settlement.research, ResearchType::MaxEnergyCap) as u16; //[11..22] + research
+        let cap: u8 = config::BASE_ENERGY_CAP
+            + (faith as f32 * config::ENERGY_CAP_FAITH_MULTIPLIER) as u8
+            + (config::MAX_ENERGY_CAP_RESEARCH_MULTIPLIER
+                * get_research_level(settlement.research, ResearchType::MaxEnergyCap)); //[11..22] + research
 
-        let s_per_unit: i64 = 60
-            * (20
-                - get_research_level(settlement.research, ResearchType::EnergyRegeneration) as i64
-                - settlement.faith as i64 / 10); //[20..8] - research min per time unit
+        let s_per_unit: i64 = SECONDS_IN_MINUTE
+            * (config::BASE_MINUTE_PER_ENERGY_UNIT
+                - (config::ENERGY_REGEN_RESEARCH_MULTIPLIER
+                    * get_research_level(settlement.research, ResearchType::EnergyRegeneration))
+                    as i64
+                - (faith as f32 * config::ENERGY_REGEN_FAITH_MULTIPLIER) as i64); //[20..8] - research min per time unit
 
         let now = Clock::get()?.unix_timestamp;
 
@@ -33,7 +39,7 @@ pub mod claim_time {
         let claimable = time_passed / s_per_unit as i64;
 
         if claimable > 0 {
-            settlement.time_units += u16::min(claimable as u16, cap - settlement.time_units);
+            settlement.time_units += u8::min(claimable as u8, cap - settlement.time_units);
         }
 
         if settlement.time_units == cap {

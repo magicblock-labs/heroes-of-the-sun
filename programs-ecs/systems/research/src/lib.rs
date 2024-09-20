@@ -7,7 +7,7 @@ declare_id!("nhCY8g1oJ34Xhu3koUzpD3DjyxXcnLDVyomnYaTv4yc");
 pub mod research {
 
     use settlement::{
-        config::{get_research_level_u8, ResearchType, BITS_PER_RESEARCH, RESEARCH_MASK},
+        config::{self, get_research_level_u8, ResearchType, BITS_PER_RESEARCH, RESEARCH_MASK},
         Settlement,
     };
 
@@ -52,7 +52,7 @@ pub mod research {
         msg!("New out research value: {:32b}!", research_value);
 
         settlement.research = research_value;
-        settlement.treasury.wood -= 5;
+        settlement.treasury.wood -= config::RESEARCH_COST as u16;
 
         if args.research_type == ResearchType::ExtraUnit as u8 {
             settlement.labour_allocation.push(-1);

@@ -19,23 +19,23 @@ pub struct Building {
     pub deterioration: u8, //0 is ok
     pub id: crate::config::BuildingType,
     pub level: u8,
-    pub days_to_build: u8,
+    pub turns_to_build: u8,
 }
 
 #[component]
 pub struct Settlement {
-    #[max_len(12, 5)]
+    #[max_len(20, 5)]
     pub buildings: Vec<Building>,
 
     pub environment: ResourceBalance,
     pub treasury: ResourceBalance,
 
-    pub faith: u8, //0..127
-    pub time_units: u16,
+    pub faith: u8,
+    pub time_units: u8,
     pub last_time_claim: i64,
     pub research: u32,
 
-    #[max_len(12, 1)]
+    #[max_len(30, 1)]
     pub labour_allocation: Vec<i8>, //index is labour unit index, value is building index from /buildings/ array; singed: use -1 for free slot
 }
 
@@ -55,21 +55,13 @@ impl Default for Settlement {
                 deterioration: 0,
                 id: BuildingType::TownHall,
                 level: 1,
-                days_to_build: 0,
+                turns_to_build: 0,
             }],
             labour_allocation: vec![-1], //one labour comes as default from town hall
-            environment: ResourceBalance {
-                water: 200,
-                food: 200,
-                wood: 200,
-            },
-            treasury: ResourceBalance {
-                water: 20,
-                food: 40,
-                wood: 200,
-            },
-            time_units: 10,
-            faith: 50,
+            environment: config::INITIAL_ENVIRONMENT,
+            treasury: config::INITIAL_TREASURY,
+            time_units: config::INITIAL_TIME_UNITS,
+            faith: config::INITIAL_FAITH,
             last_time_claim: now,
             research: 0,
         })
