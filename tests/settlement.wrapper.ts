@@ -12,6 +12,7 @@ import { Wait } from "../target/types/wait";
 import { Build } from "../target/types/build";
 import { AssignLabour } from "../target/types/assign_labour";
 import { Upgrade } from "../target/types/upgrade";
+import { Research } from "../target/types/research";
 
 
 export type BuildArgs = {
@@ -24,6 +25,10 @@ export type AssignLabourArgs = {
 
 export type UpgradeArgs = {
   index: number
+}
+
+export type ResearchArgs = {
+  research_type: number
 }
 
 export type WaitArgs = {
@@ -44,6 +49,7 @@ export class SettlementWrapper {
   buildSystem: Program<Build>;
   assignLabourSystem: Program<AssignLabour>;
   upgradeSystem: Program<Upgrade>;
+  researchSystem: Program<Research>;
 
   async init() {
     this.provider = anchor.AnchorProvider.env();
@@ -54,6 +60,7 @@ export class SettlementWrapper {
     this.buildSystem = anchor.workspace.Build as Program<Build>;
     this.assignLabourSystem = anchor.workspace.AssignLabour as Program<AssignLabour>;
     this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
+    this.researchSystem = anchor.workspace.Research as Program<Research>;
 
     const initNewWorld = await InitializeNewWorld({
       payer: this.provider.wallet.publicKey,
@@ -131,6 +138,23 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
       systemId: this.upgradeSystem.programId,
+      entities: [{
+        entity: this.entityPda,
+        components: [{ componentId: this.settlementComponent.programId }],
+      }],
+      args
+    });
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`build tx: ${txSign}`);
+
+    return await this.state();
+  }
+
+  async research(args: ResearchArgs) {
+    // Run the build system
+    const applySystem = await ApplySystem({
+      authority: this.provider.wallet.publicKey,
+      systemId: this.researchSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],

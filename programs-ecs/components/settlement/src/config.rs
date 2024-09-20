@@ -90,3 +90,35 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 8] = [
         build_time: 5,
     },
 ];
+
+pub const BITS_PER_RESEARCH: u8 = 2;
+pub const RESEARCH_MASK: u8 = 0b11;
+
+#[repr(u8)]
+pub enum ResearchType {
+    BuildingSpeed,
+    BuildingCost,
+    DeteriorationCap,
+    Placeholder,
+    StorageCapacity,
+    ResourceCollectionSpeed,
+    EnvironmentRegeneration,
+    Mining,
+    ExtraUnit,
+    DeathTimeout,
+    Consumption,
+    Placeholder2,
+    MaxEnergyCap,
+    EnergyRegeneration,
+    FaithBonus,
+    Placeholder3,
+}
+
+pub fn get_research_level(value: u32, research_type: ResearchType) -> u8 {
+    return get_research_level_u8(value, research_type as u8);
+}
+
+pub fn get_research_level_u8(value: u32, research_type: u8) -> u8 {
+    let shift_by = BITS_PER_RESEARCH * (research_type as u8);
+    return (value >> shift_by) as u8 & RESEARCH_MASK;
+}

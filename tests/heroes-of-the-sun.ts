@@ -10,6 +10,8 @@ describe("HeroesOfTheSun", () => {
     expect(state.buildings.length).to.eq(1);
   });
 
+
+
   it("Builds a water collector", async () => {
     const state = await settlement.build({ x: 1, y: 1, config_index: 1 });
     expect(state.buildings.length).to.gt(1);
@@ -96,6 +98,13 @@ describe("HeroesOfTheSun", () => {
     var deteriorationBefore = (await settlement.state()).buildings[0].deterioration;
     const state = await settlement.wait({ time: 5 });
     expect(state.buildings[0].deterioration).to.eq(deteriorationBefore + 5);
+  });
+
+
+  it("Researches", async () => {
+    await settlement.research({ research_type: 9 });
+    const state = await settlement.research({ research_type: 9 });
+    expect(state.research).to.gt(0);
   });
 
   after(async () => {

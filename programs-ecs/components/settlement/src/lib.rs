@@ -33,6 +33,7 @@ pub struct Settlement {
     pub faith: u8, //0..127
     pub time_units: u16,
     pub last_time_claim: i64,
+    pub research: u32,
 
     #[max_len(12, 1)]
     pub labour_allocation: Vec<i8>, //index is labour unit index, value is building index from /buildings/ array; singed: use -1 for free slot
@@ -70,6 +71,7 @@ impl Default for Settlement {
             time_units: 10,
             faith: 50,
             last_time_claim: now,
+            research: 0,
         })
     }
 }
