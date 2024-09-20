@@ -63,6 +63,8 @@ namespace Settlement
 
             public long LastTimeClaim { get; set; }
 
+            public uint Research { get; set; }
+
             public sbyte[] LabourAllocation { get; set; }
 
             public BoltMetadata BoltMetadata { get; set; }
@@ -97,6 +99,8 @@ namespace Settlement
                 offset += 2;
                 result.LastTimeClaim = _data.GetS64(offset);
                 offset += 8;
+                result.Research = _data.GetU32(offset);
+                offset += 4;
                 int resultLabourAllocationLength = (int)_data.GetU32(offset);
                 offset += 4;
                 result.LabourAllocation = new sbyte[resultLabourAllocationLength];
