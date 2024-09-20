@@ -12,8 +12,9 @@ pub mod wait {
     use std::u16;
 
     use settlement::{
+        self,
+        config::{get_research_level, BuildingType, ResearchType, ENVIRONMENT_LIMITS},
         Settlement,
-        {self, config::BuildingType, config::ENVIRONMENT_LIMITS},
     };
 
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
@@ -44,6 +45,15 @@ pub mod wait {
             }
         }
 
+        let storage_research =
+            get_research_level(settlement.research, ResearchType::StorageCapacity);
+        let storage_multiplier = 1.0 + 0.1 * storage_research as f32;
+        if storage_multiplier > 1.0 {
+            water_storage = (water_storage as f32 * storage_multiplier).floor() as u16;
+            food_storage = (food_storage as f32 * storage_multiplier).floor() as u16;
+            wood_storage = (wood_storage as f32 * storage_multiplier).floor() as u16;
+        }
+
         //wells generate water without labour asigned
         for building in settlement.buildings.to_vec() {
             match building.id {
@@ -53,7 +63,11 @@ pub mod wait {
 
                     if water_storage > settlement.treasury.water {
                         collected = u16::min(
-                            time_to_wait * get_level_multiplier(building.level),
+                            time_to_wait * get_level_multiplier(building.level)
+                                + get_research_level(
+                                    settlement.research,
+                                    ResearchType::ResourceCollectionSpeed,
+                                ) as u16,
                             settlement.environment.water,
                         );
                         collected = u16::min(collected, water_storage - settlement.treasury.water);
@@ -82,9 +96,13 @@ pub mod wait {
             }
 
             let building = settlement.buildings[building_index as usize];
+            let max_deterioration =
+                50 + 5 * get_research_level(settlement.research, ResearchType::DeteriorationCap);
 
-            if building.deterioration == u8::MAX {
+            if building.deterioration >= max_deterioration {
                 //allocated building broken
+
+                //todo deallocate?
                 continue;
             }
 
@@ -132,17 +150,19 @@ pub mod wait {
             }
         }
 
-        //regen sources in environment
+        let regeneration_research =
+            get_research_level(settlement.research, ResearchType::EnvironmentRegeneration) as u16;
+        //regeneration sources in environment
         settlement.environment.water += u16::min(
-            time_to_wait,
+            time_to_wait * regeneration_research,
             ENVIRONMENT_LIMITS.water - settlement.environment.water,
         );
         settlement.environment.food += u16::min(
-            time_to_wait,
+            time_to_wait * regeneration_research,
             ENVIRONMENT_LIMITS.water - settlement.environment.food,
         );
         settlement.environment.wood += u16::min(
-            time_to_wait,
+            time_to_wait * regeneration_research,
             ENVIRONMENT_LIMITS.water - settlement.environment.wood,
         );
 
@@ -156,8 +176,9 @@ pub mod wait {
         if settlement.treasury.water < alive_labour || settlement.treasury.food < alive_labour {
             //kill one
             for i in 0..settlement.labour_allocation.len() {
-                if (settlement.labour_allocation[i]) > -1 {
-                    settlement.labour_allocation[i] = -10;
+                if (settlement.labour_allocation[i]) >= -1 {
+                    settlement.labour_allocation[i] = -10
+                        + get_research_level(settlement.research, ResearchType::DeathTimeout) as i8;
 
                     alive_labour -= 1;
                     break;
@@ -165,7 +186,12 @@ pub mod wait {
             }
         }
 
-        let consumption_rate: u16 = alive_labour * time_to_wait;
+        let consumption_rate: u16 = (alive_labour
+            - u16::min(
+                alive_labour,
+                get_research_level(settlement.research, ResearchType::Consumption) as u16,
+            ))
+            * time_to_wait;
 
         settlement.treasury.water -= u16::min(settlement.treasury.water, consumption_rate);
         settlement.treasury.food -= u16::min(settlement.treasury.food, consumption_rate);

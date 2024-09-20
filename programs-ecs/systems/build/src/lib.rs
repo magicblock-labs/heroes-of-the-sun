@@ -44,6 +44,9 @@ fn fits(settlement: &mut Account<Settlement>, x: u8, y: u8, new_config: &Buildin
 
 #[system]
 pub mod build {
+    use std::u8;
+
+    use settlement::config::{get_research_level, ResearchType};
 
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
         if args.config_index as usize >= BUILDINGS_CONFIG.len() {
@@ -66,11 +69,21 @@ pub mod build {
             return err!(errors::BuildError::WontFit);
         }
 
-        if settlement.treasury.wood < new_building_config.cost as u16 {
+        let cost_research = get_research_level(settlement.research, ResearchType::BuildingCost);
+        let cost =
+            ((new_building_config.cost as f32) * (1.0 - 0.1 * (cost_research as f32))).ceil();
+
+        if settlement.treasury.wood < cost as u16 {
             return err!(errors::BuildError::NotEnoughResources);
         } else {
-            settlement.treasury.wood -= new_building_config.cost as u16;
+            settlement.treasury.wood -= cost as u16;
         }
+
+        let build_time = new_building_config.build_time
+            - u8::min(
+                get_research_level(settlement.research, ResearchType::BuildingSpeed),
+                new_building_config.build_time,
+            );
 
         let new_building = Building {
             x: args.x,
@@ -78,7 +91,7 @@ pub mod build {
             id: new_building_config.r#type,
             deterioration: 0,
             level: 1,
-            days_to_build: new_building_config.build_time,
+            days_to_build: build_time,
         };
 
         settlement.buildings.push(new_building);

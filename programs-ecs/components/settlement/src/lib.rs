@@ -16,7 +16,7 @@ pub struct ResourceBalance {
 pub struct Building {
     pub x: u8,
     pub y: u8,
-    pub deterioration: u8, //0 is ok, 127 will disable
+    pub deterioration: u8, //0 is ok
     pub id: crate::config::BuildingType,
     pub level: u8,
     pub days_to_build: u8,

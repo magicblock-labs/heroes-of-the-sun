@@ -5,14 +5,27 @@ declare_id!("HM794G8VuTSaYv1oNGxNhxAAJVp4UoVdM1QApdT7C9UU");
 #[system]
 pub mod claim_time {
 
-    use settlement::Settlement;
+    use settlement::{
+        config::{get_research_level, ResearchType},
+        Settlement,
+    };
 
     pub fn execute(ctx: Context<Components>, _args: EmptyArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
 
         //todo balance faith dependency
-        let cap: u16 = 10 + settlement.faith as u16 / 10; //max 22
-        let s_per_unit: i64 = 60 * (20 - settlement.faith as i64 / 10); //20..8 min per time unit
+        let faith = (settlement.faith
+            + get_research_level(settlement.research, ResearchType::FaithBonus))
+            as u16;
+
+        let cap: u16 = 10
+            + faith / 10
+            + get_research_level(settlement.research, ResearchType::MaxEnergyCap) as u16; //[11..22] + research
+
+        let s_per_unit: i64 = 60
+            * (20
+                - get_research_level(settlement.research, ResearchType::EnergyRegeneration) as i64
+                - settlement.faith as i64 / 10); //[20..8] - research min per time unit
 
         let now = Clock::get()?.unix_timestamp;
 
