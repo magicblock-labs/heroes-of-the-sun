@@ -38,7 +38,7 @@ namespace View
 
                 var obj = Instantiate(prefab, transform);
 
-                if (building.DaysToBuild > 0)
+                if (building.TurnsToBuild > 0)
                     obj.ShowConstructionSite();
                 else
                     obj.SetBuildingPrefab(conf);

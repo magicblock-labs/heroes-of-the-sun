@@ -89,7 +89,7 @@ namespace View
             {
                 var building = settlement.Buildings[labourAllocation];
 
-                if (building.DaysToBuild > 0)
+                if (building.TurnsToBuild > 0)
                 {
                     //still building, so action point should be at buildings location
                     _actionPoint = new Vector2Int(building.X, building.Y);

@@ -59,7 +59,7 @@ namespace Settlement
 
             public byte Faith { get; set; }
 
-            public ushort TimeUnits { get; set; }
+            public byte TimeUnits { get; set; }
 
             public long LastTimeClaim { get; set; }
 
@@ -95,8 +95,8 @@ namespace Settlement
                 result.Treasury = resultTreasury;
                 result.Faith = _data.GetU8(offset);
                 offset += 1;
-                result.TimeUnits = _data.GetU16(offset);
-                offset += 2;
+                result.TimeUnits = _data.GetU8(offset);
+                offset += 1;
                 result.LastTimeClaim = _data.GetS64(offset);
                 offset += 8;
                 result.Research = _data.GetU32(offset);
@@ -160,7 +160,7 @@ namespace Settlement
 
             public byte Level { get; set; }
 
-            public byte DaysToBuild { get; set; }
+            public byte TurnsToBuild { get; set; }
 
             public int Serialize(byte[] _data, int initialOffset)
             {
@@ -175,7 +175,7 @@ namespace Settlement
                 offset += 1;
                 _data.WriteU8(Level, offset);
                 offset += 1;
-                _data.WriteU8(DaysToBuild, offset);
+                _data.WriteU8(TurnsToBuild, offset);
                 offset += 1;
                 return offset - initialOffset;
             }
@@ -194,7 +194,7 @@ namespace Settlement
                 offset += 1;
                 result.Level = _data.GetU8(offset);
                 offset += 1;
-                result.DaysToBuild = _data.GetU8(offset);
+                result.TurnsToBuild = _data.GetU8(offset);
                 offset += 1;
                 return offset - initialOffset;
             }

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: c6aa26de2f57c4446bb2d6da58dfd2f2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 140925
+  packageName: Simple Fantasy UI
+  packageVersion: 0.1
+  assetPath: Assets/Fantasy UI/Samples/IconPreview.cs
+  uploadId: 297044
