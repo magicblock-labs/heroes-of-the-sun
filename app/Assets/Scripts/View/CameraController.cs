@@ -1,6 +1,7 @@
 using System;
 using Model;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Utils.Injection;
 
 namespace View
@@ -9,6 +10,7 @@ namespace View
     {
         [Inject] private InteractionStateModel _interaction;
 
+        [SerializeField] private EventSystem _eventSystem;
         [SerializeField] private float zoomSpeedTouch = 0.1f;
         [SerializeField] private float zoomSpeedMouse = 0.5f;
 
@@ -29,7 +31,7 @@ namespace View
 
         private void Update()
         {
-            if (_interaction.State == InteractionState.Dialog)
+            if (_eventSystem.IsPointerOverGameObject())
                 return;
 
             if (Input.touchSupported && Application.platform != RuntimePlatform.WebGLPlayer)

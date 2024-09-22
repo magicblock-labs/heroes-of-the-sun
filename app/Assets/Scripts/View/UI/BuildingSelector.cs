@@ -16,7 +16,8 @@ namespace View.UI
         [SerializeField] private RawImage snapshot;
         [SerializeField] private Camera cam;
         [SerializeField] private Transform buildingContainer;
-        [SerializeField] private Text id;
+        [SerializeField] private Text nameLabel;
+        [SerializeField] private Text costLabel;
 
         private Action<BuildingType> _selectedCallback;
         private BuildingType _type;
@@ -25,7 +26,7 @@ namespace View.UI
         {
             _type = value;
 
-            var renderTex = new RenderTexture(256, 256, 16);
+            var renderTex = new RenderTexture(512, 512, 16);
             snapshot.texture = renderTex;
             cam.targetTexture = renderTex;
             var buildingConfig = _config.Buildings[value];
@@ -35,7 +36,8 @@ namespace View.UI
             cam.enabled = false;
             Destroy(buildingContainer.gameObject);
 
-            id.text = value.ToString();
+            nameLabel.text = value.ToString();
+            costLabel.text = buildingConfig.cost.ToString();
         }
 
         public void OnClick()
