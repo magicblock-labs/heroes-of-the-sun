@@ -1674,6 +1674,61 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 909670177}
     m_Modifications:
+    - target: {fileID: 1060174012233683877, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1060174012233683877, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1060174012233683877, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1060174012233683877, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1060174012233683877, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058144574281278957, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058144574281278957, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058144574281278957, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058144574281278957, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058144574281278957, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058144574281278957, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3252553326188794736, guid: df5a754f4d3094f128652faafb2c7e5f,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1774,10 +1829,50 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4511810530874263674, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4969181741736473466, guid: df5a754f4d3094f128652faafb2c7e5f,
         type: 3}
       propertyPath: m_Name
       value: HUD_BuildMenu
+      objectReference: {fileID: 0}
+    - target: {fileID: 5462699197214086413, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5462699197214086413, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5462699197214086413, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5462699197214086413, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5462699197214086413, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5462699197214086413, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5535523072973274192, guid: df5a754f4d3094f128652faafb2c7e5f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

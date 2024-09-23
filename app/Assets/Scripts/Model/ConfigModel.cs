@@ -15,6 +15,7 @@ namespace Service
         FoodStorage = 5,
         WoodStorage = 6,
         Altar = 7,
+        Research = 8
     }
 
     public class BuildConfig
@@ -122,6 +123,16 @@ namespace Service
                         cost = 30,
                         buildTime = 10,
                         prefab = BuildingType.Altar.ToString()
+                    }
+                },
+                {
+                    BuildingType.Research, new BuildingConfig
+                    {
+                        width = 3,
+                        height = 3,
+                        cost = 30,
+                        buildTime = 10,
+                        prefab = BuildingType.Research.ToString()
                     }
                 }
             }
