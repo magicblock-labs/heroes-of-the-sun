@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4667585392995096}
-  - component: {fileID: 33139153108017918}
   - component: {fileID: 6598910341415786126}
   m_Layer: 0
   m_Name: PlacementPreview
@@ -35,14 +34,6 @@ Transform:
   - {fileID: 6353701347720413537}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &33139153108017918
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1169408063739096}
-  m_Mesh: {fileID: 4300000, guid: 9e154dd6664f39140a4e1414b5734034, type: 3}
 --- !u!114 &6598910341415786126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56,8 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buildingContainer: {fileID: 6353701347720413537}
-  materialOverride: {fileID: -876546973899608171, guid: 2dac9bb17c63c49da88ac431509e268c,
-    type: 3}
+  constructionSite: {fileID: 0}
 --- !u!1 &157072401643120048
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +127,7 @@ Canvas:
   m_GameObject: {fileID: 6466209927222897589}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
+  m_RenderMode: 1
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -145,11 +135,11 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &2139653740920165372
 MonoBehaviour:
@@ -309,7 +299,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3318750750091381863, guid: fa60d5ecbe7f94251ba8be6b1ac9867d, type: 3}
+    - {fileID: 3590731257382358815, guid: fa60d5ecbe7f94251ba8be6b1ac9867d, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

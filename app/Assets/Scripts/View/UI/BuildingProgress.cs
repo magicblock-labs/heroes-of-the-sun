@@ -20,42 +20,29 @@ namespace View.UI
             if (value == null)
                 return;
 
+            if (value.TurnsToBuild <= 0)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
             nameLabel.text = value.Id.ToString();
             if (levelLabel)
                 levelLabel.text = "Level: " + value.Level;
 
-            StartCoroutine(UpdateProgress(value, config));
-        }
+            var percentage =
+                config.buildTime > 0
+                    ? Mathf.Clamp((float)(config.buildTime - value.TurnsToBuild) / config.buildTime, 0, 1)
+                    : 1;
 
-        private IEnumerator UpdateProgress(Building value, BuildingConfig config)
-        {
-            while (true)
-            {
-                var nowUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            fill.fillAmount = percentage;
+            statePercentageLabel.text = $"{percentage:0%}";
 
-                var percentage =
-                    config.buildTime > 0
-                        ? Mathf.Clamp((float)(config.buildTime - value.TurnsToBuild) / config.buildTime, 0, 1)
-                        : 1;
+            var r = (byte)(byte.MaxValue * Math.Clamp((1 - percentage) * 2f, 0, 1f));
+            var g = (byte)(byte.MaxValue * Math.Clamp(percentage * 2, 0f, 1f));
 
-                fill.fillAmount = percentage;
-                statePercentageLabel.text = $"{percentage:0%}";
-
-                var r = (byte)(byte.MaxValue * Math.Clamp((1 - percentage) * 2f, 0, 1f));
-                var g = (byte)(byte.MaxValue * Math.Clamp(percentage * 2, 0f, 1f));
-
-                bg.color = new Color32(r, g, 0, 40);
-                fill.color = new Color32(r, g, 0, byte.MaxValue);
-
-                if (percentage >= 1)
-                {
-                    gameObject.SetActive(false);
-                    yield break;
-                }
-
-                yield return null;
-            }
-            
+            bg.color = new Color32(r, g, 0, 40);
+            fill.color = new Color32(r, g, 0, byte.MaxValue);
         }
     }
 }

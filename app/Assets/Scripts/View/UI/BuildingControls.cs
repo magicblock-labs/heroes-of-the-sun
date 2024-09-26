@@ -11,8 +11,6 @@ namespace View.UI
     {
         [SerializeField] private BuildingProgress progress;
         [SerializeField] private BuildingInfo info;
-        [SerializeField] private DisplayLabourAllocation labourAllocation;
-
 
         [Inject] private InteractionStateModel _interaction;
         [Inject] private ProgramConnector _connector;
@@ -20,7 +18,7 @@ namespace View.UI
         private Camera _camera;
         private BoxCollider _collider;
         private NavMeshModifierVolume _obstacle;
-
+        
         public void SetData(int index, Building value, BuildingConfig config)
         {
             _camera = Camera.main;
@@ -32,10 +30,7 @@ namespace View.UI
             _obstacle.size = (new Vector3(_collider.size.x, 2, _collider.size.z));
 
             progress.SetData(value, config);
-            info.SetData(index, value, config);
-
-            info.gameObject.SetActive(false);
-            labourAllocation.SetBuildingIndex(index);
+            info.SetData(index, value);
         }
 
         private void LateUpdate()
@@ -45,7 +40,7 @@ namespace View.UI
 
 
             if (Input.GetMouseButtonUp(0))
-                info.gameObject.SetActive(intersectRay && _interaction.State == InteractionState.Idle);
+                info.ShowExtendedControls(intersectRay && _interaction.State == InteractionState.Idle);
         }
     }
 }
