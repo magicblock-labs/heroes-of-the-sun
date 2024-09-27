@@ -1,6 +1,7 @@
 using Model;
 using Service;
 using UnityEngine;
+using UnityEngine.Events;
 using Utils.Injection;
 
 namespace View.UI
@@ -9,23 +10,12 @@ namespace View.UI
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private ProgramConnector _connector;
+        [Inject] private InteractionStateModel _interaction;
 
         [SerializeField] private LabourAllocationEntry labourAllocationEntry;
-        private int _buildingIndex = -1;
+        [SerializeField] private UnityEvent close;
 
-        public void Start()
-        {
-            _settlement.Updated.Add(Redraw);
-            if (_settlement.HasData)
-                Redraw();
-        }
-
-        public void SetBuildingIndex(int value)
-        {
-            _buildingIndex = value;
-        }
-
-        private void Redraw()
+        private void OnEnable()
         {
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
@@ -35,20 +25,18 @@ namespace View.UI
             {
                 var allocationEntry = Instantiate(labourAllocationEntry, transform);
                 allocationEntry.SetData(i, allocation[i]);
-                if (_buildingIndex >= 0)
-                    allocationEntry.onSelected.AddListener(TryAssignLabour);
+                allocationEntry.onSelected.AddListener(TryAssignLabour);
             }
         }
 
         private async void TryAssignLabour(int index)
         {
-            if (await _connector.AssignLabour(index, _buildingIndex))
+            close?.Invoke();
+            
+            if (_interaction.SelectedBuildingIndex < 0) return;
+            if (await _connector.AssignLabour(index, _interaction.SelectedBuildingIndex))
                 await _connector.ReloadData();
-        }
-
-        public void OnDestroy()
-        {
-            _settlement.Updated.Remove(Redraw);
+            
         }
     }
 }

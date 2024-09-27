@@ -13,14 +13,14 @@ namespace View.UI
         {
             Canvas canvas = null;
 
-            var p = transform;
-            while (p != null)
+            var parent = transform;
+            while (parent != null)
             {
-                canvas = p.GetComponent<Canvas>();
+                canvas = parent.GetComponent<Canvas>();
                 if (canvas != null)
                     break;
 
-                p = transform.parent;
+                parent = transform.parent;
             }
 
             if (_camera == null)

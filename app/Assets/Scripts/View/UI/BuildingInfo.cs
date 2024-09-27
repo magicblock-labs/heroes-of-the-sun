@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Model;
+using Notifications;
 using Plugins.Demigiant.DOTween.Modules;
 using Service;
 using Settlement.Types;
@@ -16,6 +17,8 @@ namespace View.UI
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private ProgramConnector _connector;
+        [Inject] private InteractionStateModel _interaction;
+        [Inject] private ShowWorkerSelection _showWorkerSelection;
 
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text levelLabel;
@@ -75,15 +78,23 @@ namespace View.UI
         {
             var freeWorker = _settlement.GetFreeWorkerIndex();
 
-            if (await _connector.AssignLabour(Math.Max(0, freeWorker), _index))
-                await _connector.ReloadData();
+            if (freeWorker >= 0)
+            {
+                if (await _connector.AssignLabour(Math.Max(0, freeWorker), _index))
+                    await _connector.ReloadData();
+            }
+
+            else {
+                _interaction.SelectedBuildingIndex = _index;
+                _showWorkerSelection.Dispatch();
+            }
         }
 
         public void ShowExtendedControls(bool value)
         {
             if (controls.activeSelf == value)
                 return;
-            
+
             controls.SetActive(value);
 
             foreach (RectTransform child in controls.transform)

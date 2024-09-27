@@ -30,6 +30,8 @@ namespace Model
 
         public int CellPosX;
         public int CellPosZ;
+        
+        public int SelectedBuildingIndex = -1;
 
         public void StartPlacement(BuildingType type)
         {
