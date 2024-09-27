@@ -34,11 +34,20 @@ namespace Service
         public string prefab;
     }
 
+
     [Singleton]
     public class ConfigModel : InjectableObject<ConfigModel>
     {
         public const int CellSize = 2; //units per cell
+
+
+        public const int WATER_STORAGE_PER_LEVEL = 10;
+        public const int FOOD_STORAGE_PER_LEVEL = 20;
+        public const int WOOD_STORAGE_PER_LEVEL = 50;
         
+        
+        public const float STORAGE_CAPACITY_RESEARCH_MULTIPLIER = 0.1f;
+
         private readonly BuildConfig _buildConfig = new()
         {
             width = 20,
@@ -50,8 +59,8 @@ namespace Service
                     {
                         width = 4,
                         height = 4,
-                        cost = 30,
-                        buildTime = 6,
+                        cost = 50,
+                        buildTime = 3,
                         prefab = BuildingType.TownHall.ToString()
                     }
                 },
@@ -60,8 +69,8 @@ namespace Service
                     {
                         width = 2,
                         height = 2,
-                        cost = 30,
-                        buildTime = 6,
+                        cost = 10,
+                        buildTime = 2,
                         prefab = BuildingType.WaterCollector.ToString()
                     }
                 },
@@ -70,8 +79,8 @@ namespace Service
                     {
                         width = 2,
                         height = 2,
-                        cost = 30,
-                        buildTime = 10,
+                        cost = 10,
+                        buildTime = 1,
                         prefab = BuildingType.FoodCollector.ToString()
                     }
                 },
@@ -80,8 +89,8 @@ namespace Service
                     {
                         width = 2,
                         height = 2,
-                        cost = 30,
-                        buildTime = 10,
+                        cost = 5,
+                        buildTime = 3,
                         prefab = BuildingType.WoodCollector.ToString()
                     }
                 },
@@ -90,8 +99,8 @@ namespace Service
                     {
                         width = 3,
                         height = 3,
-                        cost = 30,
-                        buildTime = 10,
+                        cost = 5,
+                        buildTime = 2,
                         prefab = BuildingType.WaterStorage.ToString()
                     }
                 },
@@ -100,8 +109,8 @@ namespace Service
                     {
                         width = 3,
                         height = 3,
-                        cost = 30,
-                        buildTime = 10,
+                        cost = 8,
+                        buildTime = 2,
                         prefab = BuildingType.FoodStorage.ToString()
                     }
                 },
@@ -110,8 +119,8 @@ namespace Service
                     {
                         width = 3,
                         height = 3,
-                        cost = 30,
-                        buildTime = 10,
+                        cost = 8,
+                        buildTime = 4,
                         prefab = BuildingType.WoodStorage.ToString()
                     }
                 },
@@ -130,8 +139,8 @@ namespace Service
                     {
                         width = 3,
                         height = 3,
-                        cost = 30,
-                        buildTime = 10,
+                        cost = 60,
+                        buildTime = 5,
                         prefab = BuildingType.Research.ToString()
                     }
                 }

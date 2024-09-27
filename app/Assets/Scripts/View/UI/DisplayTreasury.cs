@@ -8,7 +8,7 @@ namespace View.UI
     public class DisplayCredits : InjectableBehaviour
     {
         [Inject] private SettlementModel _model;
-        
+
         [SerializeField] private Text foodLabel;
         [SerializeField] private Text woodLabel;
         [SerializeField] private Text waterLabel;
@@ -26,12 +26,18 @@ namespace View.UI
             if (_model.HasData)
             {
                 var settlement = _model.Get();
-                foodLabel.text = $"{settlement.Treasury.Food}";
-                woodLabel.text = $"{settlement.Treasury.Wood}";
-                waterLabel.text = $"{settlement.Treasury.Water}";
+                var caps = _model.StorageCapacity;
+                foodLabel.text = FormatResource(settlement.Treasury.Food, caps.Food);
+                woodLabel.text = FormatResource(settlement.Treasury.Wood, caps.Wood);
+                waterLabel.text = FormatResource(settlement.Treasury.Water, caps.Water);
                 // stoneLabel.text = $"{settlement.Treasury.Water}";
                 // coinsLabel.text = $"{settlement.Treasury.Water}";
             }
+        }
+
+        string FormatResource(int value, int cap)
+        {
+            return value < cap ? $"{value}/{cap}" : $"{value}/<color=red>{cap}</color>";
         }
 
         private void OnDestroy()

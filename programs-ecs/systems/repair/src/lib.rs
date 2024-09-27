@@ -24,10 +24,9 @@ pub mod repair {
 
         if settlement.treasury.wood < repair_cost {
             return err!(errors::RepairError::NotEnoughResources);
-        } else {
-            settlement.treasury.wood -= repair_cost;
         }
 
+        settlement.treasury.wood -= repair_cost;
         //all checks passed
         settlement.buildings[args.index as usize].deterioration = 0;
 

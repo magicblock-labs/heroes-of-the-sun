@@ -173,7 +173,8 @@ pub mod wait {
         }
 
         let regeneration_research =
-            get_research_level(settlement.research, ResearchType::EnvironmentRegeneration) as u16;
+            1 + get_research_level(settlement.research, ResearchType::EnvironmentRegeneration)
+                as u16;
         //regeneration sources in environment
         settlement.environment.water += u16::min(
             time_to_wait * regeneration_research,

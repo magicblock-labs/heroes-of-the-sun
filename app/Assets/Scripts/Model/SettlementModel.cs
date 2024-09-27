@@ -6,6 +6,13 @@ using Utils.Signal;
 
 namespace Model
 {
+    public struct StorageCapacity
+    {
+        public int Food;
+        public int Wood;
+        public int Water;
+    }
+
     [Singleton]
     public class SettlementModel : InjectableObject<SettlementModel>
     {
@@ -21,6 +28,7 @@ namespace Model
         public void Set(Settlement.Accounts.Settlement value)
         {
             _data = value;
+            StorageCapacity = GetStorageCapacity();
             OccupiedData = GetCellsData();
             Updated.Dispatch();
         }
@@ -90,6 +98,85 @@ namespace Model
 
 
             return true;
+        }
+
+
+        public StorageCapacity StorageCapacity { get; private set; }
+
+        private static int GetLevelMultiplier(int level)
+        {
+            return (int)Mathf.Pow(2, level);
+        }
+
+        private StorageCapacity GetStorageCapacity()
+        {
+            var storage = new StorageCapacity()
+            {
+                Water = 0,
+                Food = 0,
+                Wood = 0,
+            };
+
+            //calc current storage capacity for all resources
+            foreach (var building in _data.Buildings)
+            {
+                if (building.TurnsToBuild > 0)
+                    continue;
+
+                // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+                switch (building.Id)
+                {
+                    case Settlement.Types.BuildingType.WaterStorage:
+                        storage.Water += ConfigModel.WATER_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        break;
+                    case Settlement.Types.BuildingType.FoodStorage:
+                        storage.Food += ConfigModel.FOOD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        break;
+                    case Settlement.Types.BuildingType.WoodStorage:
+                        storage.Wood += ConfigModel.WOOD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        break;
+                }
+            }
+
+            var storageResearch = GetResearchLevel(ResearchType.StorageCapacity);
+            var storageMultiplier = 1.0f + ConfigModel.STORAGE_CAPACITY_RESEARCH_MULTIPLIER * storageResearch;
+            
+            if (!(storageMultiplier > 1.0)) return storage;
+            
+            storage.Water = (int)Math.Floor(storage.Water * storageMultiplier);
+            storage.Food = (int)Math.Floor(storage.Food * storageMultiplier);
+            storage.Wood = (int)Math.Floor(storage.Wood * storageMultiplier);
+
+            return storage;
+        }
+
+        public enum ResearchType
+        {
+            BuildingSpeed,
+            BuildingCost,
+            DeteriorationCap,
+            Placeholder,
+            StorageCapacity,
+            ResourceCollectionSpeed,
+            EnvironmentRegeneration,
+            Mining,
+            ExtraUnit,
+            DeathTimeout,
+            Consumption,
+            Placeholder2,
+            MaxEnergyCap,
+            EnergyRegeneration,
+            FaithBonus,
+            Placeholder3,
+        }
+
+        private const int BitsPerResearch = 2;
+        private const int ResearchMask = 3; //00000011
+
+        public uint GetResearchLevel(ResearchType researchType)
+        {
+            var shiftBy = BitsPerResearch * (int)researchType;
+            return (_data.Research >> shiftBy) & ResearchMask;
         }
     }
 }
