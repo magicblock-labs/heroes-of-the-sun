@@ -26,7 +26,7 @@ pub struct BuildingConfig {
 pub const MAP_WIDTH: u8 = 20;
 pub const MAP_HEIGHT: u8 = 20;
 
-pub const INITIAL_TIME_UNITS: u8 = 10;
+pub const INITIAL_TIME_UNITS: u8 = 100;
 pub const INITIAL_FAITH: u8 = 50;
 
 pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {

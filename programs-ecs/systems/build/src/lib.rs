@@ -98,6 +98,14 @@ pub mod build {
 
         settlement.buildings.push(new_building);
 
+        if args.worker_index >= 0 {
+            if (settlement.labour_allocation.len() as i16 <= args.worker_index) {
+                return err!(errors::BuildError::SuppliedWorkerIndexOutOfBounds);
+            }
+            settlement.labour_allocation[args.worker_index as usize] =
+                (settlement.buildings.len() - 1) as i8;
+        }
+
         Ok((ctx.accounts))
     }
 
@@ -109,6 +117,7 @@ pub mod build {
     #[arguments]
     struct BuildArgs {
         config_index: u8,
+        worker_index: i16,
         x: u8,
         y: u8,
     }

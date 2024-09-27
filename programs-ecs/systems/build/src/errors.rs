@@ -10,4 +10,6 @@ pub enum BuildError {
     NotEnoughResources,
     #[msg("Config Index Out Of Bounds")]
     ConfigIndexOutOfRange,
+    #[msg("Worker Index Out Of Bounds")]
+    SuppliedWorkerIndexOutOfBounds,
 }

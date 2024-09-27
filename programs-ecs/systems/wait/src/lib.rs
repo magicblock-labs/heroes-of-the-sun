@@ -31,6 +31,10 @@ pub mod wait {
 
         //calc current storage capacity for all resources
         for building in settlement.buildings.to_vec() {
+            if building.turns_to_build > 0 {
+                continue;
+            }
+
             match building.id {
                 BuildingType::WaterStorage => {
                     water_storage +=
@@ -60,6 +64,9 @@ pub mod wait {
 
         //wells generate water without labour asigned
         for building in settlement.buildings.to_vec() {
+            if building.turns_to_build > 0 {
+                continue;
+            }
             match building.id {
                 BuildingType::WaterCollector => {
                     //todo check if this code can be reused (across 3 different resources)
@@ -87,9 +94,10 @@ pub mod wait {
         }
 
         //process all buildings with allocated labour
-        let labour_allocation = settlement.labour_allocation.to_vec();
         let mut alive_labour: u16 = 0;
-        for building_index in labour_allocation {
+        for worker_index in 0..settlement.labour_allocation.len() {
+            let building_index = settlement.labour_allocation[worker_index];
+
             if building_index >= -1 {
                 alive_labour += 1;
             }
@@ -106,15 +114,24 @@ pub mod wait {
 
             if building.deterioration >= max_deterioration {
                 //allocated building broken
-
-                //todo deallocate labour?
+                settlement.labour_allocation[worker_index] = -1;
                 continue;
             }
 
             if building.turns_to_build > 0 {
                 settlement.buildings[building_index as usize].turns_to_build -=
                     u8::min(time_to_wait as u8, building.turns_to_build);
-                continue;
+
+                if settlement.buildings[building_index as usize].turns_to_build <= 0 {
+                    //finished building anything but food/wood collectors
+                    match settlement.buildings[building_index as usize].id {
+                        BuildingType::FoodCollector => {}
+                        BuildingType::WoodCollector => {}
+                        _ => settlement.labour_allocation[worker_index] = -1,
+                    }
+                } else {
+                    continue;
+                }
             }
 
             let building_type = building.id;
