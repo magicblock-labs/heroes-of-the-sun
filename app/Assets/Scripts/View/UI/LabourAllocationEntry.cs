@@ -1,15 +1,21 @@
+using Model;
+using Service;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using Utils.Injection;
 
 namespace View.UI
 {
-    public class LabourAllocationEntry : MonoBehaviour, IPointerClickHandler
+    public class LabourAllocationEntry : InjectableBehaviour, IPointerClickHandler
     {
+        [Inject] private SettlementModel _settlement;
+        [Inject] private ConfigModel _config;
+        
         [SerializeField] private GameObject freeMarker;
         [SerializeField] private GameObject deadMarker;
-        [SerializeField] private TMP_Text buildingIndex;
+        [SerializeField] private BuildingSnapshot buildingSnapshot;
 
         private int _index;
         private int _allocation;
@@ -21,14 +27,23 @@ namespace View.UI
             _index = index;
             _allocation = allocation;
 
-            if (buildingIndex)
-                buildingIndex.text = _allocation >= 0 ? _allocation.ToString() : "x";
+            Invoke(nameof(CreateBuildingSnapshot), .01f);
 
             if (freeMarker)
                 freeMarker.SetActive(allocation == -1);
             
             if (deadMarker)
                 deadMarker.SetActive(allocation < -1);
+        }
+
+        void CreateBuildingSnapshot()
+        {
+            if (!buildingSnapshot) return;
+            
+            var building = _settlement.Get().Buildings[_allocation];
+            var buildingConfig = _config.Buildings[(BuildingType)building.Id];
+                
+            buildingSnapshot.Generate(buildingConfig);
         }
 
         public void OnPointerClick(PointerEventData eventData)

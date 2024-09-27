@@ -13,9 +13,7 @@ namespace View.UI
         [Inject] private SettlementModel _model;
         [Inject] private InteractionStateModel _interaction;
 
-        [SerializeField] private RawImage snapshot;
-        [SerializeField] private Camera cam;
-        [SerializeField] private Transform buildingContainer;
+        [SerializeField] private BuildingSnapshot snapshot;
         [SerializeField] private Text nameLabel;
         [SerializeField] private Text costLabel;
 
@@ -25,17 +23,9 @@ namespace View.UI
         public void SetData(BuildingType value)
         {
             _type = value;
-
-            var renderTex = new RenderTexture(512, 512, 16);
-            snapshot.texture = renderTex;
-            cam.targetTexture = renderTex;
             var buildingConfig = _config.Buildings[value];
-            BuildingPreview.CreateBuildingInto(buildingConfig, buildingContainer);
 
-            cam.Render();
-            cam.enabled = false;
-            Destroy(buildingContainer.gameObject);
-
+            snapshot.Generate(buildingConfig);
             nameLabel.text = value.ToString();
             costLabel.text = buildingConfig.cost.ToString();
         }
@@ -43,12 +33,6 @@ namespace View.UI
         public void OnClick()
         {
             _interaction.StartPlacement(_type);
-        }
-
-        private void OnDestroy()
-        {
-            if (snapshot.texture)
-                Destroy(snapshot.texture); //destroy generated texture
         }
     }
 }
