@@ -7,7 +7,7 @@ namespace View
     public class DisplayWorkers : InjectableBehaviour
     {
         [Inject] private SettlementModel _settlement;
-        [SerializeField] private LabourUnit labourUnitPrefab;
+        [SerializeField] private Worker workerPrefab;
 
         public void Start()
         {
@@ -20,7 +20,7 @@ namespace View
         {
             var allocation = _settlement.Get().LabourAllocation;
             for (var i = transform.childCount; i < allocation.Length; i++)
-                Instantiate(labourUnitPrefab, transform).SetIndex(i);
+                Instantiate(workerPrefab, transform).SetIndex(i);
         }
 
         public void OnDestroy()

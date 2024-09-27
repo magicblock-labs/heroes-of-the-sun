@@ -389,7 +389,7 @@ GameObject:
   - component: {fileID: 451118354}
   - component: {fileID: 451118355}
   m_Layer: 0
-  m_Name: Labour
+  m_Name: Workers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -422,7 +422,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ccf25e84dba54a8b9b45f541b29cc02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  labourUnitPrefab: {fileID: 4598617563765038509, guid: a09fd096697de49ba8d9372f5a49ea66,
+  workerPrefab: {fileID: 4598617563765038509, guid: a09fd096697de49ba8d9372f5a49ea66,
     type: 3}
 --- !u!1 &572435598
 GameObject:

@@ -1,6 +1,5 @@
 using Model;
 using Service;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;

@@ -3983,7 +3983,7 @@ GameObject:
   - component: {fileID: 4598617563765038509}
   - component: {fileID: 5346466347558505638}
   m_Layer: 0
-  m_Name: LabourUnit
+  m_Name: WorkerUnit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -10,7 +10,7 @@ using BuildingType = Settlement.Types.BuildingType;
 
 namespace View
 {
-    public class LabourUnit : InjectableBehaviour
+    public class Worker : InjectableBehaviour
     {
         [Inject] private SettlementModel _model;
         [Inject] private ResourceLocationModel _locations;
@@ -23,6 +23,7 @@ namespace View
         private Animator _anim;
         private static readonly int TargetDistance = Animator.StringToHash("TargetDistance");
         private static readonly int Action = Animator.StringToHash("Action");
+        private static readonly int Dead = Animator.StringToHash("Dead");
 
         void Start()
         {
@@ -79,6 +80,8 @@ namespace View
 
             var settlement = _model.Get();
             var labourAllocation = settlement.LabourAllocation[_index];
+
+            _anim.SetBool(Dead, labourAllocation < -1);
 
             if (labourAllocation < 0 || labourAllocation >= settlement.Buildings.Length)
             {
