@@ -49,13 +49,11 @@ namespace Service
             if (requestResult.Result.Value < 500000000)
             {
                 var airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 1000000000);
-                Debug.Log(JsonConvert.SerializeObject(airdropResult));
                 await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
             }
 
             requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
 
-            Debug.Log(JsonConvert.SerializeObject(requestResult));
         }
 
         public async Task<bool> ReloadData()
@@ -89,7 +87,6 @@ namespace Service
 
                     var result = await walletBase.SignAndSendTransaction(tx, true);
                     await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
-                    Debug.Log(JsonConvert.SerializeObject(result));
                 }
 
                 var dataAddress = Pda.FindComponentPda(new(EntityPda), new(SettlementProgramAddress));
@@ -125,6 +122,7 @@ namespace Service
             if (rawData.ParsedResult == null)
                 return false;
 
+            Debug.Log($"Data:\n {JsonConvert.SerializeObject(rawData.ParsedResult)}");
             _settlement.Set(rawData.ParsedResult);
 
             return true;
@@ -192,7 +190,7 @@ namespace Service
             };
 
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
-            Debug.Log(JsonConvert.SerializeObject(result));
+            Debug.Log($"ApplySystem: {result.Result}");
 
             await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
 
