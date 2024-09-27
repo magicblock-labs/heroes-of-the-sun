@@ -62,7 +62,7 @@ pub mod wait {
             wood_storage = (wood_storage as f32 * storage_multiplier).floor() as u16;
         }
 
-        //wells generate water without labour asigned
+        //wells generate water without worker asigned
         for building in settlement.buildings.to_vec() {
             if building.turns_to_build > 0 {
                 continue;
@@ -93,17 +93,17 @@ pub mod wait {
             }
         }
 
-        //process all buildings with allocated labour
+        //process all buildings with allocated worker
         let mut alive_labour: u16 = 0;
-        for worker_index in 0..settlement.labour_allocation.len() {
-            let building_index = settlement.labour_allocation[worker_index];
+        for worker_index in 0..settlement.worker_assignment.len() {
+            let building_index = settlement.worker_assignment[worker_index];
 
             if building_index >= -1 {
                 alive_labour += 1;
             }
 
             if building_index < 0 {
-                //labour unallocated
+                //worker unallocated
                 continue;
             }
 
@@ -114,7 +114,7 @@ pub mod wait {
 
             if building.deterioration >= max_deterioration {
                 //allocated building broken
-                settlement.labour_allocation[worker_index] = -1;
+                settlement.worker_assignment[worker_index] = -1;
                 continue;
             }
 
@@ -127,7 +127,7 @@ pub mod wait {
                     match settlement.buildings[building_index as usize].id {
                         BuildingType::FoodCollector => {}
                         BuildingType::WoodCollector => {}
-                        _ => settlement.labour_allocation[worker_index] = -1,
+                        _ => settlement.worker_assignment[worker_index] = -1,
                     }
                 } else {
                     continue;
@@ -197,9 +197,9 @@ pub mod wait {
 
         if settlement.treasury.water < alive_labour || settlement.treasury.food < alive_labour {
             //kill one
-            for i in 0..settlement.labour_allocation.len() {
-                if (settlement.labour_allocation[i]) >= -1 {
-                    settlement.labour_allocation[i] = config::BASE_DEATH_TIMEOUT
+            for i in 0..settlement.worker_assignment.len() {
+                if (settlement.worker_assignment[i]) >= -1 {
+                    settlement.worker_assignment[i] = config::BASE_DEATH_TIMEOUT
                         + (config::DEATH_TIMEOUT_RESEARCH_MULTIPLIER
                             * get_research_level(settlement.research, ResearchType::DeathTimeout))
                             as i8;
@@ -222,12 +222,12 @@ pub mod wait {
 
         let mut i: usize = 0;
 
-        //restore sacrificed labour
-        for building_index in settlement.labour_allocation.to_vec() {
+        //restore sacrificed worker
+        for building_index in settlement.worker_assignment.to_vec() {
             if building_index < -1 {
-                settlement.labour_allocation[i] += time_to_wait as i8;
-                if settlement.labour_allocation[i] > -1 {
-                    settlement.labour_allocation[i] = -1;
+                settlement.worker_assignment[i] += time_to_wait as i8;
+                if settlement.worker_assignment[i] > -1 {
+                    settlement.worker_assignment[i] = -1;
                 }
             }
 

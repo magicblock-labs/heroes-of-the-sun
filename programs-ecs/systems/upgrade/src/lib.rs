@@ -30,7 +30,7 @@ pub mod upgrade {
         settlement.buildings[args.index as usize].level += 1;
 
         if matches!(building.id, BuildingType::TownHall) {
-            settlement.labour_allocation.push(-1);
+            settlement.worker_assignment.push(-1);
         }
         Ok((ctx.accounts))
     }

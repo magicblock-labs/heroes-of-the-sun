@@ -65,7 +65,7 @@ namespace Settlement
 
             public uint Research { get; set; }
 
-            public sbyte[] LabourAllocation { get; set; }
+            public sbyte[] WorkerAssignment { get; set; }
 
             public BoltMetadata BoltMetadata { get; set; }
 
@@ -101,12 +101,12 @@ namespace Settlement
                 offset += 8;
                 result.Research = _data.GetU32(offset);
                 offset += 4;
-                int resultLabourAllocationLength = (int)_data.GetU32(offset);
+                int resultWorkerAssignmentLength = (int)_data.GetU32(offset);
                 offset += 4;
-                result.LabourAllocation = new sbyte[resultLabourAllocationLength];
-                for (uint resultLabourAllocationIdx = 0; resultLabourAllocationIdx < resultLabourAllocationLength; resultLabourAllocationIdx++)
+                result.WorkerAssignment = new sbyte[resultWorkerAssignmentLength];
+                for (uint resultWorkerAssignmentIdx = 0; resultWorkerAssignmentIdx < resultWorkerAssignmentLength; resultWorkerAssignmentIdx++)
                 {
-                    result.LabourAllocation[resultLabourAllocationIdx] = _data.GetS8(offset);
+                    result.WorkerAssignment[resultWorkerAssignmentIdx] = _data.GetS8(offset);
                     offset += 1;
                 }
 

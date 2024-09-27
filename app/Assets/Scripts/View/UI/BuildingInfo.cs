@@ -59,7 +59,7 @@ namespace View.UI
                                value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector;
             workerStatus.gameObject.SetActive(needsWorkers);
             if (needsWorkers)
-                workerStatus.SetCount(_settlement.Get().LabourAllocation.Count(w => w == _index));
+                workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
         }
 
         public async void Repair()

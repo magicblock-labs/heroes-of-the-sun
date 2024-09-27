@@ -7,7 +7,7 @@ using Utils.Injection;
 
 namespace View.UI
 {
-    public class LabourAllocationEntry : InjectableBehaviour, IPointerClickHandler
+    public class WorkerAssignmentEntry : InjectableBehaviour, IPointerClickHandler
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private ConfigModel _config;

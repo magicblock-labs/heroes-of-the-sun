@@ -56,7 +56,7 @@ describe("HeroesOfTheSun", () => {
     expect(state.buildings.length).to.gt(1);
   });
 
-  it("Prevents allocation of labour beyond townhall level", async () => {
+  it("Prevents allocation of worker beyond townhall level", async () => {
     try {
       await settlement.assignLabour({ labour_index: 1, building_index: 2 });
       assert(false, "should've failed but didn't ")
@@ -91,7 +91,7 @@ describe("HeroesOfTheSun", () => {
   it("Collects food from environment", async () => {
     var foodBefore = (await settlement.state()).treasury.food;
     const state = await settlement.wait({ time: 1 });
-    expect(state.treasury.food).to.gte(foodBefore); //gte here cause we ahve 2 labour that eats everything collected
+    expect(state.treasury.food).to.gte(foodBefore); //gte here cause we have 2 worker that eats everything collected
   });
 
   it("Time Deteriorates buildings", async () => {

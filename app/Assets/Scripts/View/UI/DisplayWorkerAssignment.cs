@@ -2,17 +2,18 @@ using Model;
 using Service;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using Utils.Injection;
 
 namespace View.UI
 {
-    public class DisplayLabourAllocation : InjectableBehaviour
+    public class DisplayWorkerAssignment : InjectableBehaviour
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private ProgramConnector _connector;
         [Inject] private InteractionStateModel _interaction;
 
-        [SerializeField] private LabourAllocationEntry labourAllocationEntry;
+        [SerializeField] private WorkerAssignmentEntry workerAssignmentEntry;
         [SerializeField] private UnityEvent close;
 
         private void OnEnable()
@@ -23,10 +24,10 @@ namespace View.UI
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
-            var allocation = _settlement.Get().LabourAllocation;
+            var allocation = _settlement.Get().WorkerAssignment;
             for (var i = 0; i < allocation.Length; i++)
             {
-                var allocationEntry = Instantiate(labourAllocationEntry, transform);
+                var allocationEntry = Instantiate(workerAssignmentEntry, transform);
                 allocationEntry.SetData(i, allocation[i]);
                 allocationEntry.onSelected.AddListener(TryAssignLabour);
             }

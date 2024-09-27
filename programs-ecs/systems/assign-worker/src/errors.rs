@@ -1,9 +1,9 @@
 use bolt_lang::error_code;
 
 #[error_code]
-pub enum AssignLabourError {
+pub enum AssignWorkerError {
     #[msg("Supplied Labour index out range")]
-    LabourIndexOutOfRange,
+    WorkerIndexOutOfRange,
     #[msg("Supplied Building index out range")]
     BuildingIndexOutOfRange,
     #[msg("Not Restored Yet")]

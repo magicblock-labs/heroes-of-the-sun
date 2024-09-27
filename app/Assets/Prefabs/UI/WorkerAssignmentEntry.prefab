@@ -318,7 +318,7 @@ GameObject:
   - component: {fileID: 1432721978817085781}
   - component: {fileID: 5476378024873279825}
   m_Layer: 5
-  m_Name: LabourAllocation
+  m_Name: WorkerAssignmentEntry
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

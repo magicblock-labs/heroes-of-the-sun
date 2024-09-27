@@ -79,7 +79,7 @@ namespace View
             yield return null; //allow locations to be populated
 
             var settlement = _model.Get();
-            var labourAllocation = settlement.LabourAllocation[_index];
+            var labourAllocation = settlement.WorkerAssignment[_index];
 
             _anim.SetBool(Dead, labourAllocation < -1);
 

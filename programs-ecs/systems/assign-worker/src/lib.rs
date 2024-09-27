@@ -11,18 +11,18 @@ pub mod assign_labour {
         let settlement = &mut ctx.accounts.settlement;
 
         if settlement.buildings.len() <= args.building_index as usize {
-            return err!(errors::AssignLabourError::BuildingIndexOutOfRange);
+            return err!(errors::AssignWorkerError::BuildingIndexOutOfRange);
         }
 
         if settlement.buildings[0].level <= args.labour_index {
-            return err!(errors::AssignLabourError::LabourIndexOutOfRange);
+            return err!(errors::AssignWorkerError::WorkerIndexOutOfRange);
         }
 
-        if settlement.labour_allocation[args.labour_index as usize] < -1 {
-            return err!(errors::AssignLabourError::NotRestoredYet);
+        if settlement.worker_assignment[args.labour_index as usize] < -1 {
+            return err!(errors::AssignWorkerError::NotRestoredYet);
         }
 
-        settlement.labour_allocation[args.labour_index as usize] = args.building_index;
+        settlement.worker_assignment[args.labour_index as usize] = args.building_index;
         Ok(ctx.accounts)
     }
 

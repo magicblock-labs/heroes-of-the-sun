@@ -36,7 +36,7 @@ pub struct Settlement {
     pub research: u32,
 
     #[max_len(30, 1)]
-    pub labour_allocation: Vec<i8>, //index is labour unit index, value is building index from /buildings/ array; singed: use -1 for free slot
+    pub worker_assignment: Vec<i8>, //index is worker unit index, value is building index from /buildings/ array; singed: use -1 for free slot
 }
 
 impl Default for Settlement {
@@ -57,7 +57,7 @@ impl Default for Settlement {
                 level: 1,
                 turns_to_build: 0,
             }],
-            labour_allocation: vec![-1], //one labour comes as default from town hall
+            worker_assignment: vec![-1], //one worker comes as default from town hall
             environment: config::INITIAL_ENVIRONMENT,
             treasury: config::INITIAL_TREASURY,
             time_units: config::INITIAL_TIME_UNITS,

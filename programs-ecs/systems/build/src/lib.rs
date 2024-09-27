@@ -99,10 +99,10 @@ pub mod build {
         settlement.buildings.push(new_building);
 
         if args.worker_index >= 0 {
-            if (settlement.labour_allocation.len() as i16 <= args.worker_index) {
+            if settlement.worker_assignment.len() as i16 <= args.worker_index {
                 return err!(errors::BuildError::SuppliedWorkerIndexOutOfBounds);
             }
-            settlement.labour_allocation[args.worker_index as usize] =
+            settlement.worker_assignment[args.worker_index as usize] =
                 (settlement.buildings.len() - 1) as i8;
         }
 

@@ -49,14 +49,9 @@ namespace Model
 
         public int GetFreeWorkerIndex()
         {
-            var workerAllocation = _data.LabourAllocation;
-            for (var i = 0; i < workerAllocation.Length; i++)
-            {
-                if (workerAllocation[i] == -1)
-                {
+            for (var i = 0; i < _data.WorkerAssignment.Length; i++)
+                if (_data.WorkerAssignment[i] == -1)
                     return i;
-                }
-            }
 
             return -1;
         }

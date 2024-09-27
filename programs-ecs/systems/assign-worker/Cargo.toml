@@ -1,12 +1,12 @@
 [package]
-name = "labour"
+name = "worker"
 version = "0.1.8"
 description = "Created with Bolt"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "labour"
+name = "worker"
 
 [features]
 no-entrypoint = []

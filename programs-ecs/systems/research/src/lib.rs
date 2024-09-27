@@ -55,7 +55,7 @@ pub mod research {
         settlement.treasury.wood -= config::RESEARCH_COST as u16;
 
         if args.research_type == ResearchType::ExtraUnit as u8 {
-            settlement.labour_allocation.push(-1);
+            settlement.worker_assignment.push(-1);
         }
 
         Ok(ctx.accounts)

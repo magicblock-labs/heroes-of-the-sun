@@ -13,15 +13,15 @@ pub mod sacrifice {
     pub fn execute(ctx: Context<Components>, args: SacrificeArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
 
-        if settlement.labour_allocation.len() <= args.index as usize {
+        if settlement.worker_assignment.len() <= args.index as usize {
             return err!(errors::SacrificeError::LabourIndexOutOfRange);
         }
 
-        if settlement.labour_allocation[args.index as usize] < -1 {
+        if settlement.worker_assignment[args.index as usize] < -1 {
             return err!(errors::SacrificeError::NotRestoredYet);
         }
 
-        settlement.labour_allocation[args.index as usize] = config::BASE_DEATH_TIMEOUT
+        settlement.worker_assignment[args.index as usize] = config::BASE_DEATH_TIMEOUT
             + (config::DEATH_TIMEOUT_RESEARCH_MULTIPLIER
                 * get_research_level(settlement.research, ResearchType::DeathTimeout))
                 as i8;

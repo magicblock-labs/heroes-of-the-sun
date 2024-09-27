@@ -18,7 +18,7 @@ namespace View
 
         private void Redraw()
         {
-            var allocation = _settlement.Get().LabourAllocation;
+            var allocation = _settlement.Get().WorkerAssignment;
             for (var i = transform.childCount; i < allocation.Length; i++)
                 Instantiate(workerPrefab, transform).SetIndex(i);
         }
