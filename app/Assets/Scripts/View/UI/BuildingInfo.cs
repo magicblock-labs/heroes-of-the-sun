@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Model;
@@ -47,7 +48,8 @@ namespace View.UI
             if (levelLabel)
                 levelLabel.text = value.Level.ToString();
 
-            deteriorationStatus.gameObject.SetActive(value.Deterioration > 0);
+            //todo max deterioration
+            deteriorationStatus.gameObject.SetActive(value.Deterioration > 50);
             deteriorationStatus.SetStatus(value.Deterioration, 127);
 
             var needsWorkers = value.TurnsToBuild > 0 ||
@@ -71,18 +73,9 @@ namespace View.UI
 
         public async void AllocateWorker()
         {
-            var workerAllocation = _settlement.Get().LabourAllocation;
-            var workerIndex = 0;
-            for (var i = 0; i < workerAllocation.Length; i++)
-            {
-                if (workerAllocation[i] == -1)
-                {
-                    workerIndex = i;
-                    break;
-                }
-            }
+            var freeWorker = _settlement.GetFreeWorkerIndex();
 
-            if (await _connector.AssignLabour(workerIndex, _index))
+            if (await _connector.AssignLabour(Math.Max(0, freeWorker), _index))
                 await _connector.ReloadData();
         }
 

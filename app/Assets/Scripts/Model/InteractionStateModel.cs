@@ -49,29 +49,10 @@ namespace Model
             Updated.Dispatch();
         }
 
-        public void SetPlacementLocation(int cellPosX, int cellPosZ, Vector3 buildingDimensions,
-            byte[,] occupiedData)
+        public void SetPlacementLocation(int cellPosX, int cellPosZ, bool valid)
         {
 
-            ValidPlacement = true;
-            for (var i = cellPosX; i < cellPosX + buildingDimensions.x; i++)
-            {
-                for (var j = cellPosZ; j < cellPosZ + buildingDimensions.z; j++)
-                {
-                    if (i < 0 || i >= occupiedData.GetLength(0) || j < 0 ||
-                        j >= occupiedData.GetLength(1))
-                    {
-                        ValidPlacement = false;
-                        break;
-                    }
-
-                    if (occupiedData[i, j] != 0)
-                    {
-                        ValidPlacement = false;
-                        break;
-                    }
-                }
-            }
+            ValidPlacement = valid;
             CellPosX = cellPosX;
             CellPosZ = cellPosZ;
         }

@@ -50,10 +50,9 @@ namespace View
                     var buildingDimensions =
                         new Vector3(_selectedBuildingConfig.width, 0, _selectedBuildingConfig.height);
 
-                    ApplyWorldPoint(
-                        new Vector3(_config.Width / 2 * ConfigModel.CellSize, 0,
-                            _config.Height / 2 * ConfigModel.CellSize),
-                        buildingDimensions);
+                    var initialPos = _settlement.GetUnoccupiedPositionFor(buildingDimensions);
+
+                    ApplyCellPoint(initialPos.x, initialPos.z, buildingDimensions);
                 }
             }
             else
@@ -80,7 +79,7 @@ namespace View
                 else
                     _cells[i, j].SetActive(true);
             }
-            
+
             if (_preview == null)
             {
                 _preview = Instantiate(previewPrefab, transform);
@@ -106,10 +105,10 @@ namespace View
 
                     ApplyWorldPoint(worldPoint, buildingDimensions);
                 }
-
-
+                
                 _preview.transform.localPosition =
-                    (new Vector3(_interaction.CellPosX, 0, _interaction.CellPosZ) + buildingDimensions / 2) * ConfigModel.CellSize;
+                    (new Vector3(_interaction.CellPosX, 0, _interaction.CellPosZ) + buildingDimensions / 2) *
+                    ConfigModel.CellSize;
             }
         }
 
@@ -120,17 +119,22 @@ namespace View
             var cellPosX = Mathf.RoundToInt(cellPos.x);
             var cellPosZ = Mathf.RoundToInt(cellPos.z);
 
+            ApplyCellPoint(cellPosX, cellPosZ, buildingDimensions);
+        }
+
+
+        private void ApplyCellPoint(int cellPosX, int cellPosZ, Vector3 buildingDimensions)
+        {
             _interaction.SetPlacementLocation(
                 cellPosX,
                 cellPosZ,
-                buildingDimensions,
-                _settlement.OccupiedData);
+                _settlement.IsValidLocation(cellPosX, cellPosZ, buildingDimensions));
 
             var previewMaterial = _interaction.ValidPlacement ? available : blocked;
 
             if (!_preview.gameObject.activeSelf) //maybe lets add an explicit flag
                 return;
-            
+
             _preview.SetMaterialOverride(_interaction.ValidPlacement ? cell : blocked);
 
             for (var i = 0; i < _cells.GetLength(0); i++)

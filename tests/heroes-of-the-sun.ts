@@ -13,13 +13,13 @@ describe("HeroesOfTheSun", () => {
 
 
   it("Builds a water collector", async () => {
-    const state = await settlement.build({ x: 1, y: 1, config_index: 1 });
+    const state = await settlement.build({ x: 1, y: 1, config_index: 1, worker_index: 0 });
     expect(state.buildings.length).to.gt(1);
   });
 
   it("Prevents building overlap", async () => {
     try {
-      await settlement.build({ x: 1, y: 1, config_index: 1 });
+      await settlement.build({ x: 1, y: 1, config_index: 1, worker_index: 0 });
       assert(false, "should've failed but didn't ")
     } catch (_err) {
       //why cant in just get the error from the _err type??? error types are not exposed :/
@@ -35,7 +35,7 @@ describe("HeroesOfTheSun", () => {
 
   it("Builds a water storage", async () => {
     var lengthBefore = (await settlement.state()).buildings.length;
-    const state = await settlement.build({ x: 1, y: 6, config_index: 4 });
+    const state = await settlement.build({ x: 1, y: 6, config_index: 4, worker_index: 0 });
     expect(state.buildings.length).to.gt(lengthBefore);
   });
 
@@ -46,13 +46,13 @@ describe("HeroesOfTheSun", () => {
 
   it("Collect water from environment", async () => {
     var waterBefore = (await settlement.state()).treasury.water;
-    const state = await settlement.wait({ time: 1 });
+    const state = await settlement.wait({ time: 2 });
     console.log(state);
     expect(state.treasury.water).to.gt(waterBefore);
   });
 
   it("Builds a food collector", async () => {
-    const state = await settlement.build({ x: 1, y: 3, config_index: 2 });
+    const state = await settlement.build({ x: 1, y: 3, config_index: 2, worker_index: 0 });
     expect(state.buildings.length).to.gt(1);
   });
 
@@ -84,7 +84,7 @@ describe("HeroesOfTheSun", () => {
 
   it("Builds a food storage", async () => {
     var lengthBefore = (await settlement.state()).buildings.length;
-    const state = await settlement.build({ x: 1, y: 10, config_index: 5 });
+    const state = await settlement.build({ x: 1, y: 10, config_index: 5, worker_index: 0 });
     expect(state.buildings.length).to.gt(lengthBefore);
   });
 

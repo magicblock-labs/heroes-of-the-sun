@@ -27,16 +27,14 @@ namespace View.UI
         {
             if (_interaction.ValidPlacement)
             {
-                if (!await _connector.PlaceBuilding((byte)_interaction.CellPosX, (byte)_interaction.CellPosZ,
-                        (byte)_interaction.SelectedBuildingType))
-                    Debug.LogError("cant place building!");
+                if (await _connector.PlaceBuilding(
+                        (byte)_interaction.CellPosX,
+                        (byte)_interaction.CellPosZ,
+                        (byte)_interaction.SelectedBuildingType,
+                        _settlement.GetFreeWorkerIndex()))
+                    await _connector.ReloadData();
 
-                await _connector.ReloadData();
-
-                if (_config.Buildings.ContainsKey(_interaction.SelectedBuildingType))
-                    _interaction.FinishPlacement();
-                else
-                    _interaction.CellPosX++;
+                _interaction.FinishPlacement();
             }
         }
 

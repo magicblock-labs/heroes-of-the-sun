@@ -16,7 +16,7 @@ import { Research } from "../target/types/research";
 
 
 export type BuildArgs = {
-  x: number, y: number, config_index: number
+  x: number, y: number, config_index: number, worker_index: number
 }
 
 export type AssignLabourArgs = {

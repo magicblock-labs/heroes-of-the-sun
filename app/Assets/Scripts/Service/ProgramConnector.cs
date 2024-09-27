@@ -130,10 +130,10 @@ namespace Service
             return true;
         }
 
-        public async Task<bool> PlaceBuilding(byte x, byte y, byte type)
+        public async Task<bool> PlaceBuilding(byte x, byte y, byte type, int worker_index)
         {
             return await ApplySystem(new PublicKey("Fgc4uSFUPnhUpwUu7z4siYiBtnkxrwroYVQ2csDo3Q7P"),
-                new { x, y, config_index = type });
+                new { x, y, config_index = type, worker_index });
         }
 
         public async Task<bool> Wait(int time)
