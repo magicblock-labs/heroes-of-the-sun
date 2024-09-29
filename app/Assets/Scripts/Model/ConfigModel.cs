@@ -1,23 +1,10 @@
 using System.Collections.Generic;
+using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 
-namespace Service
+namespace Model
 {
-    public enum BuildingType
-    {
-        None = -1,
-        TownHall = 0,
-        WaterCollector = 1,
-        FoodCollector = 2,
-        WoodCollector = 3,
-        WaterStorage = 4,
-        FoodStorage = 5,
-        WoodStorage = 6,
-        Altar = 7,
-        Research = 8
-    }
-
     public class BuildConfig
     {
         public int width;
@@ -44,8 +31,10 @@ namespace Service
         public const int WATER_STORAGE_PER_LEVEL = 10;
         public const int FOOD_STORAGE_PER_LEVEL = 20;
         public const int WOOD_STORAGE_PER_LEVEL = 50;
-        
-        
+        public const int STONE_STORAGE_PER_LEVEL = 15;
+        public const int GOLD_STORAGE_PER_LEVEL = 5;
+
+
         public const float STORAGE_CAPACITY_RESEARCH_MULTIPLIER = 0.1f;
 
         private readonly BuildConfig _buildConfig = new()
@@ -62,66 +51,6 @@ namespace Service
                         cost = 50,
                         buildTime = 3,
                         prefab = BuildingType.TownHall.ToString()
-                    }
-                },
-                {
-                    BuildingType.WaterCollector, new BuildingConfig
-                    {
-                        width = 2,
-                        height = 2,
-                        cost = 10,
-                        buildTime = 2,
-                        prefab = BuildingType.WaterCollector.ToString()
-                    }
-                },
-                {
-                    BuildingType.FoodCollector, new BuildingConfig
-                    {
-                        width = 2,
-                        height = 2,
-                        cost = 10,
-                        buildTime = 1,
-                        prefab = BuildingType.FoodCollector.ToString()
-                    }
-                },
-                {
-                    BuildingType.WoodCollector, new BuildingConfig
-                    {
-                        width = 2,
-                        height = 2,
-                        cost = 5,
-                        buildTime = 3,
-                        prefab = BuildingType.WoodCollector.ToString()
-                    }
-                },
-                {
-                    BuildingType.WaterStorage, new BuildingConfig
-                    {
-                        width = 3,
-                        height = 3,
-                        cost = 5,
-                        buildTime = 2,
-                        prefab = BuildingType.WaterStorage.ToString()
-                    }
-                },
-                {
-                    BuildingType.FoodStorage, new BuildingConfig
-                    {
-                        width = 3,
-                        height = 3,
-                        cost = 8,
-                        buildTime = 2,
-                        prefab = BuildingType.FoodStorage.ToString()
-                    }
-                },
-                {
-                    BuildingType.WoodStorage, new BuildingConfig
-                    {
-                        width = 3,
-                        height = 3,
-                        cost = 8,
-                        buildTime = 4,
-                        prefab = BuildingType.WoodStorage.ToString()
                     }
                 },
                 {
@@ -142,6 +71,106 @@ namespace Service
                         cost = 60,
                         buildTime = 5,
                         prefab = BuildingType.Research.ToString()
+                    }
+                },
+                {
+                    BuildingType.WaterCollector, new BuildingConfig
+                    {
+                        width = 2,
+                        height = 2,
+                        cost = 10,
+                        buildTime = 2,
+                        prefab = BuildingType.WaterCollector.ToString()
+                    }
+                },
+                {
+                    BuildingType.WaterStorage, new BuildingConfig
+                    {
+                        width = 3,
+                        height = 3,
+                        cost = 5,
+                        buildTime = 2,
+                        prefab = BuildingType.WaterStorage.ToString()
+                    }
+                },
+                {
+                    BuildingType.FoodCollector, new BuildingConfig
+                    {
+                        width = 2,
+                        height = 2,
+                        cost = 10,
+                        buildTime = 1,
+                        prefab = BuildingType.FoodCollector.ToString()
+                    }
+                },
+                {
+                    BuildingType.FoodStorage, new BuildingConfig
+                    {
+                        width = 3,
+                        height = 3,
+                        cost = 8,
+                        buildTime = 2,
+                        prefab = BuildingType.FoodStorage.ToString()
+                    }
+                },
+                {
+                    BuildingType.WoodCollector, new BuildingConfig
+                    {
+                        width = 2,
+                        height = 2,
+                        cost = 5,
+                        buildTime = 3,
+                        prefab = BuildingType.WoodCollector.ToString()
+                    }
+                },
+                {
+                    BuildingType.WoodStorage, new BuildingConfig
+                    {
+                        width = 3,
+                        height = 3,
+                        cost = 8,
+                        buildTime = 4,
+                        prefab = BuildingType.WoodStorage.ToString()
+                    }
+                },
+                {
+                    BuildingType.StoneCollector, new BuildingConfig
+                    {
+                        width = 2,
+                        height = 2,
+                        cost = 5,
+                        buildTime = 3,
+                        prefab = BuildingType.StoneCollector.ToString()
+                    }
+                },
+                {
+                    BuildingType.StoneStorage, new BuildingConfig
+                    {
+                        width = 3,
+                        height = 3,
+                        cost = 8,
+                        buildTime = 4,
+                        prefab = BuildingType.StoneStorage.ToString()
+                    }
+                },
+                {
+                    BuildingType.GoldCollector, new BuildingConfig
+                    {
+                        width = 2,
+                        height = 2,
+                        cost = 5,
+                        buildTime = 3,
+                        prefab = BuildingType.GoldCollector.ToString()
+                    }
+                },
+                {
+                    BuildingType.GoldStorage, new BuildingConfig
+                    {
+                        width = 3,
+                        height = 3,
+                        cost = 8,
+                        buildTime = 4,
+                        prefab = BuildingType.GoldStorage.ToString()
                     }
                 }
             }

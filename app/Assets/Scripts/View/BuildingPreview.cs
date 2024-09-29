@@ -1,3 +1,4 @@
+using Model;
 using Service;
 using UnityEngine;
 

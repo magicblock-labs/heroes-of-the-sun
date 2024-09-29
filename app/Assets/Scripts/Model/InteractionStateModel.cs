@@ -1,5 +1,6 @@
 using System;
 using Service;
+using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 using Utils.Signal;
@@ -22,7 +23,7 @@ namespace Model
         private InteractionState _state = InteractionState.Idle;
         public Signal Updated = new();
         
-        public BuildingType SelectedBuildingType = BuildingType.None;
+        public BuildingType? SelectedBuildingType;
 
         public InteractionState State => _state;
 
@@ -61,7 +62,7 @@ namespace Model
 
         public void FinishPlacement()
         {
-            SelectedBuildingType = BuildingType.None;
+            SelectedBuildingType = null;
             Updated.Dispatch();
         }
     }

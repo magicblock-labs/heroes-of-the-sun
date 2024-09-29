@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Service;
+using Settlement.Types;
 using UnityEngine;
 
 namespace View.UI
@@ -37,7 +38,7 @@ namespace View.UI
             
             foreach (var type in GetFilteredBuildings())
             {
-                if (type is not (BuildingType.None or BuildingType.TownHall))
+                if (type is not BuildingType.TownHall)
                     Instantiate(prefab, transform).SetData(type);
             }
         }
@@ -51,12 +52,16 @@ namespace View.UI
                     BuildingType.WaterCollector,
                     BuildingType.FoodCollector,
                     BuildingType.WoodCollector,
+                    BuildingType.StoneCollector,
+                    BuildingType.GoldCollector,
                 },
                 BuildingFilter.Storage => new[]
                 {
                     BuildingType.WaterStorage,
                     BuildingType.FoodStorage,
                     BuildingType.WoodStorage,
+                    BuildingType.StoneStorage,
+                    BuildingType.GoldStorage,
                 },
                 BuildingFilter.Special => new[]
                 {

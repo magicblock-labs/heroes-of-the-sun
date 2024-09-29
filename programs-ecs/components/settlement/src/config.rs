@@ -1,22 +1,27 @@
 use bolt_lang::*;
 
-use crate::ResourceBalance;
+use crate::{EnvironmentState, ResourceBalance};
 
 //this enum matches the BUILDINGS_CONFIG array indexes (so we don't need to use a map (BuildingType=>BuildingConfig))
 #[component_deserialize]
 pub enum BuildingType {
     TownHall = 0,
-    WaterCollector = 1,
-    FoodCollector = 2,
-    WoodCollector = 3,
-    WaterStorage = 4,
-    FoodStorage = 5,
-    WoodStorage = 6,
-    Altar = 7,
+    Altar = 1,
+    Research = 2,
+    WaterCollector = 3,
+    WoodStorage = 4,
+    FoodCollector = 5,
+    FoodStorage = 6,
+    WoodCollector = 7,
+    WaterStorage = 8,
+    StoneCollector = 9,
+    StoneStorage = 10,
+    GoldCollector = 11,
+    GoldStorage = 12,
 }
 
 pub struct BuildingConfig {
-    pub r#type: BuildingType,
+    pub id: BuildingType,
     pub width: u8,
     pub height: u8,
     pub cost: u8,
@@ -33,76 +38,76 @@ pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
     water: 20,
     food: 40,
     wood: 200,
+    stone: 10,
+    gold: 10,
 };
 
-pub const INITIAL_ENVIRONMENT: ResourceBalance = ResourceBalance {
-    water: 200,
+pub const INITIAL_ENVIRONMENT: EnvironmentState = EnvironmentState {
     food: 200,
     wood: 200,
 };
 
-pub const ENVIRONMENT_LIMITS: ResourceBalance = ResourceBalance {
-    water: 1000,
+pub const ENVIRONMENT_MAX: EnvironmentState = EnvironmentState {
     food: 1000,
     wood: 1000,
 };
 
 pub const BUILDINGS_CONFIG: [BuildingConfig; 8] = [
     BuildingConfig {
-        r#type: BuildingType::TownHall,
+        id: BuildingType::TownHall,
         width: 4,
         height: 4,
         cost: 50,
         build_time: 3,
     },
     BuildingConfig {
-        r#type: BuildingType::WaterCollector,
+        id: BuildingType::Altar,
+        width: 3,
+        height: 3,
+        cost: 60,
+        build_time: 5,
+    },
+    BuildingConfig {
+        id: BuildingType::WaterCollector,
         width: 1,
         height: 1,
         cost: 10,
         build_time: 2,
     },
     BuildingConfig {
-        r#type: BuildingType::FoodCollector,
+        id: BuildingType::WaterStorage,
+        width: 2,
+        height: 2,
+        cost: 5,
+        build_time: 2,
+    },
+    BuildingConfig {
+        id: BuildingType::FoodCollector,
         width: 2,
         height: 2,
         cost: 10,
         build_time: 1,
     },
     BuildingConfig {
-        r#type: BuildingType::WoodCollector,
+        id: BuildingType::FoodStorage,
+        width: 2,
+        height: 2,
+        cost: 8,
+        build_time: 2,
+    },
+    BuildingConfig {
+        id: BuildingType::WoodCollector,
         width: 1,
         height: 3,
         cost: 5,
         build_time: 3,
     },
     BuildingConfig {
-        r#type: BuildingType::WaterStorage,
-        width: 2,
-        height: 2,
-        cost: 5,
-        build_time: 2,
-    },
-    BuildingConfig {
-        r#type: BuildingType::FoodStorage,
-        width: 2,
-        height: 2,
-        cost: 8,
-        build_time: 2,
-    },
-    BuildingConfig {
-        r#type: BuildingType::WoodStorage,
+        id: BuildingType::WoodStorage,
         width: 2,
         height: 2,
         cost: 8,
         build_time: 4,
-    },
-    BuildingConfig {
-        r#type: BuildingType::Altar,
-        width: 3,
-        height: 3,
-        cost: 60,
-        build_time: 5,
     },
 ];
 
@@ -124,6 +129,8 @@ pub const DETERIORATION_CAP_RESEARCH_MULTIPLIER: u8 = 5;
 pub const WATER_STORAGE_PER_LEVEL: u16 = 10;
 pub const FOOD_STORAGE_PER_LEVEL: u16 = 20;
 pub const WOOD_STORAGE_PER_LEVEL: u16 = 50;
+pub const STONE_STORAGE_PER_LEVEL: u16 = 15;
+pub const GOLD_STORAGE_PER_LEVEL: u16 = 5;
 
 pub const STORAGE_CAPACITY_RESEARCH_MULTIPLIER: f32 = 0.1;
 

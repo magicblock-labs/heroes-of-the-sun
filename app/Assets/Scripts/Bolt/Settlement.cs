@@ -53,7 +53,7 @@ namespace Settlement
             public static string ACCOUNT_DISCRIMINATOR_B58 => "AD24AwEsvU5";
             public Building[] Buildings { get; set; }
 
-            public ResourceBalance Environment { get; set; }
+            public EnvironmentState Environment { get; set; }
 
             public ResourceBalance Treasury { get; set; }
 
@@ -89,7 +89,7 @@ namespace Settlement
                     result.Buildings[resultBuildingsIdx] = resultBuildingsresultBuildingsIdx;
                 }
 
-                offset += ResourceBalance.Deserialize(_data, offset, out var resultEnvironment);
+                offset += EnvironmentState.Deserialize(_data, offset, out var resultEnvironment);
                 result.Environment = resultEnvironment;
                 offset += ResourceBalance.Deserialize(_data, offset, out var resultTreasury);
                 result.Treasury = resultTreasury;
@@ -203,13 +203,46 @@ namespace Settlement
         public enum BuildingType : byte
         {
             TownHall,
+            Altar,
+            Research,
             WaterCollector,
+            WoodStorage,
             FoodCollector,
+            FoodStorage,
             WoodCollector,
             WaterStorage,
-            FoodStorage,
-            WoodStorage,
-            Altar
+            StoneCollector,
+            StoneStorage,
+            GoldCollector,
+            GoldStorage
+        }
+
+        public partial class EnvironmentState
+        {
+            public ushort Food { get; set; }
+
+            public ushort Wood { get; set; }
+
+            public int Serialize(byte[] _data, int initialOffset)
+            {
+                int offset = initialOffset;
+                _data.WriteU16(Food, offset);
+                offset += 2;
+                _data.WriteU16(Wood, offset);
+                offset += 2;
+                return offset - initialOffset;
+            }
+
+            public static int Deserialize(ReadOnlySpan<byte> _data, int initialOffset, out EnvironmentState result)
+            {
+                int offset = initialOffset;
+                result = new EnvironmentState();
+                result.Food = _data.GetU16(offset);
+                offset += 2;
+                result.Wood = _data.GetU16(offset);
+                offset += 2;
+                return offset - initialOffset;
+            }
         }
 
         public partial class ResourceBalance
@@ -220,6 +253,10 @@ namespace Settlement
 
             public ushort Wood { get; set; }
 
+            public ushort Stone { get; set; }
+
+            public ushort Gold { get; set; }
+
             public int Serialize(byte[] _data, int initialOffset)
             {
                 int offset = initialOffset;
@@ -228,6 +265,10 @@ namespace Settlement
                 _data.WriteU16(Water, offset);
                 offset += 2;
                 _data.WriteU16(Wood, offset);
+                offset += 2;
+                _data.WriteU16(Stone, offset);
+                offset += 2;
+                _data.WriteU16(Gold, offset);
                 offset += 2;
                 return offset - initialOffset;
             }
@@ -241,6 +282,10 @@ namespace Settlement
                 result.Water = _data.GetU16(offset);
                 offset += 2;
                 result.Wood = _data.GetU16(offset);
+                offset += 2;
+                result.Stone = _data.GetU16(offset);
+                offset += 2;
+                result.Gold = _data.GetU16(offset);
                 offset += 2;
                 return offset - initialOffset;
             }

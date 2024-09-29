@@ -1,6 +1,7 @@
 using System;
 using Model;
 using Service;
+using Settlement.Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;

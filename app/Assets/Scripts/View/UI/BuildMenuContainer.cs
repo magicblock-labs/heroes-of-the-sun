@@ -1,5 +1,6 @@
 using Model;
 using Service;
+using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 
@@ -20,7 +21,7 @@ namespace View.UI
 
         private void OnInteractionUpdated()
         {
-            if (_interaction.SelectedBuildingType != BuildingType.None)
+            if (_interaction.SelectedBuildingType.HasValue)
                 ShowMenu(false);
         }
 

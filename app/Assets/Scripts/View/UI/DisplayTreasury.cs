@@ -30,8 +30,8 @@ namespace View.UI
                 foodLabel.text = FormatResource(settlement.Treasury.Food, caps.Food);
                 woodLabel.text = FormatResource(settlement.Treasury.Wood, caps.Wood);
                 waterLabel.text = FormatResource(settlement.Treasury.Water, caps.Water);
-                // stoneLabel.text = $"{settlement.Treasury.Water}";
-                // coinsLabel.text = $"{settlement.Treasury.Water}";
+                stoneLabel.text = FormatResource(settlement.Treasury.Stone, caps.Stone);
+                coinsLabel.text = FormatResource(settlement.Treasury.Gold, caps.Gold);
             }
         }
 

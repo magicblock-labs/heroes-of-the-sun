@@ -90,7 +90,7 @@ pub mod build {
         let new_building = Building {
             x: args.x,
             y: args.y,
-            id: new_building_config.r#type,
+            id: new_building_config.id,
             deterioration: 0,
             level: 1,
             turns_to_build: build_time,

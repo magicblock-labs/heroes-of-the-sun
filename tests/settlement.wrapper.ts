@@ -15,8 +15,25 @@ import { Upgrade } from "../target/types/upgrade";
 import { Research } from "../target/types/research";
 
 
+export enum BuildingType {
+  TownHall = 0,
+  Altar = 1,
+  Research = 2,
+  WaterCollector = 3,
+  WoodStorage = 4,
+  FoodCollector = 5,
+  FoodStorage = 6,
+  WoodCollector = 7,
+  WaterStorage = 8,
+  StoneCollector = 9,
+  StoneStorage = 10,
+  GoldCollector = 11,
+  GoldStorage = 12,
+}
+
+
 export type BuildArgs = {
-  x: number, y: number, config_index: number, worker_index: number
+  x: number, y: number, config_index: BuildingType, worker_index: number
 }
 
 export type AssignLabourArgs = {

@@ -4,7 +4,6 @@ using Settlement.Types;
 using Unity.AI.Navigation;
 using UnityEngine;
 using Utils.Injection;
-using BuildingType = Service.BuildingType;
 
 namespace View.UI
 {
@@ -44,7 +43,7 @@ namespace View.UI
                 info.ShowExtendedControls(
                     intersectRay
                     && _interaction.State == InteractionState.Idle 
-                    && _interaction.SelectedBuildingType == BuildingType.None);
+                    && !_interaction.SelectedBuildingType.HasValue);
         }
     }
 }

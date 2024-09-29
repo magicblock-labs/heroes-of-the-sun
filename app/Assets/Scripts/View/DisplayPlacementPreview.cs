@@ -1,6 +1,7 @@
 using System.Collections;
 using Model;
 using Service;
+using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 
@@ -36,11 +37,11 @@ namespace View
 
         private void OnModeUpdated()
         {
-            if (_interaction.SelectedBuildingType != BuildingType.None)
+            if (_interaction.SelectedBuildingType.HasValue)
             {
                 LazyInit();
 
-                _selectedBuildingConfig = _config.Buildings[_interaction.SelectedBuildingType];
+                _selectedBuildingConfig = _config.Buildings[_interaction.SelectedBuildingType.Value];
                 _preview.SetBuildingPrefab(_selectedBuildingConfig);
 
                 if (!_preview.gameObject.activeSelf)
@@ -89,7 +90,7 @@ namespace View
 
         private void Update()
         {
-            if (_interaction.SelectedBuildingType != BuildingType.None)
+            if (_interaction.SelectedBuildingType.HasValue)
             {
                 var mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 

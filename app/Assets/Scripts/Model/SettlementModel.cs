@@ -1,5 +1,6 @@
 using System;
 using Service;
+using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 using Utils.Signal;
@@ -11,6 +12,8 @@ namespace Model
         public int Food;
         public int Wood;
         public int Water;
+        public int Stone;
+        public int Gold;
     }
 
     [Singleton]
@@ -45,7 +48,7 @@ namespace Model
             //this is a proper dynamic data calculated based on placed buildings
             foreach (var building in _data.Buildings)
             {
-                var config = _config.Buildings[(BuildingType)building.Id];
+                var config = _config.Buildings[building.Id];
 
                 for (var i = building.X; i < building.X + config.width; i++)
                 for (var j = building.Y; j < building.Y + config.height; j++)
@@ -126,14 +129,20 @@ namespace Model
                 // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
                 switch (building.Id)
                 {
-                    case Settlement.Types.BuildingType.WaterStorage:
+                    case BuildingType.WaterStorage:
                         storage.Water += ConfigModel.WATER_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
                         break;
-                    case Settlement.Types.BuildingType.FoodStorage:
+                    case BuildingType.FoodStorage:
                         storage.Food += ConfigModel.FOOD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
                         break;
-                    case Settlement.Types.BuildingType.WoodStorage:
+                    case BuildingType.WoodStorage:
                         storage.Wood += ConfigModel.WOOD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        break;
+                    case BuildingType.StoneStorage:
+                        storage.Stone += ConfigModel.STONE_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        break;
+                    case BuildingType.GoldStorage:
+                        storage.Gold += ConfigModel.GOLD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
                         break;
                 }
             }
@@ -146,6 +155,8 @@ namespace Model
             storage.Water = (int)Math.Floor(storage.Water * storageMultiplier);
             storage.Food = (int)Math.Floor(storage.Food * storageMultiplier);
             storage.Wood = (int)Math.Floor(storage.Wood * storageMultiplier);
+            storage.Stone = (int)Math.Floor(storage.Stone * storageMultiplier);
+            storage.Gold = (int)Math.Floor(storage.Gold * storageMultiplier);
 
             return storage;
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Model;
 using Service;
 using Settlement.Types;
 using UnityEngine;

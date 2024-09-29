@@ -10,6 +10,14 @@ pub struct ResourceBalance {
     pub food: u16,
     pub water: u16,
     pub wood: u16,
+    pub stone: u16,
+    pub gold: u16,
+}
+
+#[component_deserialize]
+pub struct EnvironmentState {
+    pub food: u16,
+    pub wood: u16,
 }
 
 #[component_deserialize]
@@ -27,7 +35,7 @@ pub struct Settlement {
     #[max_len(20, 5)]
     pub buildings: Vec<Building>,
 
-    pub environment: ResourceBalance,
+    pub environment: EnvironmentState,
     pub treasury: ResourceBalance,
 
     pub faith: u8,
@@ -58,8 +66,8 @@ impl Default for Settlement {
                 turns_to_build: 0,
             }],
             worker_assignment: vec![-1], //one worker comes as default from town hall
-            environment: config::INITIAL_ENVIRONMENT,
             treasury: config::INITIAL_TREASURY,
+            environment: config::INITIAL_ENVIRONMENT,
             time_units: config::INITIAL_TIME_UNITS,
             faith: config::INITIAL_FAITH,
             last_time_claim: now,

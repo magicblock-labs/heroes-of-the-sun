@@ -13,7 +13,7 @@ pub mod wait {
 
     use settlement::{
         self,
-        config::{self, get_research_level, BuildingType, ResearchType, ENVIRONMENT_LIMITS},
+        config::{self, get_research_level, BuildingType, ResearchType, ENVIRONMENT_MAX},
         Settlement,
     };
 
@@ -26,6 +26,8 @@ pub mod wait {
         let mut water_storage: u16 = 0;
         let mut food_storage: u16 = 0;
         let mut wood_storage: u16 = 0;
+        let mut stone_storage: u16 = 0;
+        let mut gold_storage: u16 = 0;
 
         //todo move all rates to config
 
@@ -48,6 +50,14 @@ pub mod wait {
                     wood_storage +=
                         config::WOOD_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
                 }
+                BuildingType::StoneStorage => {
+                    stone_storage +=
+                        config::STONE_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
+                }
+                BuildingType::GoldStorage => {
+                    gold_storage +=
+                        config::GOLD_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
+                }
                 _ => {}
             }
         }
@@ -60,9 +70,11 @@ pub mod wait {
             water_storage = (water_storage as f32 * storage_multiplier).floor() as u16;
             food_storage = (food_storage as f32 * storage_multiplier).floor() as u16;
             wood_storage = (wood_storage as f32 * storage_multiplier).floor() as u16;
+            stone_storage = (stone_storage as f32 * storage_multiplier).floor() as u16;
+            gold_storage = (gold_storage as f32 * storage_multiplier).floor() as u16;
         }
 
-        //wells generate water without worker asigned
+        //wells generate water without worker assigned
         for building in settlement.buildings.to_vec() {
             if building.turns_to_build > 0 {
                 continue;
@@ -73,19 +85,15 @@ pub mod wait {
                     let mut collected = 0;
 
                     if water_storage > settlement.treasury.water {
-                        collected = u16::min(
-                            time_to_wait * get_level_multiplier(building.level)
-                                + get_research_level(
-                                    settlement.research,
-                                    ResearchType::ResourceCollectionSpeed,
-                                ) as u16,
-                            settlement.environment.water,
-                        );
+                        collected = time_to_wait * get_level_multiplier(building.level)
+                            + get_research_level(
+                                settlement.research,
+                                ResearchType::ResourceCollectionSpeed,
+                            ) as u16;
                         collected = u16::min(collected, water_storage - settlement.treasury.water);
                     }
 
                     if collected > 0 {
-                        settlement.environment.water -= collected;
                         settlement.treasury.water += collected;
                     }
                 }
@@ -127,6 +135,8 @@ pub mod wait {
                     match settlement.buildings[building_index as usize].id {
                         BuildingType::FoodCollector => {}
                         BuildingType::WoodCollector => {}
+                        BuildingType::StoneCollector => {}
+                        BuildingType::GoldCollector => {}
                         _ => settlement.worker_assignment[worker_index] = -1,
                     }
                 } else {
@@ -168,6 +178,36 @@ pub mod wait {
                         settlement.treasury.wood += collected; //* faith +technology + env capacity */
                     }
                 }
+                BuildingType::StoneCollector => {
+                    let mut collected = 0;
+
+                    if stone_storage > settlement.treasury.stone {
+                        collected = u16::min(
+                            time_to_wait * get_level_multiplier(building.level),
+                            settlement.environment.stone,
+                        );
+                        collected = u16::min(collected, stone_storage - settlement.treasury.stone);
+                    }
+                    if collected > 0 {
+                        settlement.environment.stone -= collected;
+                        settlement.treasury.stone += collected; //* faith +technology + env capacity */
+                    }
+                }
+                BuildingType::GoldCollector => {
+                    let mut collected = 0;
+
+                    if gold_storage > settlement.treasury.gold {
+                        collected = u16::min(
+                            time_to_wait * get_level_multiplier(building.level),
+                            settlement.environment.gold,
+                        );
+                        collected = u16::min(collected, gold_storage - settlement.treasury.gold);
+                    }
+                    if collected > 0 {
+                        settlement.environment.gold -= collected;
+                        settlement.treasury.gold += collected; //* faith +technology + env capacity */
+                    }
+                }
                 _ => {}
             }
         }
@@ -175,18 +215,15 @@ pub mod wait {
         let regeneration_research =
             1 + get_research_level(settlement.research, ResearchType::EnvironmentRegeneration)
                 as u16;
+
         //regeneration sources in environment
-        settlement.environment.water += u16::min(
-            time_to_wait * regeneration_research,
-            ENVIRONMENT_LIMITS.water - settlement.environment.water,
-        );
         settlement.environment.food += u16::min(
             time_to_wait * regeneration_research,
-            ENVIRONMENT_LIMITS.water - settlement.environment.food,
+            ENVIRONMENT_MAX.food - settlement.environment.food,
         );
         settlement.environment.wood += u16::min(
             time_to_wait * regeneration_research,
-            ENVIRONMENT_LIMITS.water - settlement.environment.wood,
+            ENVIRONMENT_MAX.wood - settlement.environment.wood,
         );
 
         //deteriorate buildings
