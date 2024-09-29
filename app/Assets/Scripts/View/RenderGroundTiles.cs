@@ -34,7 +34,6 @@ namespace View
                     j >= _settlement.OccupiedData.GetLength(1))
                     prefab = surroundingTile;
                 else if (_settlement.OccupiedData[i, j] == 0)
-
                     prefab = tilePrefab;
                 else
                     prefab = occupiedTilePrefab;

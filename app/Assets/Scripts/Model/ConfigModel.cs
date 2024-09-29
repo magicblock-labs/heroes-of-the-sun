@@ -136,8 +136,8 @@ namespace Model
                 {
                     BuildingType.StoneCollector, new BuildingConfig
                     {
-                        width = 2,
-                        height = 2,
+                        width = 3,
+                        height = 3,
                         cost = 5,
                         buildTime = 3,
                         prefab = BuildingType.StoneCollector.ToString()
@@ -156,8 +156,8 @@ namespace Model
                 {
                     BuildingType.GoldCollector, new BuildingConfig
                     {
-                        width = 2,
-                        height = 2,
+                        width = 3,
+                        height = 3,
                         cost = 5,
                         buildTime = 3,
                         prefab = BuildingType.GoldCollector.ToString()

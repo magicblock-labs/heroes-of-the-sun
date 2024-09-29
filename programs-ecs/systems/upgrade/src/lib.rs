@@ -7,7 +7,7 @@ declare_id!("FrTthTtkfEWa2zZt4YEHGbL9Hz8hpsSW1hsHHnJXPRd4");
 
 #[system]
 pub mod upgrade {
-    use settlement::config::BUILDINGS_CONFIG;
+    use settlement::config::{get_extraction_cap, BUILDINGS_CONFIG};
 
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
@@ -28,6 +28,8 @@ pub mod upgrade {
 
         //all checks passed
         settlement.buildings[args.index as usize].level += 1;
+        settlement.extraction[args.index as usize] +=
+            get_extraction_cap(settlement.buildings[args.index as usize].level);
 
         if matches!(building.id, BuildingType::TownHall) {
             settlement.worker_assignment.push(-1);

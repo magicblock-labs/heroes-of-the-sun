@@ -46,7 +46,7 @@ fn fits(settlement: &mut Account<Settlement>, x: u8, y: u8, new_config: &Buildin
 pub mod build {
     use std::u8;
 
-    use settlement::config::{self, get_research_level, ResearchType};
+    use settlement::config::{self, get_extraction_cap, get_research_level, ResearchType};
 
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
         if args.config_index as usize >= BUILDINGS_CONFIG.len() {
@@ -97,6 +97,10 @@ pub mod build {
         };
 
         settlement.buildings.push(new_building);
+
+        settlement
+            .extraction
+            .push(get_extraction_cap(new_building.level));
 
         if args.worker_index >= 0 {
             if settlement.worker_assignment.len() as i16 <= args.worker_index {

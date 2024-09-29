@@ -9,11 +9,11 @@ pub enum BuildingType {
     Altar = 1,
     Research = 2,
     WaterCollector = 3,
-    WoodStorage = 4,
-    FoodCollector = 5,
-    FoodStorage = 6,
-    WoodCollector = 7,
-    WaterStorage = 8,
+    WaterStorage = 4,
+    WoodStorage = 5,
+    FoodCollector = 6,
+    FoodStorage = 7,
+    WoodCollector = 8,
     StoneCollector = 9,
     StoneStorage = 10,
     GoldCollector = 11,
@@ -52,7 +52,7 @@ pub const ENVIRONMENT_MAX: EnvironmentState = EnvironmentState {
     wood: 1000,
 };
 
-pub const BUILDINGS_CONFIG: [BuildingConfig; 8] = [
+pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
     BuildingConfig {
         id: BuildingType::TownHall,
         width: 4,
@@ -68,16 +68,23 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 8] = [
         build_time: 5,
     },
     BuildingConfig {
+        id: BuildingType::Research,
+        width: 3,
+        height: 3,
+        cost: 60,
+        build_time: 5,
+    },
+    BuildingConfig {
         id: BuildingType::WaterCollector,
-        width: 1,
-        height: 1,
+        width: 2,
+        height: 2,
         cost: 10,
         build_time: 2,
     },
     BuildingConfig {
         id: BuildingType::WaterStorage,
-        width: 2,
-        height: 2,
+        width: 3,
+        height: 3,
         cost: 5,
         build_time: 2,
     },
@@ -90,22 +97,50 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 8] = [
     },
     BuildingConfig {
         id: BuildingType::FoodStorage,
-        width: 2,
-        height: 2,
+        width: 3,
+        height: 3,
         cost: 8,
         build_time: 2,
     },
     BuildingConfig {
         id: BuildingType::WoodCollector,
-        width: 1,
-        height: 3,
+        width: 2,
+        height: 2,
         cost: 5,
         build_time: 3,
     },
     BuildingConfig {
         id: BuildingType::WoodStorage,
-        width: 2,
-        height: 2,
+        width: 3,
+        height: 3,
+        cost: 8,
+        build_time: 4,
+    },
+    BuildingConfig {
+        id: BuildingType::StoneCollector,
+        width: 3,
+        height: 3,
+        cost: 8,
+        build_time: 4,
+    },
+    BuildingConfig {
+        id: BuildingType::StoneStorage,
+        width: 3,
+        height: 3,
+        cost: 8,
+        build_time: 4,
+    },
+    BuildingConfig {
+        id: BuildingType::GoldCollector,
+        width: 3,
+        height: 3,
+        cost: 8,
+        build_time: 4,
+    },
+    BuildingConfig {
+        id: BuildingType::GoldStorage,
+        width: 3,
+        height: 3,
         cost: 8,
         build_time: 4,
     },
@@ -167,8 +202,15 @@ pub const ENERGY_REGEN_RESEARCH_MULTIPLIER: u8 = 1;
 pub fn get_research_level(value: u32, research_type: ResearchType) -> u8 {
     return get_research_level_u8(value, research_type as u8);
 }
-
 pub fn get_research_level_u8(value: u32, research_type: u8) -> u8 {
     let shift_by = BITS_PER_RESEARCH * (research_type as u8);
     return (value >> shift_by) as u8 & RESEARCH_MASK;
+}
+
+pub fn get_storage_level_multiplier(level: u8) -> u16 {
+    return (2 as u16).pow(level as u32);
+}
+
+pub fn get_extraction_cap(level: u8) -> u16 {
+    return 10 * (2 as u16).pow(level as u32);
 }

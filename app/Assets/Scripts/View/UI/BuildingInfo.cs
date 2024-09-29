@@ -56,7 +56,8 @@ namespace View.UI
             deteriorationStatus.SetStatus(value.Deterioration, 127);
 
             var needsWorkers = value.TurnsToBuild > 0 ||
-                               value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector;
+                               value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector
+                                   or BuildingType.StoneCollector or BuildingType.GoldCollector;
             workerStatus.gameObject.SetActive(needsWorkers);
             if (needsWorkers)
                 workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
@@ -84,7 +85,8 @@ namespace View.UI
                     await _connector.ReloadData();
             }
 
-            else {
+            else
+            {
                 _interaction.SelectedBuildingIndex = _index;
                 _showWorkerSelection.Dispatch();
             }

@@ -2,10 +2,6 @@ use bolt_lang::*;
 
 declare_id!("ECfKKquvf7PWgvCTAQiYkbDGVjaxhqAN4DFZCAjTUpwx");
 
-fn get_level_multiplier(level: u8) -> u16 {
-    return (2 as u16).pow(level as u32);
-}
-
 #[system]
 pub mod wait {
 
@@ -13,7 +9,10 @@ pub mod wait {
 
     use settlement::{
         self,
-        config::{self, get_research_level, BuildingType, ResearchType, ENVIRONMENT_MAX},
+        config::{
+            self, get_research_level, get_storage_level_multiplier, BuildingType, ResearchType,
+            ENVIRONMENT_MAX,
+        },
         Settlement,
     };
 
@@ -39,24 +38,24 @@ pub mod wait {
 
             match building.id {
                 BuildingType::WaterStorage => {
-                    water_storage +=
-                        config::WATER_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
+                    water_storage += config::WATER_STORAGE_PER_LEVEL
+                        * get_storage_level_multiplier(building.level);
                 }
                 BuildingType::FoodStorage => {
-                    food_storage +=
-                        config::FOOD_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
+                    food_storage += config::FOOD_STORAGE_PER_LEVEL
+                        * get_storage_level_multiplier(building.level);
                 }
                 BuildingType::WoodStorage => {
-                    wood_storage +=
-                        config::WOOD_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
+                    wood_storage += config::WOOD_STORAGE_PER_LEVEL
+                        * get_storage_level_multiplier(building.level);
                 }
                 BuildingType::StoneStorage => {
-                    stone_storage +=
-                        config::STONE_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
+                    stone_storage += config::STONE_STORAGE_PER_LEVEL
+                        * get_storage_level_multiplier(building.level);
                 }
                 BuildingType::GoldStorage => {
-                    gold_storage +=
-                        config::GOLD_STORAGE_PER_LEVEL * get_level_multiplier(building.level);
+                    gold_storage += config::GOLD_STORAGE_PER_LEVEL
+                        * get_storage_level_multiplier(building.level);
                 }
                 _ => {}
             }
@@ -85,7 +84,7 @@ pub mod wait {
                     let mut collected = 0;
 
                     if water_storage > settlement.treasury.water {
-                        collected = time_to_wait * get_level_multiplier(building.level)
+                        collected = time_to_wait * get_storage_level_multiplier(building.level)
                             + get_research_level(
                                 settlement.research,
                                 ResearchType::ResourceCollectionSpeed,
@@ -152,7 +151,7 @@ pub mod wait {
 
                     if food_storage > settlement.treasury.food {
                         collected = u16::min(
-                            time_to_wait * get_level_multiplier(building.level),
+                            time_to_wait * get_storage_level_multiplier(building.level),
                             settlement.environment.food,
                         );
                         collected = u16::min(collected, food_storage - settlement.treasury.food);
@@ -168,7 +167,7 @@ pub mod wait {
 
                     if wood_storage > settlement.treasury.wood {
                         collected = u16::min(
-                            time_to_wait * get_level_multiplier(building.level),
+                            time_to_wait * get_storage_level_multiplier(building.level),
                             settlement.environment.wood,
                         );
                         collected = u16::min(collected, wood_storage - settlement.treasury.wood);
@@ -183,13 +182,13 @@ pub mod wait {
 
                     if stone_storage > settlement.treasury.stone {
                         collected = u16::min(
-                            time_to_wait * get_level_multiplier(building.level),
-                            settlement.environment.stone,
+                            time_to_wait * get_storage_level_multiplier(building.level),
+                            settlement.extraction[building_index as usize],
                         );
                         collected = u16::min(collected, stone_storage - settlement.treasury.stone);
                     }
                     if collected > 0 {
-                        settlement.environment.stone -= collected;
+                        settlement.extraction[building_index as usize] -= collected;
                         settlement.treasury.stone += collected; //* faith +technology + env capacity */
                     }
                 }
@@ -198,13 +197,13 @@ pub mod wait {
 
                     if gold_storage > settlement.treasury.gold {
                         collected = u16::min(
-                            time_to_wait * get_level_multiplier(building.level),
-                            settlement.environment.gold,
+                            time_to_wait * get_storage_level_multiplier(building.level),
+                            settlement.extraction[building_index as usize],
                         );
                         collected = u16::min(collected, gold_storage - settlement.treasury.gold);
                     }
                     if collected > 0 {
-                        settlement.environment.gold -= collected;
+                        settlement.extraction[building_index as usize] -= collected;
                         settlement.treasury.gold += collected; //* faith +technology + env capacity */
                     }
                 }
