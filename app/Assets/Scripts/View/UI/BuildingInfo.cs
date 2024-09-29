@@ -25,6 +25,7 @@ namespace View.UI
 
         [SerializeField] private DeteriorationStatus deteriorationStatus;
         [SerializeField] private WorkerStatus workerStatus;
+        [SerializeField] private ExtractionStatus extractionStatus;
 
         [SerializeField] private GameObject controls;
 
@@ -61,6 +62,9 @@ namespace View.UI
             workerStatus.gameObject.SetActive(needsWorkers);
             if (needsWorkers)
                 workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
+            
+            extractionStatus.gameObject.SetActive(value.Id is BuildingType.GoldCollector or BuildingType.StoneCollector);
+            extractionStatus.SetCount(_settlement.Get().Extraction[index]);
         }
 
         public async void Repair()
