@@ -31,7 +31,7 @@ namespace View
             var i = 0;
             foreach (var building in _model.Get().Buildings)
             {
-                var conf = _config.Buildings[(BuildingType)building.Id];
+                var conf = _config.Buildings[building.Id];
                 var buildingDimensions = new Vector3(conf.width, 0, conf.height);
 
                 var centerPos = (new Vector3(building.X, 0, building.Y) + buildingDimensions / 2) *

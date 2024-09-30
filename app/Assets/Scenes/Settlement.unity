@@ -196,7 +196,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Select an assinged worker:'
+  m_Text: 'All Workers Busy!
+
+    Pick one to unassign:'
 --- !u!222 &125960860
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -720,7 +722,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &700810216
 RectTransform:
   m_ObjectHideFlags: 0

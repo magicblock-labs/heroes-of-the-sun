@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Model;
 using Service;
 using UnityEngine;
@@ -25,10 +26,23 @@ namespace View.UI
                 Destroy(child.gameObject);
 
             var allocation = _settlement.Get().WorkerAssignment;
+            
+            //group by building ID
+            var grouped = new Dictionary<sbyte, List<int>>();
+
             for (var i = 0; i < allocation.Length; i++)
             {
+                if (!grouped.ContainsKey(allocation[i]))
+                    grouped[allocation[i]] = new List<int>();
+
+                grouped[allocation[i]].Add(i);
+            }
+
+
+            foreach (var (buildingId, workerIds) in grouped)
+            {
                 var allocationEntry = Instantiate(workerAssignmentEntry, transform);
-                allocationEntry.SetData(i, allocation[i]);
+                allocationEntry.SetData(buildingId, workerIds);
                 allocationEntry.onSelected.AddListener(TryAssignLabour);
             }
         }

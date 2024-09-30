@@ -1,9 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
 using Model;
 using Service;
 using Settlement.Types;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using Utils.Injection;
 
 namespace View.UI
@@ -16,39 +19,42 @@ namespace View.UI
         [SerializeField] private GameObject freeMarker;
         [SerializeField] private GameObject deadMarker;
         [SerializeField] private BuildingSnapshot buildingSnapshot;
+        [SerializeField] private Text workerCount;
 
-        private int _index;
-        private int _allocation;
+        private sbyte _buildingIndex;
+        private List<int> _workerIndexes;
 
         [HideInInspector] public UnityEvent<int> onSelected;
 
-        public void SetData(int index, int allocation)
+        public void SetData(sbyte building, List<int> workers)
         {
-            _index = index;
-            _allocation = allocation;
+            _buildingIndex = building;
+            _workerIndexes = workers;
 
             Invoke(nameof(CreateBuildingSnapshot), .01f);
 
             if (freeMarker)
-                freeMarker.SetActive(allocation == -1);
+                freeMarker.SetActive(_buildingIndex == -1);
             
             if (deadMarker)
-                deadMarker.SetActive(allocation < -1);
+                deadMarker.SetActive(_buildingIndex < -1);
+
+            workerCount.text = $"x{_workerIndexes.Count}";
         }
 
         void CreateBuildingSnapshot()
         {
             if (!buildingSnapshot) return;
             
-            var building = _settlement.Get().Buildings[_allocation];
-            var buildingConfig = _config.Buildings[(BuildingType)building.Id];
+            var building = _settlement.Get().Buildings[_buildingIndex];
+            var buildingConfig = _config.Buildings[building.Id];
                 
             buildingSnapshot.Generate(buildingConfig);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            onSelected?.Invoke(_index);
+            onSelected?.Invoke(_workerIndexes.Last());
         }
     }
 }
