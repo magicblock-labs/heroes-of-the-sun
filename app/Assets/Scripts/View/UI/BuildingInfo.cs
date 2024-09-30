@@ -27,6 +27,7 @@ namespace View.UI
         [SerializeField] private WorkerStatus workerStatus;
         [SerializeField] private ExtractionStatus extractionStatus;
 
+        private IBuildingActionButton[] _actionButtons;
         [SerializeField] private GameObject controls;
 
         private readonly Dictionary<RectTransform, Vector2> _actionPositions = new();
@@ -36,6 +37,8 @@ namespace View.UI
         {
             base.Start();
             controls.SetActive(false);
+            
+            _actionButtons ??= GetComponentsInChildren<IBuildingActionButton>();
 
             foreach (RectTransform child in controls.transform)
                 _actionPositions[child] = child.anchoredPosition;
@@ -47,6 +50,11 @@ namespace View.UI
                 return;
 
             _index = index;
+
+            _actionButtons ??= GetComponentsInChildren<IBuildingActionButton>();
+
+            foreach (var btn in _actionButtons)
+                btn.SetData(index, value);
 
             nameLabel.text = value.Id.ToString();
             if (levelLabel)
@@ -65,35 +73,6 @@ namespace View.UI
             
             extractionStatus.gameObject.SetActive(value.Id is BuildingType.GoldCollector or BuildingType.StoneCollector);
             extractionStatus.SetCount(_settlement.Get().Extraction[index]);
-        }
-
-        public async void Repair()
-        {
-            if (await _connector.Repair(_index))
-                await _connector.ReloadData();
-        }
-
-        public async void Upgrade()
-        {
-            if (await _connector.Upgrade(_index))
-                await _connector.ReloadData();
-        }
-
-        public async void AllocateWorker()
-        {
-            var freeWorker = _settlement.GetFreeWorkerIndex();
-
-            if (freeWorker >= 0)
-            {
-                if (await _connector.AssignLabour(Math.Max(0, freeWorker), _index))
-                    await _connector.ReloadData();
-            }
-
-            else
-            {
-                _interaction.SelectedBuildingIndex = _index;
-                _showWorkerSelection.Dispatch();
-            }
         }
 
         public void ShowExtendedControls(bool value)

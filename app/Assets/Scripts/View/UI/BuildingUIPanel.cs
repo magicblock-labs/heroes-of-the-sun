@@ -35,7 +35,7 @@ namespace View.UI
             if (worldAnchor == null)
                 return;
 
-            transform.position = worldAnchor.position + _camera.transform.forward * -5;
+            transform.position = worldAnchor.position + _camera.transform.forward * -7;
             transform.localScale = Vector3.one * 25f / _camera.orthographicSize;
         }
     }
