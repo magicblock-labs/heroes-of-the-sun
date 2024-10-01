@@ -1,18 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Model;
-using Notifications;
-using Plugins.Demigiant.DOTween.Modules;
 using Service;
 using Settlement.Types;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
-using BuildingType = Settlement.Types.BuildingType;
 
-namespace View.UI
+namespace View.ActionRequest
 {
     public class UpgradeButton : InjectableBehaviour, IBuildingActionButton
     {

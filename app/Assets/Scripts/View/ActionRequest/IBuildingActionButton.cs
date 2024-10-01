@@ -1,7 +1,6 @@
-using System;
 using Settlement.Types;
 
-namespace View.UI
+namespace View.ActionRequest
 {
     public interface IBuildingActionButton
     {

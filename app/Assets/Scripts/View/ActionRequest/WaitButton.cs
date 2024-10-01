@@ -2,7 +2,7 @@ using Model;
 using Service;
 using Utils.Injection;
 
-namespace View
+namespace View.ActionRequest
 {
     public class WaitButton : InjectableBehaviour
     {
