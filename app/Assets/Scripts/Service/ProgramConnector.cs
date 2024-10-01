@@ -161,10 +161,10 @@ namespace Service
             return await ApplySystem(new PublicKey("HM794G8VuTSaYv1oNGxNhxAAJVp4UoVdM1QApdT7C9UU"), new {  });
         }
         
-        public async Task<bool> Research(int research_index)
+        public async Task<bool> Research(int research_type)
         {
             return await ApplySystem(new PublicKey("nhCY8g1oJ34Xhu3koUzpD3DjyxXcnLDVyomnYaTv4yc"),
-                new { research_index });
+                new { research_type });
         }
 
         private async Task<bool> ApplySystem(PublicKey system, object args)

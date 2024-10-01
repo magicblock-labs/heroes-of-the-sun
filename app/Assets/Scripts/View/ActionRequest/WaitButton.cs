@@ -4,7 +4,7 @@ using Utils.Injection;
 
 namespace View
 {
-    public class RequestWait : InjectableBehaviour
+    public class WaitButton : InjectableBehaviour
     {
         [Inject] private ProgramConnector _connector;
         [Inject] private SettlementModel _model;
