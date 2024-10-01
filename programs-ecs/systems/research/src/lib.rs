@@ -19,7 +19,7 @@ pub mod research {
             return err!(errors::ResearchError::ResearchIndexOutOfRange);
         }
 
-        if settlement.treasury.wood < 5 {
+        if settlement.treasury.gold < config::RESEARCH_COST as u16 {
             return err!(errors::ResearchError::NotEnoughResources);
         }
 
@@ -52,7 +52,7 @@ pub mod research {
         msg!("New out research value: {:32b}!", research_value);
 
         settlement.research = research_value;
-        settlement.treasury.wood -= config::RESEARCH_COST as u16;
+        settlement.treasury.gold -= config::RESEARCH_COST as u16;
 
         if args.research_type == ResearchType::ExtraUnit as u8 {
             settlement.worker_assignment.push(-1);
