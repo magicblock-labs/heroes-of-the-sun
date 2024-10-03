@@ -81,11 +81,6 @@ namespace Utils
 
             await _connector.ReloadData();
             label.text = $"[{Web3.Account.PublicKey}] Loaded ";
-
-            if (!await _connector.ClaimTime()) return;
-            
-            await _connector.ReloadData();
-            label.text = $"[{Web3.Account.PublicKey}] Energy refreshed ";
         }
     }
 }
