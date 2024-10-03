@@ -21,10 +21,14 @@ pub mod claim_time {
                 * get_research_level(settlement.research, ResearchType::FaithBonus))
             as u16;
 
+        msg!("faith {}", faith);
+
         let cap: u8 = config::BASE_ENERGY_CAP
             + (faith as f32 * config::ENERGY_CAP_FAITH_MULTIPLIER) as u8
             + (config::MAX_ENERGY_CAP_RESEARCH_MULTIPLIER
                 * get_research_level(settlement.research, ResearchType::MaxEnergyCap)); //[11..22] + research
+
+        msg!("cap {}", cap);
 
         let s_per_unit: i64 = SECONDS_IN_MINUTE
             * (config::BASE_MINUTE_PER_ENERGY_UNIT
@@ -33,20 +37,40 @@ pub mod claim_time {
                     as i64
                 - (faith as f32 * config::ENERGY_REGEN_FAITH_MULTIPLIER) as i64); //[20..8] - research min per time unit
 
+        msg!("s_per_unit {}", s_per_unit);
+
         let now = Clock::get()?.unix_timestamp;
 
         let time_passed: i64 = now - settlement.last_time_claim;
-        let claimable = time_passed / s_per_unit as i64;
+        msg!(
+            "now, last_time_claim, time_passed {} {} {}",
+            now,
+            settlement.last_time_claim,
+            time_passed
+        );
+
+        let claimable = u8::min(
+            (time_passed / s_per_unit as i64) as u8,
+            cap - settlement.time_units,
+        );
+
+        msg!("claimable {}", claimable);
 
         if claimable > 0 {
-            settlement.time_units += u8::min(claimable as u8, cap - settlement.time_units);
+            settlement.time_units += claimable;
         }
 
-        if settlement.time_units == cap {
+        if settlement.time_units >= cap {
             settlement.last_time_claim = now;
         } else {
-            settlement.last_time_claim += claimable * s_per_unit;
+            settlement.last_time_claim += claimable as i64 * s_per_unit;
         }
+
+        msg!(
+            "new time_units&last_time_claim {} {}",
+            settlement.time_units,
+            settlement.last_time_claim
+        );
 
         Ok(ctx.accounts)
     }

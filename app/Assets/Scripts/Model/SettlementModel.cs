@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Service;
 using Settlement.Types;
 using UnityEngine;
@@ -104,9 +105,15 @@ namespace Model
         }
 
 
+        public int GetCollectionLevelMultiplier(byte level)
+        {
+            return (int)Math.Pow(2, level);
+        }
+
+
         public StorageCapacity StorageCapacity { get; private set; }
 
-        private static int GetLevelMultiplier(int level)
+        private static int GetStorageLevelMultiplier(int level)
         {
             return (int)Mathf.Pow(2, level);
         }
@@ -130,28 +137,30 @@ namespace Model
                 switch (building.Id)
                 {
                     case BuildingType.WaterStorage:
-                        storage.Water += ConfigModel.WATER_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        storage.Water += ConfigModel.WATER_STORAGE_PER_LEVEL *
+                                         GetStorageLevelMultiplier(building.Level);
                         break;
                     case BuildingType.FoodStorage:
-                        storage.Food += ConfigModel.FOOD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        storage.Food += ConfigModel.FOOD_STORAGE_PER_LEVEL * GetStorageLevelMultiplier(building.Level);
                         break;
                     case BuildingType.WoodStorage:
-                        storage.Wood += ConfigModel.WOOD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        storage.Wood += ConfigModel.WOOD_STORAGE_PER_LEVEL * GetStorageLevelMultiplier(building.Level);
                         break;
                     case BuildingType.StoneStorage:
-                        storage.Stone += ConfigModel.STONE_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        storage.Stone += ConfigModel.STONE_STORAGE_PER_LEVEL *
+                                         GetStorageLevelMultiplier(building.Level);
                         break;
                     case BuildingType.GoldStorage:
-                        storage.Gold += ConfigModel.GOLD_STORAGE_PER_LEVEL * GetLevelMultiplier(building.Level);
+                        storage.Gold += ConfigModel.GOLD_STORAGE_PER_LEVEL * GetStorageLevelMultiplier(building.Level);
                         break;
                 }
             }
 
             var storageResearch = GetResearchLevel(ResearchType.StorageCapacity);
             var storageMultiplier = 1.0f + ConfigModel.STORAGE_CAPACITY_RESEARCH_MULTIPLIER * storageResearch;
-            
+
             if (!(storageMultiplier > 1.0)) return storage;
-            
+
             storage.Water = (int)Math.Floor(storage.Water * storageMultiplier);
             storage.Food = (int)Math.Floor(storage.Food * storageMultiplier);
             storage.Wood = (int)Math.Floor(storage.Wood * storageMultiplier);
@@ -188,6 +197,76 @@ namespace Model
         {
             var shiftBy = BitsPerResearch * (int)researchType;
             return (_data.Research >> shiftBy) & ResearchMask;
+        }
+
+        public int GetConsumptionRate()
+        {
+            var result = _data.WorkerAssignment.Count(buildingId => buildingId >= -1);
+
+            result = Math.Max(0,
+                result - (int)GetResearchLevel(ResearchType.Consumption));
+
+            return result;
+        }
+
+        public int GetCollectionRate(BuildingType type)
+        {
+            var result = 0;
+
+            if (type == BuildingType.WaterCollector) //wells dont need labour to work
+            {
+                result += _data.Buildings.Where(building => building.Id == type)
+                    .Sum(GetBuildingCollectionRate);
+            }
+            else
+            {
+                result += (from buildingId in _data.WorkerAssignment
+                    where buildingId >= 0
+                    select _data.Buildings[buildingId]
+                    into building
+                    where building.Id == type
+                    select GetBuildingCollectionRate(building)).Sum();
+            }
+
+            return result;
+        }
+
+        private int GetBuildingCollectionRate(Building building)
+        {
+            if (building.TurnsToBuild > 0 || building.Deterioration >= 127)
+                return 0;
+
+            return GetCollectionLevelMultiplier(building.Level) +
+                   (int)GetResearchLevel(ResearchType.ResourceCollectionSpeed);
+        }
+
+        private const int BaseEnergyCap = 10;
+        private const float EnergyCapFaithMultiplier = 0.1f;
+        private const int MaxEnergyCapResearchMultiplier = 1;
+
+        public int GetEnergyCap()
+        {
+            return BaseEnergyCap
+                   + (int)(_data.Faith * EnergyCapFaithMultiplier)
+                   + MaxEnergyCapResearchMultiplier
+                   * (int)GetResearchLevel(ResearchType.MaxEnergyCap);
+        }
+
+
+        private const int BaseMinutePerEnergyUnit = 20;
+        private const int EnergyRegenResearchMultiplier = 1;
+        private const int SecondsInMinute = 60;
+        private const float EnergyRegenFaithMultiplier = 0.1f;
+        
+        public long GetNextEnergyClaimTimestamp()
+        {
+            var secondsPerUnit = SecondsInMinute
+                             * (BaseMinutePerEnergyUnit
+                                - (int)(EnergyRegenResearchMultiplier
+                                        * GetResearchLevel(ResearchType.EnergyRegeneration))
+                                - (int)(_data.Faith * EnergyRegenFaithMultiplier));
+
+            return _data.LastTimeClaim + secondsPerUnit;
         }
     }
 }

@@ -74,26 +74,6 @@ namespace Model
                     }
                 },
                 {
-                    BuildingType.WaterCollector, new BuildingConfig
-                    {
-                        width = 2,
-                        height = 2,
-                        cost = 10,
-                        buildTime = 2,
-                        prefab = BuildingType.WaterCollector.ToString()
-                    }
-                },
-                {
-                    BuildingType.WaterStorage, new BuildingConfig
-                    {
-                        width = 3,
-                        height = 3,
-                        cost = 5,
-                        buildTime = 2,
-                        prefab = BuildingType.WaterStorage.ToString()
-                    }
-                },
-                {
                     BuildingType.FoodCollector, new BuildingConfig
                     {
                         width = 2,
@@ -131,6 +111,26 @@ namespace Model
                         cost = 8,
                         buildTime = 4,
                         prefab = BuildingType.WoodStorage.ToString()
+                    }
+                },
+                {
+                    BuildingType.WaterCollector, new BuildingConfig
+                    {
+                        width = 2,
+                        height = 2,
+                        cost = 10,
+                        buildTime = 2,
+                        prefab = BuildingType.WaterCollector.ToString()
+                    }
+                },
+                {
+                    BuildingType.WaterStorage, new BuildingConfig
+                    {
+                        width = 3,
+                        height = 3,
+                        cost = 5,
+                        buildTime = 2,
+                        prefab = BuildingType.WaterStorage.ToString()
                     }
                 },
                 {

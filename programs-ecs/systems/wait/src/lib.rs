@@ -10,8 +10,8 @@ pub mod wait {
     use settlement::{
         self,
         config::{
-            self, get_research_level, get_storage_level_multiplier, BuildingType, ResearchType,
-            ENVIRONMENT_MAX,
+            self, get_collection_level_multiplier, get_research_level,
+            get_storage_level_multiplier, BuildingType, ResearchType, ENVIRONMENT_MAX,
         },
         Settlement,
     };
@@ -84,7 +84,7 @@ pub mod wait {
                     let mut collected = 0;
 
                     if water_storage > settlement.treasury.water {
-                        collected = time_to_wait * get_storage_level_multiplier(building.level)
+                        collected = time_to_wait * get_collection_level_multiplier(building.level)
                             + get_research_level(
                                 settlement.research,
                                 ResearchType::ResourceCollectionSpeed,
@@ -151,7 +151,11 @@ pub mod wait {
 
                     if food_storage > settlement.treasury.food {
                         collected = u16::min(
-                            time_to_wait * get_storage_level_multiplier(building.level),
+                            time_to_wait * get_collection_level_multiplier(building.level)
+                                + get_research_level(
+                                    settlement.research,
+                                    ResearchType::ResourceCollectionSpeed,
+                                ) as u16,
                             settlement.environment.food,
                         );
                         collected = u16::min(collected, food_storage - settlement.treasury.food);
@@ -167,7 +171,11 @@ pub mod wait {
 
                     if wood_storage > settlement.treasury.wood {
                         collected = u16::min(
-                            time_to_wait * get_storage_level_multiplier(building.level),
+                            time_to_wait * get_collection_level_multiplier(building.level)
+                                + get_research_level(
+                                    settlement.research,
+                                    ResearchType::ResourceCollectionSpeed,
+                                ) as u16,
                             settlement.environment.wood,
                         );
                         collected = u16::min(collected, wood_storage - settlement.treasury.wood);
@@ -182,7 +190,11 @@ pub mod wait {
 
                     if stone_storage > settlement.treasury.stone {
                         collected = u16::min(
-                            time_to_wait * get_storage_level_multiplier(building.level),
+                            time_to_wait * get_collection_level_multiplier(building.level)
+                                + get_research_level(
+                                    settlement.research,
+                                    ResearchType::ResourceCollectionSpeed,
+                                ) as u16,
                             settlement.extraction[building_index as usize],
                         );
                         collected = u16::min(collected, stone_storage - settlement.treasury.stone);
@@ -278,12 +290,14 @@ pub mod wait {
                 u16::min(settlement.treasury.food, settlement.treasury.water) / alive_labour as u16;
         }
 
+        msg!("runway {}", runway);
+
         if settlement.faith >= config::FAITH_TO_RUNWAY_LERP_PER_TURN
-            && runway > settlement.faith as u16
+            && runway < settlement.faith as u16
         {
             settlement.faith -= config::FAITH_TO_RUNWAY_LERP_PER_TURN;
         } else if settlement.faith < u8::MAX - config::FAITH_TO_RUNWAY_LERP_PER_TURN
-            && runway < settlement.faith as u16
+            && runway > settlement.faith as u16
         {
             settlement.faith += config::FAITH_TO_RUNWAY_LERP_PER_TURN;
         }

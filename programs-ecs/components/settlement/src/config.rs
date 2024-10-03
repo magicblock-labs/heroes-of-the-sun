@@ -8,12 +8,12 @@ pub enum BuildingType {
     TownHall = 0,
     Altar = 1,
     Research = 2,
-    WaterCollector = 3,
-    WaterStorage = 4,
-    WoodStorage = 5,
-    FoodCollector = 6,
-    FoodStorage = 7,
-    WoodCollector = 8,
+    FoodCollector = 3,
+    FoodStorage = 4,
+    WoodCollector = 5,
+    WoodStorage = 6,
+    WaterCollector = 7,
+    WaterStorage = 8,
     StoneCollector = 9,
     StoneStorage = 10,
     GoldCollector = 11,
@@ -31,7 +31,7 @@ pub struct BuildingConfig {
 pub const MAP_WIDTH: u8 = 20;
 pub const MAP_HEIGHT: u8 = 20;
 
-pub const INITIAL_TIME_UNITS: u8 = 100;
+pub const INITIAL_TIME_UNITS: u8 = 2;
 pub const INITIAL_FAITH: u8 = 50;
 
 pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
@@ -75,20 +75,6 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
         build_time: 5,
     },
     BuildingConfig {
-        id: BuildingType::WaterCollector,
-        width: 2,
-        height: 2,
-        cost: 10,
-        build_time: 2,
-    },
-    BuildingConfig {
-        id: BuildingType::WaterStorage,
-        width: 3,
-        height: 3,
-        cost: 5,
-        build_time: 2,
-    },
-    BuildingConfig {
         id: BuildingType::FoodCollector,
         width: 2,
         height: 2,
@@ -115,6 +101,20 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
         height: 3,
         cost: 8,
         build_time: 4,
+    },
+    BuildingConfig {
+        id: BuildingType::WaterCollector,
+        width: 2,
+        height: 2,
+        cost: 10,
+        build_time: 2,
+    },
+    BuildingConfig {
+        id: BuildingType::WaterStorage,
+        width: 3,
+        height: 3,
+        cost: 5,
+        build_time: 2,
     },
     BuildingConfig {
         id: BuildingType::StoneCollector,
@@ -202,12 +202,17 @@ pub const ENERGY_REGEN_RESEARCH_MULTIPLIER: u8 = 1;
 pub fn get_research_level(value: u32, research_type: ResearchType) -> u8 {
     return get_research_level_u8(value, research_type as u8);
 }
+
 pub fn get_research_level_u8(value: u32, research_type: u8) -> u8 {
     let shift_by = BITS_PER_RESEARCH * (research_type as u8);
     return (value >> shift_by) as u8 & RESEARCH_MASK;
 }
 
 pub fn get_storage_level_multiplier(level: u8) -> u16 {
+    return (2 as u16).pow(level as u32);
+}
+
+pub fn get_collection_level_multiplier(level: u8) -> u16 {
     return (2 as u16).pow(level as u32);
 }
 
