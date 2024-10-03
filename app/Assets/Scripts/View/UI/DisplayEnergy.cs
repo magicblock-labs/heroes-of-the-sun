@@ -45,7 +45,7 @@ namespace View.UI
         {
             while (true)
             {
-                var secondsUntilClaim = _claimTimestamp - DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                var secondsUntilClaim = _claimTimestamp - _connector.GetNodeTime();
                 if (secondsUntilClaim < 0)
                 {
                     yield return new WaitForSeconds(1);

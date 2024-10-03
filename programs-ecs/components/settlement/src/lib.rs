@@ -61,8 +61,8 @@ impl Default for Settlement {
 
         Self::new(SettlementInit {
             buildings: vec![Building {
-                x: 10,
-                y: 10,
+                x: 8,
+                y: 8,
                 deterioration: 0,
                 id: BuildingType::TownHall,
                 level: 1,

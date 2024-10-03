@@ -36,6 +36,7 @@ namespace Service
 
         private string _dataAddress;
         private string _entityPda;
+        private long _offset;
 
         private string EntityPda =>
             _entityPda ??= Pda.FindEntityPda(WorldIndex, 0, ExtraSeed);
@@ -198,5 +199,18 @@ namespace Service
             return result.WasSuccessful;
         }
 
+        public async Task SyncTime()
+        {
+            var slot = await Web3.Rpc.GetSlotAsync(Commitment.Processed);
+            var nodeTimestamp = await Web3.Rpc.GetBlockTimeAsync(slot.Result);
+            _offset = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - (long)nodeTimestamp.Result;
+            
+            Debug.Log(_offset);
+        }
+
+        public long GetNodeTime()
+        {
+            return DateTimeOffset.UtcNow.ToUnixTimeSeconds() - _offset;
+        }
     }
 }

@@ -81,6 +81,9 @@ namespace Utils
 
             await _connector.ReloadData();
             label.text = $"[{Web3.Account.PublicKey}] Loaded ";
+            
+            //sync time
+            await _connector.SyncTime();
         }
     }
 }
