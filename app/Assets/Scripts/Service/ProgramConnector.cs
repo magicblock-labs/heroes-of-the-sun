@@ -15,6 +15,7 @@ using UnityEngine;
 using Utils.Injection;
 using View.UI;
 using World.Program;
+
 // ReSharper disable InconsistentNaming (this is for args passing without renaming etc to match rust)
 
 namespace Service
@@ -25,9 +26,9 @@ namespace Service
         [Inject] private SettlementModel _settlement;
 
         //this comes from program deployment
-        private const string WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";
-        private const string SettlementProgramAddress = "ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ";
-        private const int WorldIndex = 2;
+        private const string WorldPda = "GvMv6N5UF8ctteapSXMJUh2GXmXb4a7hRHWNmi69PTA8";
+        private const string SettlementProgramAddress = "B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv";
+        private const int WorldIndex = 1318;
 
         private SettlementClient _client;
 
@@ -50,11 +51,10 @@ namespace Service
             if (requestResult.Result.Value < 500000000)
             {
                 var airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 1000000000);
-                await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
+                var txResult = await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
             }
 
             requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
-
         }
 
         public async Task<bool> ReloadData()
@@ -115,6 +115,7 @@ namespace Service
                     var result = await walletBase.SignAndSendTransaction(tx, true);
                     await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
                 }
+
                 _dataAddress = dataAddress;
             }
 
@@ -131,40 +132,41 @@ namespace Service
 
         public async Task<bool> PlaceBuilding(byte x, byte y, byte type, int worker_index)
         {
-            return await ApplySystem(new PublicKey("Fgc4uSFUPnhUpwUu7z4siYiBtnkxrwroYVQ2csDo3Q7P"),
+            return await ApplySystem(new PublicKey("AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c"),
                 new { x, y, config_index = type, worker_index });
         }
 
         public async Task<bool> Wait(int time)
         {
-            return await ApplySystem(new PublicKey("ECfKKquvf7PWgvCTAQiYkbDGVjaxhqAN4DFZCAjTUpwx"),
+            return await ApplySystem(new PublicKey("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy"),
                 new { time });
         }
 
         public async Task<bool> AssignLabour(int labour_index, int building_index)
         {
-            return await ApplySystem(new PublicKey("BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH"),
+            return await ApplySystem(new PublicKey("F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq"),
                 new { labour_index, building_index });
         }
-        
-        
+
+
         public async Task<bool> Repair(int index)
         {
-            return await ApplySystem(new PublicKey("FViANCSUgsHJxK3m1J2d41Yq5yJ13BDkA8eiRwQPFHuJ"), new { index });
+            return await ApplySystem(new PublicKey("4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j"), new { index });
         }
+
         public async Task<bool> Upgrade(int index)
         {
-            return await ApplySystem(new PublicKey("FrTthTtkfEWa2zZt4YEHGbL9Hz8hpsSW1hsHHnJXPRd4"), new { index });
+            return await ApplySystem(new PublicKey("J3evfUppPdgjTzWhhAhuhKBVM23UU8iCU9j9r7sTHCTB"), new { index });
         }
-        
+
         public async Task<bool> ClaimTime()
         {
-            return await ApplySystem(new PublicKey("HM794G8VuTSaYv1oNGxNhxAAJVp4UoVdM1QApdT7C9UU"), new {  });
+            return await ApplySystem(new PublicKey("HFx2weMbr8CrAEAPfPtgw9zzgHgUFzSz7qiTyhTHGSF"), new { });
         }
-        
+
         public async Task<bool> Research(int research_type)
         {
-            return await ApplySystem(new PublicKey("nhCY8g1oJ34Xhu3koUzpD3DjyxXcnLDVyomnYaTv4yc"),
+            return await ApplySystem(new PublicKey("GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb"),
                 new { research_type });
         }
 
@@ -193,7 +195,7 @@ namespace Service
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
             Debug.Log($"ApplySystem: {result.Result}");
 
-            await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Confirmed);
+            await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Processed);
 
             Dimmer.Visible = false;
             return result.WasSuccessful;
@@ -204,7 +206,7 @@ namespace Service
             var slot = await Web3.Rpc.GetSlotAsync(Commitment.Processed);
             var nodeTimestamp = await Web3.Rpc.GetBlockTimeAsync(slot.Result);
             _offset = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - (long)nodeTimestamp.Result;
-            
+
             Debug.Log(_offset);
         }
 

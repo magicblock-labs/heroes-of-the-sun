@@ -1,7 +1,7 @@
 use bolt_lang::*;
 mod errors;
 
-declare_id!("nhCY8g1oJ34Xhu3koUzpD3DjyxXcnLDVyomnYaTv4yc");
+declare_id!("GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb");
 
 #[system]
 pub mod research {

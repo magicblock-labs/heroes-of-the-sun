@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-declare_id!("ECfKKquvf7PWgvCTAQiYkbDGVjaxhqAN4DFZCAjTUpwx");
+declare_id!("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy");
 
 #[system]
 pub mod wait {
@@ -101,12 +101,12 @@ pub mod wait {
         }
 
         //process all buildings with allocated worker
-        let mut alive_labour: u16 = 0;
+        let mut alive_workers: u16 = 0;
         for worker_index in 0..settlement.worker_assignment.len() {
             let building_index = settlement.worker_assignment[worker_index];
 
             if building_index >= -1 {
-                alive_labour += 1;
+                alive_workers += 1;
             }
 
             if building_index < 0 {
@@ -115,6 +115,7 @@ pub mod wait {
             }
 
             let building = settlement.buildings[building_index as usize];
+            //todo time to wait
             let max_deterioration = config::BASE_DETERIORATION_CAP
                 + config::DETERIORATION_CAP_RESEARCH_MULTIPLIER
                     * get_research_level(settlement.research, ResearchType::DeteriorationCap);
@@ -223,6 +224,7 @@ pub mod wait {
             }
         }
 
+        //todo use a multiplier (formula)
         let regeneration_research =
             1 + get_research_level(settlement.research, ResearchType::EnvironmentRegeneration)
                 as u16;
@@ -244,7 +246,7 @@ pub mod wait {
             }
         }
 
-        if settlement.treasury.water < alive_labour || settlement.treasury.food < alive_labour {
+        if settlement.treasury.water < alive_workers || settlement.treasury.food < alive_workers {
             //kill one
             for i in 0..settlement.worker_assignment.len() {
                 if (settlement.worker_assignment[i]) >= -1 {
@@ -253,15 +255,15 @@ pub mod wait {
                             * get_research_level(settlement.research, ResearchType::DeathTimeout))
                             as i8;
 
-                    alive_labour -= 1;
+                    alive_workers -= 1;
                     break;
                 }
             }
         }
 
-        let consumption_rate: u16 = (alive_labour
+        let consumption_rate: u16 = (alive_workers
             - u16::min(
-                alive_labour,
+                alive_workers,
                 get_research_level(settlement.research, ResearchType::Consumption) as u16,
             ))
             * time_to_wait;
@@ -285,9 +287,9 @@ pub mod wait {
 
         //calc faith as a lerp to 'runway'
         let mut runway = 0;
-        if alive_labour > 0 {
-            runway =
-                u16::min(settlement.treasury.food, settlement.treasury.water) / alive_labour as u16;
+        if alive_workers > 0 {
+            runway = u16::min(settlement.treasury.food, settlement.treasury.water)
+                / alive_workers as u16;
         }
 
         msg!("runway {}", runway);

@@ -31,7 +31,7 @@ pub struct BuildingConfig {
 pub const MAP_WIDTH: u8 = 20;
 pub const MAP_HEIGHT: u8 = 20;
 
-pub const INITIAL_TIME_UNITS: u8 = 2;
+pub const INITIAL_TIME_UNITS: u8 = 50;
 pub const INITIAL_FAITH: u8 = 50;
 
 pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
@@ -169,6 +169,7 @@ pub const GOLD_STORAGE_PER_LEVEL: u16 = 5;
 
 pub const STORAGE_CAPACITY_RESEARCH_MULTIPLIER: f32 = 0.1;
 
+//todo dynamic??
 pub const RESEARCH_COST: u8 = 5;
 pub const BITS_PER_RESEARCH: u8 = 2;
 pub const RESEARCH_MASK: u8 = 0b11;

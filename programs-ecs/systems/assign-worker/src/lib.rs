@@ -1,7 +1,7 @@
 mod errors;
 use bolt_lang::*;
 
-declare_id!("BEc67x2mycQPPeWDLB8r2LCV4TSZCHTfp7rjpjwFwUhH");
+declare_id!("F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq");
 
 #[system]
 pub mod assign_labour {

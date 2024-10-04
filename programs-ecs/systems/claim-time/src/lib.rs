@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-declare_id!("HM794G8VuTSaYv1oNGxNhxAAJVp4UoVdM1QApdT7C9UU");
+declare_id!("HFx2weMbr8CrAEAPfPtgw9zzgHgUFzSz7qiTyhTHGSF");
 
 const SECONDS_IN_MINUTE: i64 = 60;
 

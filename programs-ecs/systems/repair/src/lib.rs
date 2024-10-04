@@ -1,7 +1,7 @@
 mod errors;
 use bolt_lang::*;
 
-declare_id!("FViANCSUgsHJxK3m1J2d41Yq5yJ13BDkA8eiRwQPFHuJ");
+declare_id!("4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j");
 
 #[system]
 pub mod repair {
@@ -19,7 +19,7 @@ pub mod repair {
 
         //todo multiply cost by level??
         let repair_cost = (building_config.cost
-            * (settlement.buildings[args.index as usize].deterioration / u8::MAX))
+            * (settlement.buildings[args.index as usize].deterioration / u8::MAX)) //todo dynamic CAP
             as u16;
 
         if settlement.treasury.wood < repair_cost {

@@ -1,7 +1,7 @@
 mod errors;
 use bolt_lang::*;
 
-declare_id!("85CUG48uuz6UYrvWYuDuK5Z79Q7rTGCP4y4CU933A7jd");
+declare_id!("4Cvjz6qrVakbSg3dqBMA8vv8XL8KD3UCTbRVM8g8WkoW");
 
 #[system]
 pub mod sacrifice {

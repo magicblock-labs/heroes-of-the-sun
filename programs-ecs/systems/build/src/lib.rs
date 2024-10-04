@@ -6,7 +6,7 @@ use settlement::{
     Building, Settlement,
 };
 
-declare_id!("Fgc4uSFUPnhUpwUu7z4siYiBtnkxrwroYVQ2csDo3Q7P");
+declare_id!("AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c");
 
 //move to settlement trait?
 fn fits(settlement: &mut Account<Settlement>, x: u8, y: u8, new_config: &BuildingConfig) -> bool {
@@ -77,7 +77,7 @@ pub mod build {
         if settlement.treasury.wood < cost as u16 {
             return err!(errors::BuildError::NotEnoughResources);
         } else {
-            settlement.treasury.wood -= cost as u16;
+            settlement.treasury.wood -= cost as u16; //todo use other resources for high level buildings (?)
         }
 
         let build_time = new_building_config.build_time

@@ -1911,7 +1911,7 @@ Behaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 572435598}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &572435603
 Camera:
   m_ObjectHideFlags: 0
@@ -4292,7 +4292,7 @@ PrefabInstance:
     - target: {fileID: 7187663143598891768, guid: 942055af8e39a44ce8769a0441177164,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -120
       objectReference: {fileID: 0}
     - target: {fileID: 7187663143598891768, guid: 942055af8e39a44ce8769a0441177164,
         type: 3}
@@ -4337,7 +4337,7 @@ PrefabInstance:
     - target: {fileID: 7187663143598891768, guid: 942055af8e39a44ce8769a0441177164,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -60
       objectReference: {fileID: 0}
     - target: {fileID: 7187663143598891768, guid: 942055af8e39a44ce8769a0441177164,
         type: 3}
@@ -4824,8 +4824,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rpcCluster: 1
-  customRpc: http://127.0.0.1:8899
-  webSocketsRpc: ws://127.0.0.1:8900
+  customRpc: https://rpc.magicblock.app/devnet
+  webSocketsRpc: wss://rpc.magicblock.app/devnet
   autoConnectOnStartup: 1
   web3AuthWalletOptions:
     appName: Web3Auth Sample App
@@ -6702,7 +6702,7 @@ PrefabInstance:
     - target: {fileID: 5853891395708624524, guid: 2d8fa19998e5146fa83cbb1648dcf161,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -30
+      value: -120
       objectReference: {fileID: 0}
     - target: {fileID: 5853891395708624524, guid: 2d8fa19998e5146fa83cbb1648dcf161,
         type: 3}
@@ -6853,7 +6853,7 @@ PrefabInstance:
     - target: {fileID: 4398153586560010277, guid: 099481b4dbc8345c380554dafc5c6801,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -20
+      value: -120
       objectReference: {fileID: 0}
     - target: {fileID: 4398153586560010277, guid: 099481b4dbc8345c380554dafc5c6801,
         type: 3}
@@ -7051,7 +7051,7 @@ PrefabInstance:
     - target: {fileID: 3252553326188794736, guid: df5a754f4d3094f128652faafb2c7e5f,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: -120
       objectReference: {fileID: 0}
     - target: {fileID: 3252553326188794736, guid: df5a754f4d3094f128652faafb2c7e5f,
         type: 3}
@@ -7096,7 +7096,7 @@ PrefabInstance:
     - target: {fileID: 3252553326188794736, guid: df5a754f4d3094f128652faafb2c7e5f,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 3252553326188794736, guid: df5a754f4d3094f128652faafb2c7e5f,
         type: 3}

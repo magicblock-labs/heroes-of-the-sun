@@ -3,7 +3,7 @@ mod errors;
 use bolt_lang::*;
 use settlement::{config::BuildingType, Settlement};
 
-declare_id!("FrTthTtkfEWa2zZt4YEHGbL9Hz8hpsSW1hsHHnJXPRd4");
+declare_id!("J3evfUppPdgjTzWhhAhuhKBVM23UU8iCU9j9r7sTHCTB");
 
 #[system]
 pub mod upgrade {

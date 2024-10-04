@@ -3,7 +3,7 @@ pub mod config;
 use bolt_lang::*;
 use config::{get_extraction_cap, BuildingType};
 
-declare_id!("ARDmmVcLaNW6b9byetukTFFriUAjpw7CkSfnapR86QfZ");
+declare_id!("B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv");
 
 #[component_deserialize]
 pub struct ResourceBalance {
@@ -38,6 +38,7 @@ pub struct Settlement {
     pub environment: EnvironmentState,
     pub treasury: ResourceBalance,
 
+    //todo review if it makes sense to be part of Building struct
     #[max_len(20, 2)]
     pub extraction: Vec<u16>,
 
