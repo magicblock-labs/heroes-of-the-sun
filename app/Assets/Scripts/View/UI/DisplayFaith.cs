@@ -11,7 +11,7 @@ namespace View.UI
         [Inject] private SettlementModel _model;
 
         [SerializeField] private Image progressBar;
-        private const int Cap = 127; //todo calc
+        private const int Cap = 127; //TODO calc
 
         void Start()
         {

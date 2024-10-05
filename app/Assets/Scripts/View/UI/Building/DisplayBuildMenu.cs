@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Service;
 using Settlement.Types;
 using UnityEngine;
 
-namespace View.UI
+namespace View.UI.Building
 {
     [Serializable]
     public enum BuildingFilter

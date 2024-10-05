@@ -27,6 +27,7 @@ namespace View.ActionRequest
 
         public void ShowResearch()
         {
+            _interaction.OnActionRequested();
             _showResearch.Dispatch();
         }
     }

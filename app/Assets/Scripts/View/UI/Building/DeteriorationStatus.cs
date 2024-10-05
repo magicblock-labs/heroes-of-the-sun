@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace View.UI
+namespace View.UI.Building
 {
     public class DeteriorationStatus : MonoBehaviour
     {

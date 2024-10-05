@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Rendering;
 using Utils.Injection;
 
 namespace View.UI
@@ -29,9 +30,20 @@ namespace View.UI
             if (canvas != null)
                 canvas.worldCamera = _camera;
         }
-
-        private void Update()
+        
+        void OnEnable()
         {
+            RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
+        }
+
+        void OnDisable()
+        {
+            RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
+        }
+
+        private void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
+        {
+            
             if (worldAnchor == null)
                 return;
 

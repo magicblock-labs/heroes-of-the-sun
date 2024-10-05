@@ -12,6 +12,7 @@ namespace View.ActionRequest
         [Inject] private SettlementModel _settlement;
         [Inject] private ProgramConnector _connector;
         [Inject] private ConfigModel _config;
+        [Inject] private InteractionStateModel _interaction;
 
         [SerializeField] private Text costLabel;
 
@@ -32,6 +33,8 @@ namespace View.ActionRequest
 
         public async void Upgrade()
         {
+            _interaction.OnActionRequested();
+            
             if (_canAfford && await _connector.Upgrade(_index))
                 await _connector.ReloadData();
         }

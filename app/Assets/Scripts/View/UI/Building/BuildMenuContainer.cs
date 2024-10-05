@@ -1,10 +1,8 @@
 using Model;
-using Service;
-using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 
-namespace View.UI
+namespace View.UI.Building
 {
     public class BuildMenuContainer : InjectableBehaviour
     {

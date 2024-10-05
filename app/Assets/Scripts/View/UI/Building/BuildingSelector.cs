@@ -1,12 +1,11 @@
 using System;
 using Model;
-using Service;
 using Settlement.Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
 
-namespace View.UI
+namespace View.UI.Building
 {
     public class BuildingSelector : InjectableBehaviour
     {

@@ -1,11 +1,10 @@
 using Model;
 using Service;
-using Settlement.Types;
 using Unity.AI.Navigation;
 using UnityEngine;
 using Utils.Injection;
 
-namespace View.UI
+namespace View.UI.Building
 {
     public class BuildingControls : InjectableBehaviour
     {
@@ -19,7 +18,7 @@ namespace View.UI
         private BoxCollider _collider;
         private NavMeshModifierVolume _obstacle;
 
-        public void SetData(int index, Building value, BuildingConfig config)
+        public void SetData(int index, Settlement.Types.Building value, BuildingConfig config)
         {
             _camera = Camera.main;
 
@@ -35,9 +34,11 @@ namespace View.UI
 
         private void LateUpdate()
         {
+            if (!_interaction.CanInteract)
+                return;
+            
             var mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
             var intersectRay = _collider.bounds.IntersectRay(mouseRay, out _);
-
 
             if (Input.GetMouseButtonUp(0))
                 info.ShowExtendedControls(

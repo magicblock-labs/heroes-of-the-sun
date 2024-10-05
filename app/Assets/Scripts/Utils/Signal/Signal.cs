@@ -2,7 +2,7 @@
 
 namespace Utils.Signal
 {
-    public class Signal  //todo implement iSubuscribable visible to consumers (so they cant dispatch)
+    public class Signal  //TODO implement iSubuscribable visible to consumers (so they cant dispatch)
     {
         public delegate void Callback();
 

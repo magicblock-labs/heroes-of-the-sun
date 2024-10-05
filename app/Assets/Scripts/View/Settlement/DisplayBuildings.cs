@@ -4,6 +4,7 @@ using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 using View.UI;
+using View.UI.Building;
 
 namespace View
 {

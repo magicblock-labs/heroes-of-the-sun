@@ -32,6 +32,8 @@ namespace View.ActionRequest
 
         public async void AssignWorker()
         {
+            _interaction.OnActionRequested();
+            
             var freeWorker = _settlement.GetFreeWorkerIndex();
 
             if (freeWorker >= 0)

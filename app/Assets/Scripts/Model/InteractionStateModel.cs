@@ -33,6 +33,7 @@ namespace Model
         public int CellPosZ;
         
         public int SelectedBuildingIndex = -1;
+        private float _lockInteractionUntil;
 
         public void StartPlacement(BuildingType type)
         {
@@ -65,5 +66,12 @@ namespace Model
             SelectedBuildingType = null;
             Updated.Dispatch();
         }
+
+        public void OnActionRequested()
+        {
+            _lockInteractionUntil = Time.time + 0.1f;
+        }
+
+        public bool CanInteract => _lockInteractionUntil < Time.time;
     }
 }

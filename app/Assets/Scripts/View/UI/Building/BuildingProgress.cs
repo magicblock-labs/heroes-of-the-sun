@@ -1,22 +1,19 @@
 using System;
-using System.Collections;
 using Model;
-using Service;
-using Settlement.Types;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace View.UI
+namespace View.UI.Building
 {
     public class BuildingProgress : BuildingUIPanel
     {
-        [SerializeField] private Text nameLabel;
-        [SerializeField] private Text levelLabel;
+        [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private Image bg;
         [SerializeField] private Image fill;
-        [SerializeField] private Text statePercentageLabel;
+        [SerializeField] private TMP_Text statePercentageLabel;
 
-        public void SetData(Building value, BuildingConfig config)
+        public void SetData(Settlement.Types.Building value, BuildingConfig config)
         {
             if (value == null)
                 return;
@@ -28,8 +25,6 @@ namespace View.UI
             }
 
             nameLabel.text = value.Id.ToString();
-            if (levelLabel)
-                levelLabel.text = "Level: " + value.Level;
 
             var percentage =
                 config.buildTime > 0

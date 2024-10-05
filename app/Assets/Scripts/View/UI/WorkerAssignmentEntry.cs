@@ -8,6 +8,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Utils.Injection;
+using View.UI.Building;
 
 namespace View.UI
 {
@@ -15,7 +16,7 @@ namespace View.UI
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private ConfigModel _config;
-        
+
         [SerializeField] private GameObject freeMarker;
         [SerializeField] private GameObject deadMarker;
         [SerializeField] private BuildingSnapshot buildingSnapshot;
@@ -35,7 +36,7 @@ namespace View.UI
 
             if (freeMarker)
                 freeMarker.SetActive(_buildingIndex == -1);
-            
+
             if (deadMarker)
                 deadMarker.SetActive(_buildingIndex < -1);
 
@@ -45,10 +46,13 @@ namespace View.UI
         void CreateBuildingSnapshot()
         {
             if (!buildingSnapshot) return;
-            
+
+            if (_buildingIndex < 0) return;
+
+
             var building = _settlement.Get().Buildings[_buildingIndex];
             var buildingConfig = _config.Buildings[building.Id];
-                
+
             buildingSnapshot.Generate(buildingConfig);
         }
 

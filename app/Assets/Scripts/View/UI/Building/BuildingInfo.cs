@@ -1,18 +1,16 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Model;
 using Notifications;
 using Plugins.Demigiant.DOTween.Modules;
 using Service;
-using Settlement.Types;
 using TMPro;
 using UnityEngine;
 using Utils.Injection;
 using View.ActionRequest;
 using BuildingType = Settlement.Types.BuildingType;
 
-namespace View.UI
+namespace View.UI.Building
 {
     public class BuildingInfo : BuildingUIPanel
     {
@@ -45,7 +43,7 @@ namespace View.UI
                 _actionPositions[child] = child.anchoredPosition;
         }
 
-        public void SetData(int index, Building value)
+        public void SetData(int index, Settlement.Types.Building value)
         {
             if (value == null)
                 return;
@@ -61,7 +59,7 @@ namespace View.UI
             if (levelLabel)
                 levelLabel.text = value.Level.ToString();
 
-            //todo max deterioration
+            //TODO max deterioration
             deteriorationStatus.gameObject.SetActive(value.Deterioration > 50);
             deteriorationStatus.SetStatus(value.Deterioration, 127);
 
