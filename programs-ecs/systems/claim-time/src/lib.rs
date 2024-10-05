@@ -49,21 +49,22 @@ pub mod claim_time {
             time_passed
         );
 
-        let claimable = u8::min(
-            (time_passed / s_per_unit as i64) as u8,
-            cap - settlement.time_units,
-        );
+        let mut claimable = 0;
 
-        msg!("claimable {}", claimable);
+        if cap > settlement.time_units {
+            claimable = u8::min(
+                (time_passed / s_per_unit as i64) as u8,
+                cap - settlement.time_units,
+            );
 
-        if claimable > 0 {
-            settlement.time_units += claimable;
-        }
+            msg!("claimable {}", claimable);
 
-        if settlement.time_units >= cap {
-            settlement.last_time_claim = now;
+            if claimable > 0 {
+                settlement.time_units += claimable;
+                settlement.last_time_claim += claimable as i64 * s_per_unit;
+            }
         } else {
-            settlement.last_time_claim += claimable as i64 * s_per_unit;
+            settlement.last_time_claim = now;
         }
 
         msg!(
