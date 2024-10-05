@@ -19,15 +19,16 @@ pub mod research {
             return err!(errors::ResearchError::ResearchIndexOutOfRange);
         }
 
-        if settlement.treasury.gold < config::RESEARCH_COST as u16 {
-            return err!(errors::ResearchError::NotEnoughResources);
-        }
-
-        msg!("Try Research : {}!", args.research_type);
+        msg!("Research Type : {}!", args.research_type);
 
         let mut research_level = get_research_level_u8(settlement.research, args.research_type);
 
         msg!("Old Research Level: {}!", research_level);
+
+        let research_cost = config::get_research_cost(args.research_type, research_level);
+        if settlement.treasury.gold < research_cost {
+            return err!(errors::ResearchError::NotEnoughResources);
+        }
 
         if research_level >= RESEARCH_MASK {
             return err!(errors::ResearchError::AlreadyMaxedOut);
@@ -52,7 +53,7 @@ pub mod research {
         msg!("New out research value: {:32b}!", research_value);
 
         settlement.research = research_value;
-        settlement.treasury.gold -= config::RESEARCH_COST as u16;
+        settlement.treasury.gold -= research_cost;
 
         if args.research_type == ResearchType::ExtraUnit as u8 {
             settlement.worker_assignment.push(-1);

@@ -28,8 +28,6 @@ pub mod wait {
         let mut stone_storage: u16 = 0;
         let mut gold_storage: u16 = 0;
 
-        //todo move all rates to config
-
         //calc current storage capacity for all resources
         for building in settlement.buildings.to_vec() {
             if building.turns_to_build > 0 {
@@ -80,7 +78,6 @@ pub mod wait {
             }
             match building.id {
                 BuildingType::WaterCollector => {
-                    //todo check if this code can be reused (across 3 different resources)
                     let mut collected = 0;
 
                     if water_storage > settlement.treasury.water {
@@ -115,7 +112,7 @@ pub mod wait {
             }
 
             let building = settlement.buildings[building_index as usize];
-            //todo time to wait
+
             let max_deterioration = config::BASE_DETERIORATION_CAP
                 + config::DETERIORATION_CAP_RESEARCH_MULTIPLIER
                     * get_research_level(settlement.research, ResearchType::DeteriorationCap);
@@ -146,6 +143,7 @@ pub mod wait {
 
             let building_type = building.id;
 
+            //TODO [CLEANUP] check if this code can be reused (across 3 different resources) (e.g. using array to store resources)
             match building_type {
                 BuildingType::FoodCollector => {
                     let mut collected = 0;
@@ -224,18 +222,15 @@ pub mod wait {
             }
         }
 
-        //todo use a multiplier (formula)
-        let regeneration_research =
-            1 + get_research_level(settlement.research, ResearchType::EnvironmentRegeneration)
-                as u16;
+        let regeneration_rate = config::get_regeneration_rate(settlement.research);
 
         //regeneration sources in environment
         settlement.environment.food += u16::min(
-            time_to_wait * regeneration_research,
+            time_to_wait * regeneration_rate,
             ENVIRONMENT_MAX.food - settlement.environment.food,
         );
         settlement.environment.wood += u16::min(
-            time_to_wait * regeneration_research,
+            time_to_wait * regeneration_rate,
             ENVIRONMENT_MAX.wood - settlement.environment.wood,
         );
 

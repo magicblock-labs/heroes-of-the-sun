@@ -77,7 +77,7 @@ pub mod build {
         if settlement.treasury.wood < cost as u16 {
             return err!(errors::BuildError::NotEnoughResources);
         } else {
-            settlement.treasury.wood -= cost as u16; //todo use other resources for high level buildings (?)
+            settlement.treasury.wood -= cost as u16; //TODO [BALANCE] use other resources for high level buildings (?)
         }
 
         let build_time = new_building_config.build_time

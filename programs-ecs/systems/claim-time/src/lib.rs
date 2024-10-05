@@ -15,7 +15,7 @@ pub mod claim_time {
     pub fn execute(ctx: Context<Components>, _args: EmptyArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
 
-        //todo balance faith dependency
+        //TODO [BALANCE] faith dependency
         let faith = (settlement.faith
             + config::FAITH_BONUS_RESEARCH_MULTIPLIER
                 * get_research_level(settlement.research, ResearchType::FaithBonus))
@@ -32,7 +32,7 @@ pub mod claim_time {
 
         let s_per_unit: i64 = SECONDS_IN_MINUTE
             * (config::BASE_MINUTE_PER_ENERGY_UNIT
-                - (config::ENERGY_REGEN_RESEARCH_MULTIPLIER
+                - (config::ENERGY_REGENERATION_RESEARCH_MULTIPLIER
                     * get_research_level(settlement.research, ResearchType::EnergyRegeneration))
                     as i64
                 - (faith as f32 * config::ENERGY_REGEN_FAITH_MULTIPLIER) as i64); //[20..8] - research min per time unit
@@ -49,10 +49,8 @@ pub mod claim_time {
             time_passed
         );
 
-        let mut claimable = 0;
-
         if cap > settlement.time_units {
-            claimable = u8::min(
+            let claimable = u8::min(
                 (time_passed / s_per_unit as i64) as u8,
                 cap - settlement.time_units,
             );

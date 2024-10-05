@@ -169,8 +169,6 @@ pub const GOLD_STORAGE_PER_LEVEL: u16 = 5;
 
 pub const STORAGE_CAPACITY_RESEARCH_MULTIPLIER: f32 = 0.1;
 
-//todo dynamic??
-pub const RESEARCH_COST: u8 = 5;
 pub const BITS_PER_RESEARCH: u8 = 2;
 pub const RESEARCH_MASK: u8 = 0b11;
 
@@ -198,7 +196,7 @@ pub const BUILDING_COST_RESEARCH_MULTIPLIER: f32 = 0.1;
 pub const BUILDING_SPEED_RESEARCH_TURN_REDUCTION: u8 = 1;
 pub const FAITH_BONUS_RESEARCH_MULTIPLIER: u8 = 1;
 pub const MAX_ENERGY_CAP_RESEARCH_MULTIPLIER: u8 = 1;
-pub const ENERGY_REGEN_RESEARCH_MULTIPLIER: u8 = 1;
+pub const ENERGY_REGENERATION_RESEARCH_MULTIPLIER: u8 = 1;
 
 pub fn get_research_level(value: u32, research_type: ResearchType) -> u8 {
     return get_research_level_u8(value, research_type as u8);
@@ -219,4 +217,13 @@ pub fn get_collection_level_multiplier(level: u8) -> u16 {
 
 pub fn get_extraction_cap(level: u8) -> u16 {
     return 10 * (2 as u16).pow(level as u32);
+}
+
+pub const BASE_RESEARCH_COST: u16 = 5;
+pub fn get_research_cost(_research_type: u8, level: u8) -> u16 {
+    return BASE_RESEARCH_COST * (2 as u16).pow(level as u32);
+}
+
+pub fn get_regeneration_rate(research: u32) -> u16 {
+    return 1 + get_research_level(research, ResearchType::EnvironmentRegeneration) as u16;
 }

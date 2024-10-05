@@ -38,7 +38,7 @@ pub struct Settlement {
     pub environment: EnvironmentState,
     pub treasury: ResourceBalance,
 
-    //todo review if it makes sense to be part of Building struct
+    //TODO [CLEANUP] review if it makes sense to be part of Building struct
     #[max_len(20, 2)]
     pub extraction: Vec<u16>,
 
@@ -70,7 +70,7 @@ impl Default for Settlement {
                 turns_to_build: 0,
             }],
             worker_assignment: vec![-1], //one worker comes as default from town hall
-            extraction: vec![get_extraction_cap(1)], //todo replace this with hashmap to not store useless extraction value for in this case townhall
+            extraction: vec![get_extraction_cap(1)], //TODO [CLEANUP] replace this with hashmap to not store useless extraction value for in this case townhall
             treasury: config::INITIAL_TREASURY,
             environment: config::INITIAL_ENVIRONMENT,
             time_units: config::INITIAL_TIME_UNITS,

@@ -5,7 +5,10 @@ declare_id!("4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j");
 
 #[system]
 pub mod repair {
-    use settlement::{config::BUILDINGS_CONFIG, Settlement};
+    use settlement::{
+        config::{self, get_research_level, ResearchType, BUILDINGS_CONFIG},
+        Settlement,
+    };
 
     pub fn execute(ctx: Context<Components>, args: RepairArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
@@ -17,9 +20,14 @@ pub mod repair {
         let building = settlement.buildings[args.index as usize];
         let building_config = &BUILDINGS_CONFIG[building.id as usize];
 
-        //todo multiply cost by level??
+        //TODO [BALANCE] multiply cost by level??
+
+        let max_deterioration = config::BASE_DETERIORATION_CAP
+            + config::DETERIORATION_CAP_RESEARCH_MULTIPLIER
+                * get_research_level(settlement.research, ResearchType::DeteriorationCap);
+
         let repair_cost = (building_config.cost
-            * (settlement.buildings[args.index as usize].deterioration / u8::MAX)) //todo dynamic CAP
+            * (settlement.buildings[args.index as usize].deterioration / max_deterioration))
             as u16;
 
         if settlement.treasury.wood < repair_cost {

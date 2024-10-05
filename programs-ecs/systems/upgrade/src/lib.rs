@@ -19,7 +19,7 @@ pub mod upgrade {
         let building = settlement.buildings[args.index as usize];
         let building_config = &BUILDINGS_CONFIG[building.id as usize];
 
-        //todo multiply cost by level??
+        //TODO [BALANCE] multiply cost by level??
         if settlement.treasury.wood < building_config.cost as u16 {
             return err!(errors::BuildError::NotEnoughResources);
         } else {
