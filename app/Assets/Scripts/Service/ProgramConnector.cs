@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Settlement;
 using Settlement.Program;
 using Solana.Unity.Programs;
+using Solana.Unity.Rpc.Core.Http;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
@@ -47,14 +48,23 @@ namespace Service
 
         public async Task EnsureBalance()
         {
-            var requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
-            if (requestResult.Result.Value < 500000000)
+            var requestResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
+            Debug.Log($"{Web3.Account.PublicKey} {requestResult.Result} ");
+            
+            if (requestResult.Result.Value < 50000000)
             {
-                var airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 1000000000);
-                var txResult = await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
+                await Airdrop();
             }
 
-            requestResult = (await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey));
+        }
+        
+        public async Task Airdrop()
+        {
+            RequestResult<string> airdropResult = null;
+            airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 100000000);
+            var txResult = await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
+            var balanceResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
+            Debug.Log($"{Web3.Account.PublicKey} \nairdropResult.Result: {airdropResult.Result}, \ntxResult{txResult} \n balanceResult:{balanceResult} ");
         }
 
         public async Task<bool> ReloadData()
@@ -142,10 +152,10 @@ namespace Service
                 new { time });
         }
 
-        public async Task<bool> AssignLabour(int labour_index, int building_index)
+        public async Task<bool> AssignLabour(int worker_index, int building_index)
         {
             return await ApplySystem(new PublicKey("F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq"),
-                new { labour_index, building_index });
+                new { worker_index, building_index });
         }
 
 
@@ -170,6 +180,18 @@ namespace Service
                 new { research_type });
         }
 
+        public async Task<bool> Sacrifice(int index)
+        {
+            return await ApplySystem(new PublicKey("4Cvjz6qrVakbSg3dqBMA8vv8XL8KD3UCTbRVM8g8WkoW"),
+                new { index });
+        }
+
+        public async Task<bool> Reset()
+        {
+            return await ApplySystem(new PublicKey("J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"),
+                new {  });
+        }
+
         private async Task<bool> ApplySystem(PublicKey system, object args)
         {
             Dimmer.Visible = true;
@@ -189,7 +211,7 @@ namespace Service
                         Web3.Account.PublicKey
                     )
                 },
-                RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
+                RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Processed, useCache: false)
             };
 
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);

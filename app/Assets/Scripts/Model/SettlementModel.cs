@@ -213,7 +213,7 @@ namespace Model
         {
             var result = 0;
 
-            if (type == BuildingType.WaterCollector) //wells dont need labour to work
+            if (type == BuildingType.WaterCollector) //wells dont need workers
             {
                 result += _data.Buildings.Where(building => building.Id == type)
                     .Sum(GetBuildingCollectionRate);

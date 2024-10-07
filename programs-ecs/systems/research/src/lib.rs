@@ -19,11 +19,9 @@ pub mod research {
             return err!(errors::ResearchError::ResearchIndexOutOfRange);
         }
 
-        msg!("Research Type : {}!", args.research_type);
 
         let mut research_level = get_research_level_u8(settlement.research, args.research_type);
 
-        msg!("Old Research Level: {}!", research_level);
 
         let research_cost = config::get_research_cost(args.research_type, research_level);
         if settlement.treasury.gold < research_cost {
@@ -36,21 +34,16 @@ pub mod research {
 
         research_level += 1;
 
-        msg!("New Research Level: {}!", research_level);
-
         let mut research_value = settlement.research;
 
-        msg!("Old research value: {:32b}!", research_value);
 
         //cut out old value
         research_value &= !((RESEARCH_MASK as u32) << BITS_PER_RESEARCH * args.research_type);
 
-        msg!("Cut out research value: {:32b}!", research_value);
 
         //replace with new one
         research_value |= (research_level as u32) << BITS_PER_RESEARCH * args.research_type;
 
-        msg!("New out research value: {:32b}!", research_value);
 
         settlement.research = research_value;
         settlement.treasury.gold -= research_cost;

@@ -4,7 +4,7 @@ use bolt_lang::*;
 declare_id!("F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq");
 
 #[system]
-pub mod assign_labour {
+pub mod assign_worker {
     use settlement::Settlement;
 
     pub fn execute(ctx: Context<Components>, args: AssignLabourArgs) -> Result<Components> {
@@ -14,15 +14,15 @@ pub mod assign_labour {
             return err!(errors::AssignWorkerError::BuildingIndexOutOfRange);
         }
 
-        if settlement.buildings[0].level <= args.labour_index {
+        if settlement.buildings[0].level <= args.worker_index {
             return err!(errors::AssignWorkerError::WorkerIndexOutOfRange);
         }
 
-        if settlement.worker_assignment[args.labour_index as usize] < -1 {
+        if settlement.worker_assignment[args.worker_index as usize] < -1 {
             return err!(errors::AssignWorkerError::NotRestoredYet);
         }
 
-        settlement.worker_assignment[args.labour_index as usize] = args.building_index;
+        settlement.worker_assignment[args.worker_index as usize] = args.building_index;
         Ok(ctx.accounts)
     }
 
@@ -33,7 +33,7 @@ pub mod assign_labour {
 
     #[arguments]
     struct AssignLabourArgs {
-        labour_index: u8,
+        worker_index: u8,
         building_index: i8,
     }
 }

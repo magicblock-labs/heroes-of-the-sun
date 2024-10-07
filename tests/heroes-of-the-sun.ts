@@ -73,7 +73,7 @@ describe("HeroesOfTheSun", () => {
   // });
 
   // it("Allocates Labour To Food Collector", async () => {
-  //   const state = await settlement.assignLabour({ labour_index: 1, building_index: 3 });
+  //   const state = await settlement.assignLabour({ worker_index: 1, building_index: 3 });
   //   expect(state.workerAssignment[1]).to.eq(3);
   // });
 

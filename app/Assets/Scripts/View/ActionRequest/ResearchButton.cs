@@ -1,7 +1,5 @@
-using System;
 using Model;
 using Notifications;
-using Service;
 using Settlement.Types;
 using Utils.Injection;
 using BuildingType = Settlement.Types.BuildingType;
@@ -11,7 +9,6 @@ namespace View.ActionRequest
     public class ResearchButton : InjectableBehaviour, IBuildingActionButton
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private ProgramConnector _connector;
         [Inject] private ShowResearch _showResearch;
         [Inject] private InteractionStateModel _interaction;
 
