@@ -13,22 +13,23 @@ import { Build } from "../target/types/build";
 import { AssignWorker } from "../target/types/assign_worker";
 import { Upgrade } from "../target/types/upgrade";
 import { Research } from "../target/types/research";
+import { Reset } from "../target/types/reset";
 
 
 export enum BuildingType {
-  TownHall = 0,
-  Altar = 1,
-  Research = 2,
-  WaterCollector = 3,
-  WoodStorage = 4,
-  FoodCollector = 5,
-  FoodStorage = 6,
-  WoodCollector = 7,
-  WaterStorage = 8,
-  StoneCollector = 9,
-  StoneStorage = 10,
-  GoldCollector = 11,
-  GoldStorage = 12,
+  TownHall,
+  Altar,
+  Research,
+  FoodCollector,
+  FoodStorage,
+  WoodCollector,
+  WoodStorage,
+  WaterCollector,
+  WaterStorage,
+  StoneCollector,
+  StoneStorage,
+  GoldCollector,
+  GoldStorage
 }
 
 
@@ -53,7 +54,6 @@ export type WaitArgs = {
 }
 
 export class SettlementWrapper {
-
   provider: anchor.AnchorProvider;
 
   worldPda: PublicKey;
@@ -67,48 +67,52 @@ export class SettlementWrapper {
   assignWorkerSystem: Program<AssignWorker>;
   upgradeSystem: Program<Upgrade>;
   researchSystem: Program<Research>;
+  resetSystem: Program<Reset>;
+
+  _initialized: boolean;
 
   async init() {
-    this.provider = anchor.AnchorProvider.env();
-    anchor.setProvider(this.provider);
+    if (!this._initialized) {
+      this.provider = anchor.AnchorProvider.env();
+      anchor.setProvider(this.provider);
 
-    this.settlementComponent = anchor.workspace.Settlement as Program<Settlement>;
-    this.waitSystem = anchor.workspace.Wait as Program<Wait>;
-    this.buildSystem = anchor.workspace.Build as Program<Build>;
-    this.assignWorkerSystem = anchor.workspace.AssignWorker as Program<AssignWorker>;
-    this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
-    this.researchSystem = anchor.workspace.Research as Program<Research>;
+      this.settlementComponent = anchor.workspace.Settlement as Program<Settlement>;
+      this.waitSystem = anchor.workspace.Wait as Program<Wait>;
+      this.buildSystem = anchor.workspace.Build as Program<Build>;
+      this.assignWorkerSystem = anchor.workspace.AssignWorker as Program<AssignWorker>;
+      this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
+      this.researchSystem = anchor.workspace.Research as Program<Research>;
+      this.resetSystem = anchor.workspace.Reset as Program<Reset>;
 
-    const initNewWorld = await InitializeNewWorld({
-      payer: this.provider.wallet.publicKey,
-      connection: this.provider.connection,
-    });
-    let txSign = await this.provider.sendAndConfirm(initNewWorld.transaction);
-    this.worldPda = initNewWorld.worldPda;
+      const initNewWorld = await InitializeNewWorld({
+        payer: this.provider.wallet.publicKey,
+        connection: this.provider.connection,
+      });
+      let txSign = await this.provider.sendAndConfirm(initNewWorld.transaction);
+      this.worldPda = initNewWorld.worldPda;
 
-    console.log(`Initialized a new world \x1b[31m (PDA = ${this.worldPda}, ID = ${initNewWorld.worldId}\x1b[0m).`);
-    console.log(`Initialization signature: ${txSign}`);
+      console.log(`Initialized a new world \x1b[31m (PDA = ${this.worldPda}, ID = ${initNewWorld.worldId}\x1b[0m).`);
+      console.log(`Initialization signature: ${txSign}`);
 
-    const addEntity = await AddEntity({
-      payer: this.provider.wallet.publicKey,
-      world: this.worldPda,
-      connection: this.provider.connection,
-    });
-    txSign = await this.provider.sendAndConfirm(addEntity.transaction);
-    this.entityPda = addEntity.entityPda;
-    console.log(`Initialized a new Entity (PDA=${addEntity.entityPda}). Initialization signature: ${txSign}`);
+      const addEntity = await AddEntity({
+        payer: this.provider.wallet.publicKey,
+        world: this.worldPda,
+        connection: this.provider.connection,
+      });
+      txSign = await this.provider.sendAndConfirm(addEntity.transaction);
+      this.entityPda = addEntity.entityPda;
+      console.log(`Initialized a new Entity (PDA=${addEntity.entityPda}). Initialization signature: ${txSign}`);
 
-    const initializeComponent = await InitializeComponent({
-      payer: this.provider.wallet.publicKey,
-      entity: this.entityPda,
-      componentId: this.settlementComponent.programId,
-    });
-    txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
-    this.componentPda = initializeComponent.componentPda;
-    console.log(`Initialized the settlement component. Initialization signature: ${txSign}`);
-
-    return await this.state();
-
+      const initializeComponent = await InitializeComponent({
+        payer: this.provider.wallet.publicKey,
+        entity: this.entityPda,
+        componentId: this.settlementComponent.programId,
+      });
+      txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
+      this.componentPda = initializeComponent.componentPda;
+      console.log(`Initialized the settlement component. Initialization signature: ${txSign}`);
+    }
+    this._initialized = true;
   }
 
   async state() {
@@ -202,4 +206,38 @@ export class SettlementWrapper {
 
     return await this.state();
   }
+
+
+  async reset() {
+
+    await this.init();
+
+    // Run the reset system
+    const applySystem = await ApplySystem({
+      authority: this.provider.wallet.publicKey,
+      systemId: this.resetSystem.programId,
+      entities: [{
+        entity: this.entityPda,
+        components: [{ componentId: this.settlementComponent.programId }],
+      }]
+    }
+    );
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`Waited a day: ${txSign}`);
+
+    return await this.state();
+  }
+
+
+
+  getTurnsToCompleteAll(state: { buildings: { turnsToBuild: number; }[]; }): number {
+    let result = 0;
+
+    for (let building of state.buildings)
+      if (building.turnsToBuild > result)
+        result = building.turnsToBuild;
+
+    return result;
+  }
+
 };
