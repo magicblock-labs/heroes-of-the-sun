@@ -94,13 +94,10 @@ pub mod build {
             deterioration: 0,
             level: 1,
             turns_to_build: build_time,
+            extraction: get_extraction_cap(1),
         };
 
         settlement.buildings.push(new_building);
-
-        settlement
-            .extraction
-            .push(get_extraction_cap(new_building.level));
 
         if args.worker_index >= 0 {
             if settlement.worker_assignment.len() as i16 <= args.worker_index {

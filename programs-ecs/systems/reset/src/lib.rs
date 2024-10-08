@@ -24,10 +24,10 @@ pub mod reset {
             id: BuildingType::TownHall,
             level: 1,
             turns_to_build: 0,
+            extraction: 0,
         }];
 
         ctx.accounts.settlement.worker_assignment = vec![-1]; //one worker comes as default from town hall
-        ctx.accounts.settlement.extraction = vec![get_extraction_cap(1)]; //TODO [CLEANUP] replace this with hashmap to not store useless extraction value for in this case townhall
         ctx.accounts.settlement.treasury = config::INITIAL_TREASURY;
         ctx.accounts.settlement.environment = config::INITIAL_ENVIRONMENT;
         ctx.accounts.settlement.time_units = config::INITIAL_TIME_UNITS;

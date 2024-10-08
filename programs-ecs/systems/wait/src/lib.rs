@@ -111,7 +111,7 @@ pub mod wait {
                 continue;
             }
 
-            let building = settlement.buildings[building_index as usize];
+            let mut building = settlement.buildings[building_index as usize];
 
             let max_deterioration = config::BASE_DETERIORATION_CAP
                 + config::DETERIORATION_CAP_RESEARCH_MULTIPLIER
@@ -194,12 +194,12 @@ pub mod wait {
                                     settlement.research,
                                     ResearchType::ResourceCollectionSpeed,
                                 ) as u16,
-                            settlement.extraction[building_index as usize],
+                            building.extraction,
                         );
                         collected = u16::min(collected, stone_storage - settlement.treasury.stone);
                     }
                     if collected > 0 {
-                        settlement.extraction[building_index as usize] -= collected;
+                        building.extraction -= collected;
                         settlement.treasury.stone += collected; //* faith +technology + env capacity */
                     }
                 }
@@ -209,12 +209,12 @@ pub mod wait {
                     if gold_storage > settlement.treasury.gold {
                         collected = u16::min(
                             time_to_wait * get_storage_level_multiplier(building.level),
-                            settlement.extraction[building_index as usize],
+                            building.extraction,
                         );
                         collected = u16::min(collected, gold_storage - settlement.treasury.gold);
                     }
                     if collected > 0 {
-                        settlement.extraction[building_index as usize] -= collected;
+                        building.extraction -= collected;
                         settlement.treasury.gold += collected; //* faith +technology + env capacity */
                     }
                 }

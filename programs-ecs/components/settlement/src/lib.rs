@@ -1,7 +1,7 @@
 pub mod config;
 
 use bolt_lang::*;
-use config::{get_extraction_cap, BuildingType};
+use config::BuildingType;
 
 declare_id!("B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv");
 
@@ -28,6 +28,7 @@ pub struct Building {
     pub id: BuildingType,
     pub level: u8,
     pub turns_to_build: u8,
+    pub extraction: u16, //mines only
 }
 
 #[component]
@@ -37,10 +38,6 @@ pub struct Settlement {
 
     pub environment: EnvironmentState,
     pub treasury: ResourceBalance,
-
-    //TODO [CLEANUP] review if it makes sense to be part of Building struct
-    #[max_len(20, 2)]
-    pub extraction: Vec<u16>,
 
     pub faith: u8,
     pub time_units: u8,
@@ -68,9 +65,9 @@ impl Default for Settlement {
                 id: BuildingType::TownHall,
                 level: 1,
                 turns_to_build: 0,
+                extraction: 0,
             }],
             worker_assignment: vec![-1], //one worker comes as default from town hall
-            extraction: vec![get_extraction_cap(1)], //TODO [CLEANUP] replace this with hashmap to not store useless extraction value for in this case townhall
             treasury: config::INITIAL_TREASURY,
             environment: config::INITIAL_ENVIRONMENT,
             time_units: config::INITIAL_TIME_UNITS,

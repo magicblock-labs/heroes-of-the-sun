@@ -28,7 +28,7 @@ pub mod upgrade {
 
         //all checks passed
         settlement.buildings[args.index as usize].level += 1;
-        settlement.extraction[args.index as usize] +=
+        settlement.buildings[args.index as usize].extraction +=
             get_extraction_cap(settlement.buildings[args.index as usize].level);
 
         if matches!(building.id, BuildingType::TownHall) {
