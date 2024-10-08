@@ -24,8 +24,8 @@ pub struct BuildingConfig {
     pub id: BuildingType,
     pub width: u8,
     pub height: u8,
-    pub cost: u8,
-    pub build_time: u8,
+    pub cost_tier: u8,
+    pub build_time_tier: u8,
 }
 
 pub const MAP_WIDTH: u8 = 20;
@@ -57,92 +57,92 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
         id: BuildingType::TownHall,
         width: 4,
         height: 4,
-        cost: 50,
-        build_time: 3,
+        cost_tier: 5,
+        build_time_tier: 3,
     },
     BuildingConfig {
         id: BuildingType::Altar,
         width: 3,
         height: 3,
-        cost: 60,
-        build_time: 5,
+        cost_tier: 3,
+        build_time_tier: 5,
     },
     BuildingConfig {
         id: BuildingType::Research,
         width: 3,
         height: 3,
-        cost: 60,
-        build_time: 5,
+        cost_tier: 3,
+        build_time_tier: 5,
     },
     BuildingConfig {
         id: BuildingType::FoodCollector,
         width: 2,
         height: 2,
-        cost: 10,
-        build_time: 1,
+        cost_tier: 1,
+        build_time_tier: 2,
     },
     BuildingConfig {
         id: BuildingType::FoodStorage,
         width: 3,
         height: 3,
-        cost: 8,
-        build_time: 2,
+        cost_tier: 2,
+        build_time_tier: 4,
     },
     BuildingConfig {
         id: BuildingType::WoodCollector,
         width: 2,
         height: 2,
-        cost: 5,
-        build_time: 3,
+        cost_tier: 1,
+        build_time_tier: 2,
     },
     BuildingConfig {
         id: BuildingType::WoodStorage,
         width: 3,
         height: 3,
-        cost: 8,
-        build_time: 4,
+        cost_tier: 2,
+        build_time_tier: 4,
     },
     BuildingConfig {
         id: BuildingType::WaterCollector,
         width: 2,
         height: 2,
-        cost: 10,
-        build_time: 2,
+        cost_tier: 1,
+        build_time_tier: 2,
     },
     BuildingConfig {
         id: BuildingType::WaterStorage,
         width: 3,
         height: 3,
-        cost: 5,
-        build_time: 2,
+        cost_tier: 2,
+        build_time_tier: 4,
     },
     BuildingConfig {
         id: BuildingType::StoneCollector,
         width: 3,
         height: 3,
-        cost: 8,
-        build_time: 4,
+        cost_tier: 1,
+        build_time_tier: 2,
     },
     BuildingConfig {
         id: BuildingType::StoneStorage,
         width: 3,
         height: 3,
-        cost: 8,
-        build_time: 4,
+        cost_tier: 2,
+        build_time_tier: 4,
     },
     BuildingConfig {
         id: BuildingType::GoldCollector,
         width: 3,
         height: 3,
-        cost: 8,
-        build_time: 4,
+        cost_tier: 1,
+        build_time_tier: 2,
     },
     BuildingConfig {
         id: BuildingType::GoldStorage,
         width: 3,
         height: 3,
-        cost: 8,
-        build_time: 4,
+        cost_tier: 2,
+        build_time_tier: 4,
     },
 ];
 
@@ -226,4 +226,45 @@ pub fn get_research_cost(_research_type: u8, level: u8) -> u16 {
 
 pub fn get_regeneration_rate(research: u32) -> u16 {
     return 1 + get_research_level(research, ResearchType::EnvironmentRegeneration) as u16;
+}
+
+fn calculate_cost(research: u32, tier: u8, level: u8, level_offset: u8, multiplier: f32) -> u16 {
+    if level_offset >= level {
+        return 0;
+    }
+
+    let base_cost = 2;
+    let level_multiplier: f32 = 1.5;
+    let cost_research = get_research_level(research, ResearchType::BuildingCost);
+    let cost = ((base_cost * tier) as f32 * (level_multiplier).powf((level - level_offset) as f32))
+        * (1.0 - BUILDING_COST_RESEARCH_MULTIPLIER * (cost_research as f32))
+        * multiplier;
+
+    return cost.ceil() as u16;
+}
+
+pub fn get_construction_cost(
+    research: u32,
+    tier: u8,
+    level: u8,
+    multiplier: f32,
+) -> ResourceBalance {
+    return ResourceBalance {
+        food: 0,
+        water: 0,
+        wood: calculate_cost(research, tier, level, 0, multiplier),
+        stone: calculate_cost(research, tier, level, 4, multiplier),
+        gold: calculate_cost(research, tier, level, 8, multiplier),
+    };
+}
+
+pub fn get_build_time(research: u32, tier: u8, level: u8) -> u8 {
+    let level_multiplier: f32 = 1.2;
+    let base_cost = (tier as f32 * (level_multiplier).powf(level as f32)) as u8;
+    return base_cost
+        - u8::min(
+            BUILDING_SPEED_RESEARCH_TURN_REDUCTION
+                * get_research_level(research, ResearchType::BuildingSpeed),
+            base_cost,
+        );
 }

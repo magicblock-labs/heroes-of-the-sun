@@ -6,7 +6,7 @@ declare_id!("4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j");
 #[system]
 pub mod repair {
     use settlement::{
-        config::{self, get_research_level, ResearchType, BUILDINGS_CONFIG},
+        config::{self, get_construction_cost, get_research_level, ResearchType, BUILDINGS_CONFIG},
         Settlement,
     };
 
@@ -20,21 +20,32 @@ pub mod repair {
         let building = settlement.buildings[args.index as usize];
         let building_config = &BUILDINGS_CONFIG[building.id as usize];
 
-        //TODO [BALANCE] multiply cost by level??
-
         let max_deterioration = config::BASE_DETERIORATION_CAP
             + config::DETERIORATION_CAP_RESEARCH_MULTIPLIER
                 * get_research_level(settlement.research, ResearchType::DeteriorationCap);
 
-        let repair_cost = (building_config.cost
-            * (settlement.buildings[args.index as usize].deterioration / max_deterioration))
-            as u16;
+        let build_cost = get_construction_cost(
+            settlement.research,
+            building_config.cost_tier,
+            building.level,
+            building.deterioration as f32 / max_deterioration as f32,
+        );
 
-        if settlement.treasury.wood < repair_cost {
+        if settlement.treasury.wood < build_cost.wood
+            || settlement.treasury.water < build_cost.water
+            || settlement.treasury.food < build_cost.food
+            || settlement.treasury.stone < build_cost.stone
+            || settlement.treasury.gold < build_cost.gold
+        {
             return err!(errors::RepairError::NotEnoughResources);
+        } else {
+            settlement.treasury.wood -= build_cost.wood;
+            settlement.treasury.water -= build_cost.water;
+            settlement.treasury.food -= build_cost.food;
+            settlement.treasury.stone -= build_cost.stone;
+            settlement.treasury.gold -= build_cost.gold;
         }
 
-        settlement.treasury.wood -= repair_cost;
         //all checks passed
         settlement.buildings[args.index as usize].deterioration = 0;
 

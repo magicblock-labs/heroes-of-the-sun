@@ -24,7 +24,7 @@ pub mod reset {
             id: BuildingType::TownHall,
             level: 1,
             turns_to_build: 0,
-            extraction: 0,
+            extraction: get_extraction_cap(1),
         }];
 
         ctx.accounts.settlement.worker_assignment = vec![-1]; //one worker comes as default from town hall

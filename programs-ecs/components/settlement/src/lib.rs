@@ -1,7 +1,7 @@
 pub mod config;
 
 use bolt_lang::*;
-use config::BuildingType;
+use config::{get_extraction_cap, BuildingType};
 
 declare_id!("B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv");
 
@@ -65,7 +65,7 @@ impl Default for Settlement {
                 id: BuildingType::TownHall,
                 level: 1,
                 turns_to_build: 0,
-                extraction: 0,
+                extraction: get_extraction_cap(1),
             }],
             worker_assignment: vec![-1], //one worker comes as default from town hall
             treasury: config::INITIAL_TREASURY,

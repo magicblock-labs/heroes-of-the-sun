@@ -2,9 +2,13 @@ mod errors;
 
 use bolt_lang::*;
 use settlement::{
-    config::{BuildingConfig, BUILDINGS_CONFIG, MAP_HEIGHT, MAP_WIDTH},
+    config::{
+        get_build_time, get_construction_cost, get_extraction_cap, BuildingConfig,
+        BUILDINGS_CONFIG, MAP_HEIGHT, MAP_WIDTH,
+    },
     Building, Settlement,
 };
+use std::u8;
 
 declare_id!("AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c");
 
@@ -44,9 +48,6 @@ fn fits(settlement: &mut Account<Settlement>, x: u8, y: u8, new_config: &Buildin
 
 #[system]
 pub mod build {
-    use std::u8;
-
-    use settlement::config::{self, get_extraction_cap, get_research_level, ResearchType};
 
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
         if args.config_index as usize >= BUILDINGS_CONFIG.len() {
@@ -69,23 +70,23 @@ pub mod build {
             return err!(errors::BuildError::WontFit);
         }
 
-        let cost_research = get_research_level(settlement.research, ResearchType::BuildingCost);
-        let cost = ((new_building_config.cost as f32)
-            * (1.0 - config::BUILDING_COST_RESEARCH_MULTIPLIER * (cost_research as f32)))
-            .ceil();
+        let build_cost =
+            get_construction_cost(settlement.research, new_building_config.cost_tier, 1, 1.0);
 
-        if settlement.treasury.wood < cost as u16 {
+        if settlement.treasury.wood < build_cost.wood
+            || settlement.treasury.water < build_cost.water
+            || settlement.treasury.food < build_cost.food
+            || settlement.treasury.stone < build_cost.stone
+            || settlement.treasury.gold < build_cost.gold
+        {
             return err!(errors::BuildError::NotEnoughResources);
         } else {
-            settlement.treasury.wood -= cost as u16; //TODO [BALANCE] use other resources for high level buildings (?)
+            settlement.treasury.wood -= build_cost.wood;
+            settlement.treasury.water -= build_cost.water;
+            settlement.treasury.food -= build_cost.food;
+            settlement.treasury.stone -= build_cost.stone;
+            settlement.treasury.gold -= build_cost.gold;
         }
-
-        let build_time = new_building_config.build_time
-            - u8::min(
-                config::BUILDING_SPEED_RESEARCH_TURN_REDUCTION
-                    * get_research_level(settlement.research, ResearchType::BuildingSpeed),
-                new_building_config.build_time,
-            );
 
         let new_building = Building {
             x: args.x,
@@ -93,7 +94,11 @@ pub mod build {
             id: new_building_config.id,
             deterioration: 0,
             level: 1,
-            turns_to_build: build_time,
+            turns_to_build: get_build_time(
+                settlement.research,
+                new_building_config.build_time_tier,
+                1,
+            ),
             extraction: get_extraction_cap(1),
         };
 
