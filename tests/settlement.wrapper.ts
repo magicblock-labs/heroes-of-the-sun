@@ -14,6 +14,7 @@ import { AssignWorker } from "../target/types/assign_worker";
 import { Upgrade } from "../target/types/upgrade";
 import { Research } from "../target/types/research";
 import { Reset } from "../target/types/reset";
+import { Repair } from "../target/types/repair";
 
 
 export enum BuildingType {
@@ -37,11 +38,15 @@ export type BuildArgs = {
   x: number, y: number, config_index: BuildingType, worker_index: number
 }
 
-export type AssignLabourArgs = {
+export type AssignWorkerArgs = {
   building_index: number, worker_index: number
 }
 
 export type UpgradeArgs = {
+  index: number
+}
+
+export type RepairArgs = {
   index: number
 }
 
@@ -66,6 +71,7 @@ export class SettlementWrapper {
   buildSystem: Program<Build>;
   assignWorkerSystem: Program<AssignWorker>;
   upgradeSystem: Program<Upgrade>;
+  repairSystem: Program<Repair>;
   researchSystem: Program<Research>;
   resetSystem: Program<Reset>;
 
@@ -81,6 +87,7 @@ export class SettlementWrapper {
       this.buildSystem = anchor.workspace.Build as Program<Build>;
       this.assignWorkerSystem = anchor.workspace.AssignWorker as Program<AssignWorker>;
       this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
+      this.repairSystem = anchor.workspace.Repair as Program<Repair>;
       this.researchSystem = anchor.workspace.Research as Program<Research>;
       this.resetSystem = anchor.workspace.Reset as Program<Reset>;
 
@@ -136,7 +143,7 @@ export class SettlementWrapper {
     return await this.state();
   }
 
-  async assignLabour(args: AssignLabourArgs) {
+  async assignWorker(args: AssignWorkerArgs) {
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
       systemId: this.assignWorkerSystem.programId,
@@ -166,7 +173,24 @@ export class SettlementWrapper {
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`build tx: ${txSign}`);
+    console.log(`upgrade tx: ${txSign}`);
+
+    return await this.state();
+  }
+
+  async repair(args: RepairArgs) {
+    // Run the build system
+    const applySystem = await ApplySystem({
+      authority: this.provider.wallet.publicKey,
+      systemId: this.repairSystem.programId,
+      entities: [{
+        entity: this.entityPda,
+        components: [{ componentId: this.settlementComponent.programId }],
+      }],
+      args
+    });
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`repair tx: ${txSign}`);
 
     return await this.state();
   }

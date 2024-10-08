@@ -46,11 +46,17 @@ describe("Test suite for: resource collection", () => {
     expect(state.treasury.water).to.gt(stateBefore.treasury.water)
   });
 
-  it("Keeps collecting water even without a worker assigned", async () => {
-    let stateBefore = (await settlement.state());
-    await settlement.build({ x: 1, y: 10, config_index: BuildingType.FoodCollector, worker_index: 0 });
-    const state = await settlement.wait({ time: 1 });
+  it("Keeps collecting water even without a worker assigned (while building food storage)", async () => {
+    const stateBefore = await settlement.build({ x: 1, y: 10, config_index: BuildingType.FoodStorage, worker_index: 0 });
+    const state = await settlement.wait({ time: settlement.getTurnsToCompleteAll(stateBefore) });
     expect(state.treasury.water).to.gt(stateBefore.treasury.water)
+  });
+
+
+  it("Builds FoodCollector", async () => {
+    const stateBefore = await settlement.build({ x: 12, y: 12, config_index: BuildingType.FoodCollector, worker_index: 0 });
+    const state = await settlement.wait({ time: settlement.getTurnsToCompleteAll(stateBefore) + 1 });
+    expect(state.treasury.food).to.gt(stateBefore.treasury.food)
   });
 
 
