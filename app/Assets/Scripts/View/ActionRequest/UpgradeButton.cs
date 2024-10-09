@@ -14,7 +14,14 @@ namespace View.ActionRequest
         [Inject] private ConfigModel _config;
         [Inject] private InteractionStateModel _interaction;
 
-        [SerializeField] private Text costLabel;
+        [SerializeField] private GameObject costWood;
+        [SerializeField] private Text costWoodLabel;
+
+        [SerializeField] private GameObject costStone;
+        [SerializeField] private Text costStoneLabel;
+
+        [SerializeField] private GameObject costGold;
+        [SerializeField] private Text costGoldLabel;
 
         private int _index;
         private bool _canAfford;
@@ -26,9 +33,20 @@ namespace View.ActionRequest
 
             _index = index;
 
-            var cost = _config.Buildings[value.Id].cost;
-            _canAfford = cost <= _settlement.Get().Treasury.Wood;
-            costLabel.text = _canAfford ? $"{cost}" : $"<color=red>{cost}</color>";
+            var treasury = _settlement.Get().Treasury;
+            var cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level+1, 1);
+
+            costWood.SetActive(cost.Wood > 0);
+            costWoodLabel.text = cost.Wood.ToString();
+            costWoodLabel.color = cost.Wood <= treasury.Wood ? Color.white : Color.red;
+            
+            costStone.SetActive(cost.Stone > 0);
+            costStoneLabel.text = cost.Stone.ToString();
+            costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
+            
+            costGold.SetActive(cost.Gold > 0);
+            costGoldLabel.text = cost.Gold.ToString();
+            costGoldLabel.color = cost.Gold <= treasury.Gold ? Color.white : Color.red;
         }
 
         public async void Upgrade()

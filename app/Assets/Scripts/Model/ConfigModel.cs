@@ -16,8 +16,8 @@ namespace Model
     {
         public int width;
         public int height;
-        public uint cost;
-        public uint buildTime;
+        public uint costTier;
+        public uint buildTimeTier;
         public string prefab;
     }
 
@@ -48,8 +48,8 @@ namespace Model
                     {
                         width = 4,
                         height = 4,
-                        cost = 50,
-                        buildTime = 3,
+                        costTier = 5,
+                        buildTimeTier = 5,
                         prefab = BuildingType.TownHall.ToString()
                     }
                 },
@@ -58,8 +58,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 30,
-                        buildTime = 10,
+                        costTier = 3,
+                        buildTimeTier = 5,
                         prefab = BuildingType.Altar.ToString()
                     }
                 },
@@ -68,8 +68,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 60,
-                        buildTime = 5,
+                        costTier = 3,
+                        buildTimeTier = 5,
                         prefab = BuildingType.Research.ToString()
                     }
                 },
@@ -78,8 +78,8 @@ namespace Model
                     {
                         width = 2,
                         height = 2,
-                        cost = 10,
-                        buildTime = 1,
+                        costTier = 1,
+                        buildTimeTier = 2,
                         prefab = BuildingType.FoodCollector.ToString()
                     }
                 },
@@ -88,8 +88,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 8,
-                        buildTime = 2,
+                        costTier = 2,
+                        buildTimeTier = 4,
                         prefab = BuildingType.FoodStorage.ToString()
                     }
                 },
@@ -98,8 +98,8 @@ namespace Model
                     {
                         width = 2,
                         height = 2,
-                        cost = 5,
-                        buildTime = 3,
+                        costTier = 1,
+                        buildTimeTier = 2,
                         prefab = BuildingType.WoodCollector.ToString()
                     }
                 },
@@ -108,8 +108,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 8,
-                        buildTime = 4,
+                        costTier = 2,
+                        buildTimeTier = 4,
                         prefab = BuildingType.WoodStorage.ToString()
                     }
                 },
@@ -118,8 +118,8 @@ namespace Model
                     {
                         width = 2,
                         height = 2,
-                        cost = 10,
-                        buildTime = 2,
+                        costTier = 1,
+                        buildTimeTier = 2,
                         prefab = BuildingType.WaterCollector.ToString()
                     }
                 },
@@ -128,8 +128,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 5,
-                        buildTime = 2,
+                        costTier = 2,
+                        buildTimeTier = 4,
                         prefab = BuildingType.WaterStorage.ToString()
                     }
                 },
@@ -138,8 +138,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 5,
-                        buildTime = 3,
+                        costTier = 1,
+                        buildTimeTier = 2,
                         prefab = BuildingType.StoneCollector.ToString()
                     }
                 },
@@ -148,8 +148,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 8,
-                        buildTime = 4,
+                        costTier = 2,
+                        buildTimeTier = 4,
                         prefab = BuildingType.StoneStorage.ToString()
                     }
                 },
@@ -158,8 +158,8 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 5,
-                        buildTime = 3,
+                        costTier = 1,
+                        buildTimeTier = 2,
                         prefab = BuildingType.GoldCollector.ToString()
                     }
                 },
@@ -168,13 +168,16 @@ namespace Model
                     {
                         width = 3,
                         height = 3,
-                        cost = 8,
-                        buildTime = 4,
+                        costTier = 2,
+                        buildTimeTier = 4,
                         prefab = BuildingType.GoldStorage.ToString()
                     }
                 }
             }
         };
+
+        public const int BASE_DETERIORATION_CAP = 50;
+        public const int DETERIORATION_CAP_RESEARCH_MULTIPLIER = 5;
 
         public int Width => _buildConfig.width;
         public int Height => _buildConfig.height;

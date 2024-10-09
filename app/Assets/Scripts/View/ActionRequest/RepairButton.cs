@@ -15,7 +15,14 @@ namespace View.ActionRequest
         [Inject] private ConfigModel _config;
         [Inject] private InteractionStateModel _interaction;
 
-        [SerializeField] private Text costLabel;
+        [SerializeField] private GameObject costWood;
+        [SerializeField] private Text costWoodLabel;
+
+        [SerializeField] private GameObject costStone;
+        [SerializeField] private Text costStoneLabel;
+
+        [SerializeField] private GameObject costGold;
+        [SerializeField] private Text costGoldLabel;
 
         private int _index;
         private bool _canAfford;
@@ -27,20 +34,35 @@ namespace View.ActionRequest
 
             _index = index;
 
-            var cost = Math.Ceiling(_config.Buildings[value.Id].cost * (float)value.Deterioration / 127);
-            _canAfford = cost <= _settlement.Get().Treasury.Wood;
-            
-            costLabel.text =  _canAfford ? $"{cost}" : $"<color=red>{cost}</color>";
-            
+            var maxDeterioration = ConfigModel.BASE_DETERIORATION_CAP
+                                   + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
+                                   * _settlement.GetResearchLevel(SettlementModel.ResearchType.DeteriorationCap);
+
+            var relativeDeterioration = (float)value.Deterioration / maxDeterioration;
+
+            var treasury = _settlement.Get().Treasury;
+            var cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level + 1,
+                relativeDeterioration);
+
+            costWood.SetActive(cost.Wood > 0);
+            costWoodLabel.text = cost.Wood.ToString();
+            costWoodLabel.color = cost.Wood <= treasury.Wood ? Color.white : Color.red;
+
+            costStone.SetActive(cost.Stone > 0);
+            costStoneLabel.text = cost.Stone.ToString();
+            costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
+
+            costGold.SetActive(cost.Gold > 0);
+            costGoldLabel.text = cost.Gold.ToString();
+            costGoldLabel.color = cost.Gold <= treasury.Gold ? Color.white : Color.red;
         }
 
         public async void Repair()
         {
             _interaction.OnActionRequested();
-            
+
             if (_canAfford && await _connector.Repair(_index))
                 await _connector.ReloadData();
         }
-
     }
 }

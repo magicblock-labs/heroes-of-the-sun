@@ -15,7 +15,15 @@ namespace View.UI.Building
 
         [SerializeField] private BuildingSnapshot snapshot;
         [SerializeField] private Text nameLabel;
-        [SerializeField] private Text costLabel;
+
+        [SerializeField] private GameObject costWood;
+        [SerializeField] private Text costWoodLabel;
+
+        [SerializeField] private GameObject costStone;
+        [SerializeField] private Text costStoneLabel;
+
+        [SerializeField] private GameObject costGold;
+        [SerializeField] private Text costGoldLabel;
 
         private Action<BuildingType> _selectedCallback;
         private BuildingType _type;
@@ -27,7 +35,21 @@ namespace View.UI.Building
 
             snapshot.Generate(buildingConfig);
             nameLabel.text = value.ToString();
-            costLabel.text = buildingConfig.cost.ToString();
+
+            var treasury = _model.Get().Treasury;
+            var cost = _model.GetConstructionCost(buildingConfig.costTier, 1, 1);
+
+            costWood.SetActive(cost.Wood > 0);
+            costWoodLabel.text = cost.Wood.ToString();
+            costWoodLabel.color = cost.Wood <= treasury.Wood ? Color.white : Color.red;
+            
+            costStone.SetActive(cost.Stone > 0);
+            costStoneLabel.text = cost.Stone.ToString();
+            costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
+            
+            costGold.SetActive(cost.Gold > 0);
+            costGoldLabel.text = cost.Gold.ToString();
+            costGoldLabel.color = cost.Gold <= treasury.Gold ? Color.white : Color.red;
         }
 
         public void OnClick()

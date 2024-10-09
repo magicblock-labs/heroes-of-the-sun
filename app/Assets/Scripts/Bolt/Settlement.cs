@@ -57,8 +57,6 @@ namespace Settlement
 
             public ResourceBalance Treasury { get; set; }
 
-            public ushort[] Extraction { get; set; }
-
             public byte Faith { get; set; }
 
             public byte TimeUnits { get; set; }
@@ -95,15 +93,6 @@ namespace Settlement
                 result.Environment = resultEnvironment;
                 offset += ResourceBalance.Deserialize(_data, offset, out var resultTreasury);
                 result.Treasury = resultTreasury;
-                int resultExtractionLength = (int)_data.GetU32(offset);
-                offset += 4;
-                result.Extraction = new ushort[resultExtractionLength];
-                for (uint resultExtractionIdx = 0; resultExtractionIdx < resultExtractionLength; resultExtractionIdx++)
-                {
-                    result.Extraction[resultExtractionIdx] = _data.GetU16(offset);
-                    offset += 2;
-                }
-
                 result.Faith = _data.GetU8(offset);
                 offset += 1;
                 result.TimeUnits = _data.GetU8(offset);
@@ -173,6 +162,8 @@ namespace Settlement
 
             public byte TurnsToBuild { get; set; }
 
+            public ushort Extraction { get; set; }
+
             public int Serialize(byte[] _data, int initialOffset)
             {
                 int offset = initialOffset;
@@ -188,6 +179,8 @@ namespace Settlement
                 offset += 1;
                 _data.WriteU8(TurnsToBuild, offset);
                 offset += 1;
+                _data.WriteU16(Extraction, offset);
+                offset += 2;
                 return offset - initialOffset;
             }
 
@@ -207,6 +200,8 @@ namespace Settlement
                 offset += 1;
                 result.TurnsToBuild = _data.GetU8(offset);
                 offset += 1;
+                result.Extraction = _data.GetU16(offset);
+                offset += 2;
                 return offset - initialOffset;
             }
         }

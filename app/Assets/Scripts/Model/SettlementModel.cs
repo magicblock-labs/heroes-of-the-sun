@@ -257,16 +257,59 @@ namespace Model
         private const int EnergyRegenResearchMultiplier = 1;
         private const int SecondsInMinute = 60;
         private const float EnergyRegenFaithMultiplier = 0.1f;
-        
+        private const float BuildingCostResearchMultiplier = 0.1f;
+        private const int BuildingSpeedResearchTurnReduction = 1;
+
         public long GetNextEnergyClaimTimestamp()
         {
             var secondsPerUnit = SecondsInMinute
-                             * (BaseMinutePerEnergyUnit
-                                - (int)(EnergyRegenResearchMultiplier
-                                        * GetResearchLevel(ResearchType.EnergyRegeneration))
-                                - (int)(_data.Faith * EnergyRegenFaithMultiplier));
+                                 * (BaseMinutePerEnergyUnit
+                                    - (int)(EnergyRegenResearchMultiplier
+                                            * GetResearchLevel(ResearchType.EnergyRegeneration))
+                                    - (int)(_data.Faith * EnergyRegenFaithMultiplier));
 
             return _data.LastTimeClaim + secondsPerUnit;
+        }
+
+
+        private ushort CalculateCost(uint tier, int level, int levelOffset, float multiplier)
+        {
+            if (levelOffset >= level)
+            {
+                return 0;
+            }
+
+            const int baseCost = 2;
+            const float levelMultiplier = 1.5f;
+            var costResearch = GetResearchLevel(ResearchType.BuildingCost);
+            var cost = baseCost * tier * Math.Pow(levelMultiplier, level - levelOffset)
+                       * (1.0 - BuildingCostResearchMultiplier * costResearch)
+                       * multiplier;
+
+            return (ushort)Math.Ceiling(cost);
+        }
+
+        public ResourceBalance GetConstructionCost(uint tier, int level, float multiplier)
+        {
+            return new ResourceBalance
+            {
+                Food = 0,
+                Water = 0,
+                Wood = CalculateCost(tier, level, 0, multiplier),
+                Stone = CalculateCost(tier, level, 4, multiplier),
+                Gold = CalculateCost(tier, level, 8, multiplier)
+            };
+        }
+
+        public int GetBuildTime(uint tier, int level)
+        {
+            const float levelMultiplier = 1.2f;
+            var baseCost = (int)(tier * Math.Pow(levelMultiplier, level));
+            return baseCost
+                   - (int)Math.Min(
+                       BuildingSpeedResearchTurnReduction * GetResearchLevel(ResearchType.BuildingSpeed),
+                       baseCost
+                   );
         }
     }
 }

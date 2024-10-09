@@ -71,7 +71,7 @@ namespace View.UI.Building
                 workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
             
             extractionStatus.gameObject.SetActive(value.Id is BuildingType.GoldCollector or BuildingType.StoneCollector);
-            extractionStatus.SetCount(_settlement.Get().Extraction[index]);
+            extractionStatus.SetCount(value.Extraction);
         }
 
         public void ShowExtendedControls(bool value)

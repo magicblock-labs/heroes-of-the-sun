@@ -3,11 +3,14 @@ using Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils.Injection;
 
 namespace View.UI.Building
 {
     public class BuildingProgress : BuildingUIPanel
     {
+        [Inject] private SettlementModel _settlement;
+        
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private Image bg;
         [SerializeField] private Image fill;
@@ -26,9 +29,10 @@ namespace View.UI.Building
 
             nameLabel.text = value.Id.ToString();
 
+            var totalBuildTime = _settlement.GetBuildTime(config.buildTimeTier, value.Level) ;
             var percentage =
-                config.buildTime > 0
-                    ? Mathf.Clamp((float)(config.buildTime - value.TurnsToBuild) / config.buildTime, 0, 1)
+                totalBuildTime > 0
+                    ? Mathf.Clamp((float)(totalBuildTime - value.TurnsToBuild) / totalBuildTime, 0, 1)
                     : 1;
 
             fill.fillAmount = percentage;
