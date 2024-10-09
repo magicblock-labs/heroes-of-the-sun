@@ -52,6 +52,7 @@ namespace View.UI
             close?.Invoke();
             
             if (_interaction.SelectedBuildingIndex < 0) return;
+            _interaction.LockInteraction();
             if (await _connector.AssignLabour(index, _interaction.SelectedBuildingIndex))
                 await _connector.ReloadData();
             

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Model;
 using Service;
 using Settlement.Types;
@@ -34,6 +35,11 @@ namespace View.ActionRequest
 
             _index = index;
 
+            gameObject.SetActive(value.Deterioration > 0);
+
+            if (value.Deterioration == 0)
+                return;
+
             var maxDeterioration = ConfigModel.BASE_DETERIORATION_CAP
                                    + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
                                    * _settlement.GetResearchLevel(SettlementModel.ResearchType.DeteriorationCap);
@@ -44,22 +50,27 @@ namespace View.ActionRequest
             var cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level + 1,
                 relativeDeterioration);
 
+            _canAfford = true;
+
             costWood.SetActive(cost.Wood > 0);
             costWoodLabel.text = cost.Wood.ToString();
             costWoodLabel.color = cost.Wood <= treasury.Wood ? Color.white : Color.red;
+            _canAfford &= cost.Wood <= treasury.Wood;
 
             costStone.SetActive(cost.Stone > 0);
             costStoneLabel.text = cost.Stone.ToString();
             costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
+            _canAfford &= cost.Wood <= treasury.Wood;
 
             costGold.SetActive(cost.Gold > 0);
             costGoldLabel.text = cost.Gold.ToString();
             costGoldLabel.color = cost.Gold <= treasury.Gold ? Color.white : Color.red;
+            _canAfford &= cost.Wood <= treasury.Wood;
         }
 
         public async void Repair()
         {
-            _interaction.OnActionRequested();
+            _interaction.LockInteraction();
 
             if (_canAfford && await _connector.Repair(_index))
                 await _connector.ReloadData();

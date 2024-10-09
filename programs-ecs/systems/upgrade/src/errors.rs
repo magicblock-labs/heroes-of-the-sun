@@ -6,4 +6,6 @@ pub enum UpgradeError {
     BuildingIndexOutOfRange,
     #[msg("Not Enough Resources")]
     NotEnoughResources,
+    #[msg("Can't upgrade beyond townhall level")]
+    TownHallLevelReached,
 }

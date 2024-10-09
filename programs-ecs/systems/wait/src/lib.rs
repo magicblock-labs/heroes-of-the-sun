@@ -199,7 +199,7 @@ pub mod wait {
                         collected = u16::min(collected, stone_storage - settlement.treasury.stone);
                     }
                     if collected > 0 {
-                        building.extraction -= collected;
+                        settlement.buildings[building_index as usize].extraction -= collected;
                         settlement.treasury.stone += collected; //* faith +technology + env capacity */
                     }
                 }
@@ -214,7 +214,7 @@ pub mod wait {
                         collected = u16::min(collected, gold_storage - settlement.treasury.gold);
                     }
                     if collected > 0 {
-                        building.extraction -= collected;
+                        settlement.buildings[building_index as usize].extraction -= collected;
                         settlement.treasury.gold += collected; //* faith +technology + env capacity */
                     }
                 }

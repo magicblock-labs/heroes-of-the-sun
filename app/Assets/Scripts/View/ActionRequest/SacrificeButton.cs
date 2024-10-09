@@ -26,7 +26,7 @@ namespace View.ActionRequest
 
         public async void ShowResearch()
         {
-            _interaction.OnActionRequested();
+            _interaction.LockInteraction();
 
             var workerIndex = _settlement.GetFreeWorkerIndex();
 

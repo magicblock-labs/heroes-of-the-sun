@@ -19,6 +19,11 @@ pub mod upgrade {
         }
 
         let building = settlement.buildings[index];
+
+        if building.level >= settlement.buildings[0].level {
+            return err!(errors::UpgradeError::TownHallLevelReached);
+        }
+
         let building_config = &BUILDINGS_CONFIG[building.id as usize];
 
         let build_cost = get_construction_cost(

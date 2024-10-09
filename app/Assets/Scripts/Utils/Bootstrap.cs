@@ -32,7 +32,7 @@ namespace Utils
             if (Web3.Account == null)
             {
                 Web3.OnLogin += HandleSignIn;
-                
+
                 string password = PlayerPrefs.GetString(PwdPrefKey, null);
 
 #if FTUE_TESTING

@@ -67,7 +67,7 @@ namespace Model
             Updated.Dispatch();
         }
 
-        public void OnActionRequested()
+        public void LockInteraction()
         {
             _lockInteractionUntil = Time.time + 0.1f;
         }
