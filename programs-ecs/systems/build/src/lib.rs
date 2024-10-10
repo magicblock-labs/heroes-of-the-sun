@@ -93,13 +93,13 @@ pub mod build {
             y: args.y,
             id: new_building_config.id,
             deterioration: 0,
-            level: 1,
+            level: 0,
             turns_to_build: get_build_time(
                 settlement.research,
                 new_building_config.build_time_tier,
                 1,
             ),
-            extraction: get_extraction_cap(1),
+            extraction: get_extraction_cap(0),
         };
 
         settlement.buildings.push(new_building);

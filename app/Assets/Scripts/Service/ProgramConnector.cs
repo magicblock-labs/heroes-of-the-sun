@@ -164,9 +164,9 @@ namespace Service
             return await ApplySystem(new PublicKey("4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j"), new { index });
         }
 
-        public async Task<bool> Upgrade(int index)
+        public async Task<bool> Upgrade(int index, int worker_index)
         {
-            return await ApplySystem(new PublicKey("J3evfUppPdgjTzWhhAhuhKBVM23UU8iCU9j9r7sTHCTB"), new { index });
+            return await ApplySystem(new PublicKey("J3evfUppPdgjTzWhhAhuhKBVM23UU8iCU9j9r7sTHCTB"), new { index, worker_index });
         }
 
         public async Task<bool> ClaimTime()

@@ -1,13 +1,13 @@
 mod errors;
 
 use bolt_lang::*;
-use settlement::{config::BuildingType, Settlement};
+use settlement::Settlement;
 
 declare_id!("J3evfUppPdgjTzWhhAhuhKBVM23UU8iCU9j9r7sTHCTB");
 
 #[system]
 pub mod upgrade {
-    use settlement::config::{get_construction_cost, get_extraction_cap, BUILDINGS_CONFIG};
+    use settlement::config::{get_build_time, get_construction_cost, BUILDINGS_CONFIG};
 
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
@@ -20,7 +20,11 @@ pub mod upgrade {
 
         let building = settlement.buildings[index];
 
-        if building.level >= settlement.buildings[0].level {
+        if building.turns_to_build > 0 {
+            return err!(errors::UpgradeError::UnderConstruction);
+        }
+
+        if index > 0 && building.level >= settlement.buildings[0].level {
             return err!(errors::UpgradeError::TownHallLevelReached);
         }
 
@@ -48,13 +52,20 @@ pub mod upgrade {
             settlement.treasury.gold -= build_cost.gold;
         }
 
-        //all checks passed
-        settlement.buildings[index].level += 1;
-        settlement.buildings[index].extraction += get_extraction_cap(building.level);
-
-        if matches!(building.id, BuildingType::TownHall) {
-            settlement.worker_assignment.push(-1);
+        if args.worker_index >= 0 {
+            if settlement.worker_assignment.len() as i16 <= args.worker_index {
+                return err!(errors::UpgradeError::SuppliedWorkerIndexOutOfBounds);
+            }
+            settlement.worker_assignment[args.worker_index as usize] = (index) as i8;
         }
+
+        //all checks passed
+        settlement.buildings[index].turns_to_build += get_build_time(
+            settlement.research,
+            building_config.build_time_tier,
+            building.level,
+        );
+
         Ok((ctx.accounts))
     }
 
@@ -66,5 +77,6 @@ pub mod upgrade {
     #[arguments]
     struct BuildArgs {
         index: usize,
+        worker_index: i16,
     }
 }

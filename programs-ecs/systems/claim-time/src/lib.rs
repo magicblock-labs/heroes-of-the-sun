@@ -15,7 +15,6 @@ pub mod claim_time {
     pub fn execute(ctx: Context<Components>, _args: EmptyArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;
 
-        //TODO [BALANCE] faith dependency
         let faith = (settlement.faith
             + config::FAITH_BONUS_RESEARCH_MULTIPLIER
                 * get_research_level(settlement.research, ResearchType::FaithBonus))
@@ -26,7 +25,7 @@ pub mod claim_time {
         let cap: u8 = config::BASE_ENERGY_CAP
             + (faith as f32 * config::ENERGY_CAP_FAITH_MULTIPLIER) as u8
             + (config::MAX_ENERGY_CAP_RESEARCH_MULTIPLIER
-                * get_research_level(settlement.research, ResearchType::MaxEnergyCap)); //[11..22] + research
+                * get_research_level(settlement.research, ResearchType::MaxEnergyCap)); //[31..22] + research
 
         msg!("cap {}", cap);
 
@@ -35,7 +34,7 @@ pub mod claim_time {
                 - (config::ENERGY_REGENERATION_RESEARCH_MULTIPLIER
                     * get_research_level(settlement.research, ResearchType::EnergyRegeneration))
                     as i64
-                - (faith as f32 * config::ENERGY_REGEN_FAITH_MULTIPLIER) as i64); //[20..8] - research min per time unit
+                - (faith as f32 * config::ENERGY_REGEN_FAITH_MULTIPLIER) as i64); //[10..4] - research min per time unit
 
         msg!("s_per_unit {}", s_per_unit);
 

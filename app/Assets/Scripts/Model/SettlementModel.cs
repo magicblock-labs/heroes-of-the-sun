@@ -240,7 +240,7 @@ namespace Model
                    (int)GetResearchLevel(ResearchType.ResourceCollectionSpeed);
         }
 
-        private const int BaseEnergyCap = 10;
+        private const int BaseEnergyCap = 30;
         private const float EnergyCapFaithMultiplier = 0.1f;
         private const int MaxEnergyCapResearchMultiplier = 1;
 
@@ -251,12 +251,11 @@ namespace Model
                    + MaxEnergyCapResearchMultiplier
                    * (int)GetResearchLevel(ResearchType.MaxEnergyCap);
         }
-
-
-        private const int BaseMinutePerEnergyUnit = 20;
+        
+        private const int BaseMinutePerEnergyUnit = 10;
         private const int EnergyRegenResearchMultiplier = 1;
         private const int SecondsInMinute = 60;
-        private const float EnergyRegenFaithMultiplier = 0.1f;
+        private const float EnergyRegenFaithMultiplier = 0.05f;
         private const float BuildingCostResearchMultiplier = 0.1f;
         private const int BuildingSpeedResearchTurnReduction = 1;
 

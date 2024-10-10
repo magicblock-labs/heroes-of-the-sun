@@ -43,7 +43,8 @@ export type AssignWorkerArgs = {
 }
 
 export type UpgradeArgs = {
-  index: number
+  index: number,
+  worker_index: number
 }
 
 export type RepairArgs = {
@@ -59,6 +60,7 @@ export type WaitArgs = {
 }
 
 export class SettlementWrapper {
+
   provider: anchor.AnchorProvider;
 
   worldPda: PublicKey;
@@ -226,7 +228,7 @@ export class SettlementWrapper {
     }
     );
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`Waited a day: ${txSign}`);
+    console.log(`Waited ${args.time} turns: ${txSign}`);
 
     return await this.state();
   }
@@ -247,12 +249,15 @@ export class SettlementWrapper {
     }
     );
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`Waited a day: ${txSign}`);
+    console.log(`Reset: ${txSign}`);
 
     return await this.state();
   }
 
-
+  async upgradeAndWait(index: number, worker_index: number) {
+    let state = await this.upgrade({ index, worker_index });
+    return await this.wait({ time: this.getTurnsToCompleteAll(state) });
+  }
 
   getTurnsToCompleteAll(state: { buildings: { turnsToBuild: number; }[]; }): number {
     let result = 0;

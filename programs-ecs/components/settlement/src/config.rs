@@ -35,8 +35,8 @@ pub const INITIAL_TIME_UNITS: u8 = 50;
 pub const INITIAL_FAITH: u8 = 50;
 
 pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
-    water: 20,
-    food: 40,
+    water: 40,
+    food: 80,
     wood: 200,
     stone: 10,
     gold: 10,
@@ -58,7 +58,7 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
         width: 4,
         height: 4,
         cost_tier: 5,
-        build_time_tier: 3,
+        build_time_tier: 4,
     },
     BuildingConfig {
         id: BuildingType::Altar,
@@ -146,11 +146,11 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
     },
 ];
 
-pub const BASE_ENERGY_CAP: u8 = 10;
+pub const BASE_ENERGY_CAP: u8 = 30;
 pub const ENERGY_CAP_FAITH_MULTIPLIER: f32 = 0.1;
-pub const BASE_MINUTE_PER_ENERGY_UNIT: i64 = 20;
+pub const BASE_MINUTE_PER_ENERGY_UNIT: i64 = 10;
 
-pub const ENERGY_REGEN_FAITH_MULTIPLIER: f32 = 0.1;
+pub const ENERGY_REGEN_FAITH_MULTIPLIER: f32 = 0.05;
 
 pub const BASE_DEATH_TIMEOUT: i8 = -10;
 pub const DEATH_TIMEOUT_RESEARCH_MULTIPLIER: u8 = 1;

@@ -31,7 +31,8 @@ namespace View.ActionRequest
             if (value == null)
                 return;
 
-            var reachedTownHallLevel = _settlement.Get().Buildings[0].Level <= value.Level;
+            var reachedTownHallLevel =
+                value.Id != BuildingType.TownHall && _settlement.Get().Buildings[0].Level <= value.Level;
             gameObject.SetActive(!reachedTownHallLevel);
             if (reachedTownHallLevel)
                 return;
@@ -40,18 +41,18 @@ namespace View.ActionRequest
             _canAfford = true;
 
             var treasury = _settlement.Get().Treasury;
-            var cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level+1, 1);
+            var cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level + 1, 1);
 
             costWood.SetActive(cost.Wood > 0);
             costWoodLabel.text = cost.Wood.ToString();
             costWoodLabel.color = cost.Wood <= treasury.Wood ? Color.white : Color.red;
             _canAfford &= cost.Wood <= treasury.Wood;
-            
+
             costStone.SetActive(cost.Stone > 0);
             costStoneLabel.text = cost.Stone.ToString();
             costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
             _canAfford &= cost.Wood <= treasury.Wood;
-            
+
             costGold.SetActive(cost.Gold > 0);
             costGoldLabel.text = cost.Gold.ToString();
             costGoldLabel.color = cost.Gold <= treasury.Gold ? Color.white : Color.red;
@@ -61,8 +62,8 @@ namespace View.ActionRequest
         public async void Upgrade()
         {
             _interaction.LockInteraction();
-            
-            if (_canAfford && await _connector.Upgrade(_index))
+
+            if (_canAfford && await _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex()))
                 await _connector.ReloadData();
         }
     }

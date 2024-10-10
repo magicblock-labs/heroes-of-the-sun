@@ -8,4 +8,8 @@ pub enum UpgradeError {
     NotEnoughResources,
     #[msg("Can't upgrade beyond townhall level")]
     TownHallLevelReached,
+    #[msg("Can't upgrade a building under construction")]
+    UnderConstruction,
+    #[msg("Worker Index Out Of Bounds")]
+    SuppliedWorkerIndexOutOfBounds,
 }

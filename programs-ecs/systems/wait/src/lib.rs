@@ -10,7 +10,7 @@ pub mod wait {
     use settlement::{
         self,
         config::{
-            self, get_collection_level_multiplier, get_research_level,
+            self, get_collection_level_multiplier, get_extraction_cap, get_research_level,
             get_storage_level_multiplier, BuildingType, ResearchType, ENVIRONMENT_MAX,
         },
         Settlement,
@@ -111,7 +111,8 @@ pub mod wait {
                 continue;
             }
 
-            let mut building = settlement.buildings[building_index as usize];
+            let building_index_usize = building_index as usize;
+            let building = settlement.buildings[building_index_usize];
 
             let max_deterioration = config::BASE_DETERIORATION_CAP
                 + config::DETERIORATION_CAP_RESEARCH_MULTIPLIER
@@ -124,12 +125,21 @@ pub mod wait {
             }
 
             if building.turns_to_build > 0 {
-                settlement.buildings[building_index as usize].turns_to_build -=
+                settlement.buildings[building_index_usize].turns_to_build -=
                     u8::min(time_to_wait as u8, building.turns_to_build);
 
-                if settlement.buildings[building_index as usize].turns_to_build <= 0 {
-                    //finished building anything but food/wood collectors
-                    match settlement.buildings[building_index as usize].id {
+                    
+                if settlement.buildings[building_index_usize].turns_to_build <= 0 {
+                    settlement.buildings[building_index_usize].level += 1;
+
+                    settlement.buildings[building_index_usize].extraction +=
+                        get_extraction_cap(building.level);
+                    if matches!(building.id, BuildingType::TownHall) {
+                        settlement.worker_assignment.push(-1);
+                    }
+
+                    //finished building anything but food/wood collectors - release workers
+                    match settlement.buildings[building_index_usize].id {
                         BuildingType::FoodCollector => {}
                         BuildingType::WoodCollector => {}
                         BuildingType::StoneCollector => {}
@@ -199,7 +209,7 @@ pub mod wait {
                         collected = u16::min(collected, stone_storage - settlement.treasury.stone);
                     }
                     if collected > 0 {
-                        settlement.buildings[building_index as usize].extraction -= collected;
+                        settlement.buildings[building_index_usize].extraction -= collected;
                         settlement.treasury.stone += collected; //* faith +technology + env capacity */
                     }
                 }
@@ -214,7 +224,7 @@ pub mod wait {
                         collected = u16::min(collected, gold_storage - settlement.treasury.gold);
                     }
                     if collected > 0 {
-                        settlement.buildings[building_index as usize].extraction -= collected;
+                        settlement.buildings[building_index_usize].extraction -= collected;
                         settlement.treasury.gold += collected; //* faith +technology + env capacity */
                     }
                 }
