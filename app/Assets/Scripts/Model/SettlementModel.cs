@@ -310,5 +310,12 @@ namespace Model
                        baseCost
                    );
         }
+
+        public float GetMaxDeterioration()
+        {
+            return ConfigModel.BASE_DETERIORATION_CAP
+                + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
+                * GetResearchLevel(ResearchType.DeteriorationCap);
+        }
     }
 }

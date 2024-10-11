@@ -19,18 +19,23 @@ namespace View.UI
 
         [SerializeField] private Text foodLabel;
         [SerializeField] private Text foodDiff;
+        [SerializeField] private Image foodBar;
 
         [SerializeField] private Text woodLabel;
         [SerializeField] private Text woodDiff;
+        [SerializeField] private Image woodBar;
 
         [SerializeField] private Text waterLabel;
         [SerializeField] private Text waterDiff;
+        [SerializeField] private Image waterBar;
 
         [SerializeField] private Text stoneLabel;
         [SerializeField] private Text stoneDiff;
+        [SerializeField] private Image stoneBar;
 
         [SerializeField] private Text coinsLabel;
         [SerializeField] private Text coinsDiff;
+        [SerializeField] private Image coinsBar;
 
         private void Start()
         {
@@ -45,20 +50,33 @@ namespace View.UI
                 var settlement = _model.Get();
                 var caps = _model.StorageCapacity;
                 foodLabel.text = FormatResource(settlement.Treasury.Food, caps.Food);
+                woodBar.fillAmount = GetProgress(settlement.Treasury.Food, caps.Food);
                 foodDiff.text = FormatDiff(CalculateFoodDiff());
 
                 woodLabel.text = FormatResource(settlement.Treasury.Wood, caps.Wood);
+                woodBar.fillAmount = GetProgress(settlement.Treasury.Wood, caps.Wood);
                 woodDiff.text = FormatDiff(CalculateWoodDiff());
 
                 waterLabel.text = FormatResource(settlement.Treasury.Water, caps.Water);
+                waterBar.fillAmount = GetProgress(settlement.Treasury.Water, caps.Water);
                 waterDiff.text = FormatDiff(CalculateWaterDiff());
 
                 stoneLabel.text = FormatResource(settlement.Treasury.Stone, caps.Stone);
+                stoneBar.fillAmount = GetProgress(settlement.Treasury.Stone, caps.Stone);
                 stoneDiff.text = FormatDiff(CalculateStoneDiff());
 
                 coinsLabel.text = FormatResource(settlement.Treasury.Gold, caps.Gold);
+                coinsBar.fillAmount = GetProgress(settlement.Treasury.Gold, caps.Gold);
                 coinsDiff.text = FormatDiff(CalculateGoldDiff());
             }
+        }
+
+        private float GetProgress(ushort value, int max)
+        {
+            if (max < 1)
+                return 1;
+
+            return Mathf.Clamp((float)value / max, 0, 1);
         }
 
         private string FormatResource(int value, int cap)

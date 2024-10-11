@@ -40,11 +40,7 @@ namespace View.ActionRequest
             if (value.Deterioration == 0)
                 return;
 
-            var maxDeterioration = ConfigModel.BASE_DETERIORATION_CAP
-                                   + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
-                                   * _settlement.GetResearchLevel(SettlementModel.ResearchType.DeteriorationCap);
-
-            var relativeDeterioration = (float)value.Deterioration / maxDeterioration;
+            var relativeDeterioration = value.Deterioration / _settlement.GetMaxDeterioration();
 
             var treasury = _settlement.Get().Treasury;
             var cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level + 1,

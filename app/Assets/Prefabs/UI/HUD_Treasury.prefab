@@ -912,14 +912,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodLabel: {fileID: 3842497681777686794}
   foodDiff: {fileID: 5660634209115514364}
+  foodBar: {fileID: 1163115582790527165}
   woodLabel: {fileID: 623505206178106272}
   woodDiff: {fileID: 3689772649627219125}
+  woodBar: {fileID: 4920226747542783445}
   waterLabel: {fileID: 9025208691372919985}
   waterDiff: {fileID: 259440542386899649}
+  waterBar: {fileID: 6187229958909476802}
   stoneLabel: {fileID: 4145716805131731583}
   stoneDiff: {fileID: 1536700367010008957}
+  stoneBar: {fileID: 6610793931849520714}
   coinsLabel: {fileID: 5745918261572208966}
   coinsDiff: {fileID: 5400193881852278766}
+  coinsBar: {fileID: 2059645853896416605}
 --- !u!1 &3930105022015300437
 GameObject:
   m_ObjectHideFlags: 0

@@ -36,7 +36,7 @@ namespace View.UI.Building
         {
             base.Start();
             controls.SetActive(false);
-            
+
             _actionButtons ??= GetComponentsInChildren<IBuildingActionButton>();
 
             foreach (RectTransform child in controls.transform)
@@ -59,9 +59,9 @@ namespace View.UI.Building
             if (levelLabel)
                 levelLabel.text = value.Level.ToString();
 
-            //TODO max deterioration
-            deteriorationStatus.gameObject.SetActive(value.Deterioration > 50);
-            deteriorationStatus.SetStatus(value.Deterioration, 127);
+            var maxDeterioration = _settlement.GetMaxDeterioration();
+            deteriorationStatus.gameObject.SetActive(value.Deterioration > maxDeterioration / 2);
+            deteriorationStatus.SetStatus(value.Deterioration, (int)maxDeterioration);
 
             var needsWorkers = value.TurnsToBuild > 0 ||
                                value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector
@@ -69,8 +69,10 @@ namespace View.UI.Building
             workerStatus.gameObject.SetActive(needsWorkers);
             if (needsWorkers)
                 workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
-            
-            extractionStatus.gameObject.SetActive(value.Id is BuildingType.GoldCollector or BuildingType.StoneCollector);
+
+            extractionStatus.gameObject.SetActive(
+                value.Id is BuildingType.GoldCollector or BuildingType.StoneCollector
+                && value.TurnsToBuild == 0);
             extractionStatus.SetCount(value.Extraction);
         }
 
