@@ -317,5 +317,12 @@ namespace Model
                 + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
                 * GetResearchLevel(ResearchType.DeteriorationCap);
         }
+
+        private const int BaseResearchCost = 5;
+
+        public int GetResearchCost(ResearchType type)
+        {
+            return BaseResearchCost * (int)Math.Pow(2, GetResearchLevel(type));
+        }
     }
 }

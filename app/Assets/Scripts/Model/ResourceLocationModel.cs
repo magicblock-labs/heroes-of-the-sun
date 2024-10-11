@@ -25,7 +25,7 @@ namespace Model
 
         public List<Vector2Int> Get(ResourceType type)
         {
-            return _data[type];
+            return !_data.ContainsKey(type) ? new List<Vector2Int>() : _data[type];
         }
 
         public void Reset()

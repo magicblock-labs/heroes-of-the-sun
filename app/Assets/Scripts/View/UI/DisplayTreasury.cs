@@ -50,7 +50,7 @@ namespace View.UI
                 var settlement = _model.Get();
                 var caps = _model.StorageCapacity;
                 foodLabel.text = FormatResource(settlement.Treasury.Food, caps.Food);
-                woodBar.fillAmount = GetProgress(settlement.Treasury.Food, caps.Food);
+                foodBar.fillAmount = GetProgress(settlement.Treasury.Food, caps.Food);
                 foodDiff.text = FormatDiff(CalculateFoodDiff());
 
                 woodLabel.text = FormatResource(settlement.Treasury.Wood, caps.Wood);

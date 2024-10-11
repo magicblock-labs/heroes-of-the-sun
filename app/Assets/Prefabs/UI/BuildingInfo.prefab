@@ -652,7 +652,7 @@ GameObject:
   - component: {fileID: 8027463990555544404}
   - component: {fileID: 8073630400163068579}
   - component: {fileID: 7209712817516133221}
-  - component: {fileID: 8529983994746007026}
+  - component: {fileID: 1991512904937341253}
   m_Layer: 5
   m_Name: Sacrifice
   m_TagString: Untagged
@@ -763,9 +763,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8529983994746007026}
-        m_TargetAssemblyTypeName: View.ActionRequest.ResearchButton, Assembly-CSharp
-        m_MethodName: ShowResearch
+      - m_Target: {fileID: 1991512904937341253}
+        m_TargetAssemblyTypeName: View.ActionRequest.SacrificeButton, Assembly-CSharp
+        m_MethodName: Sacrifice
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -775,7 +775,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &8529983994746007026
+--- !u!114 &1991512904937341253
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -784,7 +784,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1329162724169857167}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95355c3c18fc46449a7551d54e37af26, type: 3}
+  m_Script: {fileID: 11500000, guid: 7886a21af8fc470082bcf5cd562c76ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1359035400715160985

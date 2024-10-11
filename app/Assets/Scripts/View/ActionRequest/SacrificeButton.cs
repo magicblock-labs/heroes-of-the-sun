@@ -24,7 +24,7 @@ namespace View.ActionRequest
             gameObject.SetActive(value.TurnsToBuild <= 0 && value.Id == BuildingType.Altar);
         }
 
-        public async void ShowResearch()
+        public async void Sacrifice()
         {
             _interaction.LockInteraction();
 
