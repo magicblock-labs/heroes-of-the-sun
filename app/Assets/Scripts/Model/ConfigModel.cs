@@ -183,11 +183,11 @@ namespace Model
         public int Height => _buildConfig.height;
         public Dictionary<BuildingType, BuildingConfig> Buildings => _buildConfig.buildings;
 
-        public static Vector3 GetWorldCellPosition(int i, int j)
+        public static Vector3 GetWorldCellPosition(int x, int y)
         {
             return new Vector3(
-                (i + 0.5f) * CellSize, 0,
-                (j + 0.5f) * CellSize);
+                (x + 0.5f) * CellSize, 0,
+                (y + 0.5f) * CellSize);
         }
     }
 }
