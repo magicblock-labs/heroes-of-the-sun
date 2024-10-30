@@ -1,56 +1,50 @@
 using System.Collections.Generic;
 using Model;
 using UnityEngine;
+using Utils.Injection;
 
-public class CreateChunks : MonoBehaviour
+namespace View.Exploration
 {
-    [SerializeField] int chunkSize;
-    [SerializeField] RenderRandomChunk prefab;
-
-    private Dictionary<Vector2Int, RenderRandomChunk> _visibleChunks = new();
-    private Camera _camera;
-    private Transform _cameraTransform;
-    private Vector2 _cameraAngleOffset;
-
-    private void Start()
+    public class CreateChunks : InjectableBehaviour
     {
-        _camera = Camera.main;
-        _cameraTransform = _camera.transform;
+        [Inject] private HeroModel _heroModel;
 
-        _cameraAngleOffset = _camera.ViewportToWorldPoint(new Vector3(.5f, .5f, 40f));
-    }
+        [SerializeField] private int chunkSize;
+        [SerializeField] private int passes = 2;
+        [SerializeField] private RenderRandomChunk prefab;
 
-    private void Update()
-    {
-        var startingChunkX =
-            (int)((_cameraAngleOffset.x + _cameraTransform.position.x) / (chunkSize * ConfigModel.CellSize));
-        var startingChunkY =
-            (int)((_cameraAngleOffset.y + _cameraTransform.position.z) / (chunkSize * ConfigModel.CellSize));
+        private readonly Dictionary<Vector2Int, RenderRandomChunk> _visibleChunks = new();
 
-        var pass = 0;
-
-        while (pass < 2)
+        private void Update()
         {
-            for (var chunkX = -pass; chunkX <= pass; chunkX++)
-            for (var chunkY = -pass; chunkY <= pass; chunkY++)
+            var startingChunkX = Mathf.FloorToInt((float)_heroModel.Location.x / chunkSize);
+            var startingChunkY = Mathf.FloorToInt((float)_heroModel.Location.y / chunkSize);
+
+            var pass = 0;
+
+            while (pass <= passes)
             {
-                //edges only
-                if (chunkX > -pass && chunkX < pass && chunkY > -pass && chunkY < pass) continue;
-
-                var offsetChunkLocation = new Vector2Int(startingChunkX + chunkX, startingChunkY + chunkY);
-
-                if (!_visibleChunks.ContainsKey(offsetChunkLocation))
+                for (var chunkX = -pass; chunkX <= pass; chunkX++)
+                for (var chunkY = -pass; chunkY <= pass; chunkY++)
                 {
-                    _visibleChunks[offsetChunkLocation] =
-                        Instantiate(prefab,
-                            new Vector3(startingChunkX + chunkX, 0, startingChunkY + chunkY),
-                            Quaternion.identity,
-                            transform).Create(offsetChunkLocation * chunkSize, chunkSize,
-                            new Vector2(chunkSize, chunkSize) * .1f);
-                }
-            }
+                    //edges only
+                    if (chunkX > -pass && chunkX < pass && chunkY > -pass && chunkY < pass) continue;
 
-            pass++;
+                    var offsetChunkLocation = new Vector2Int(startingChunkX + chunkX, startingChunkY + chunkY);
+
+                    if (!_visibleChunks.ContainsKey(offsetChunkLocation))
+                    {
+                        _visibleChunks[offsetChunkLocation] =
+                            Instantiate(prefab,
+                                new Vector3(startingChunkX + chunkX, 0, startingChunkY + chunkY),
+                                Quaternion.identity,
+                                transform).Create(offsetChunkLocation * chunkSize, chunkSize,
+                                new Vector2(chunkSize, chunkSize) * .1f);
+                    }
+                }
+
+                pass++;
+            }
         }
     }
 }

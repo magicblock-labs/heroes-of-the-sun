@@ -1,30 +1,76 @@
+using System;
+using System.Collections.Generic;
 using Model;
-using Unity.AI.Navigation;
 using UnityEngine;
 
-public class RenderRandomChunk : MonoBehaviour
+namespace View.Exploration
 {
-    [SerializeField] private RenderTile tile;
-
-    public RenderRandomChunk Create(Vector2Int offset, int size, Vector2 scale)
+    public class RenderRandomChunk : MonoBehaviour
     {
-        transform.position = new Vector3(offset.x * ConfigModel.CellSize, 0, offset.y * ConfigModel.CellSize);
+        [SerializeField] private Transform tileContainer;
+        [SerializeField] private RenderTile tile;
 
-        foreach (Transform child in transform)
-            Destroy(child.gameObject);
+        [SerializeField] private MeshFilter waterMesh;
 
-        gameObject.name = $"Chunk@{transform.position.x}x{transform.position.z}";
-
-        for (var x = 0; x < size; x++)
-        for (var y = 0; y < size; y++)
+        public RenderRandomChunk Create(Vector2Int offset, int size, Vector2 scale)
         {
-            var sampleX = (float)(x + offset.x) / size * scale.x;
-            var sampleY = (float)(y + offset.y) / size * scale.y;
+            transform.position = new Vector3(offset.x * ConfigModel.CellSize, 0, offset.y * ConfigModel.CellSize);
+            gameObject.name = $"Chunk@{transform.position.x}x{transform.position.z}";
 
-            var perlinNoiseSample = Mathf.PerlinNoise(sampleX, sampleY);
-            Instantiate(tile, transform).Create(offset, new Vector2Int(x, y), perlinNoiseSample);
+            foreach (Transform child in tileContainer)
+                Destroy(child.gameObject);
+
+            for (var x = 0; x < size; x++)
+            for (var y = 0; y < size; y++)
+            {
+                var sampleX = (float)(x + offset.x) / size * scale.x;
+                var sampleY = (float)(y + offset.y) / size * scale.y;
+
+                var perlinNoiseSample = Mathf.PerlinNoise(sampleX, sampleY);
+                Instantiate(tile, tileContainer).Create(offset, new Vector2Int(x, y), perlinNoiseSample);
+            }
+
+            GenerateWaterMesh(size, size * ConfigModel.CellSize);
+            return this;
         }
 
-        return this;
+        private void GenerateWaterMesh(int subdivisions, int scale)
+        {
+            var vertices = new List<Vector3>();
+            var normals = new List<Vector3>();
+            var uvs = new List<Vector2>();
+            for (var y = 0; y < subdivisions; y++)
+            for (var x = 0; x < subdivisions; x++)
+            {
+                var tx = x / (float)(subdivisions - 1);
+                var ty = y / (float)(subdivisions - 1);
+                vertices.Add(new Vector3(tx, 0, ty) * scale);
+                normals.Add(Vector3.up);
+                uvs.Add(new Vector2(tx, ty));
+            }
+
+            var indices = new List<int>();
+            for (var y = 0; y < subdivisions - 1; y++)
+            for (var x = 0; x < subdivisions - 1; x++)
+            {
+                var quad = y * subdivisions + x;
+
+                indices.Add(quad);
+                indices.Add(quad + subdivisions);
+                indices.Add(quad + subdivisions + 1);
+
+                indices.Add(quad);
+                indices.Add(quad + subdivisions + 1);
+                indices.Add(quad + 1);
+            }
+
+            waterMesh.sharedMesh = new Mesh
+            {
+                vertices = vertices.ToArray(),
+                triangles = indices.ToArray(),
+                uv = uvs.ToArray(),
+                normals = normals.ToArray()
+            };
+        }
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace View
+namespace View.Exploration
 {
     public class Follow : MonoBehaviour
     {

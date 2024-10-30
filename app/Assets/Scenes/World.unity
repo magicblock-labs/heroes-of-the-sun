@@ -241,7 +241,7 @@ Transform:
   m_GameObject: {fileID: 636324505}
   serializedVersion: 2
   m_LocalRotation: {x: 0.27781588, y: -0.36497167, z: 0.1150751, w: 0.8811196}
-  m_LocalPosition: {x: 32, y: 36, z: -32}
+  m_LocalPosition: {x: 32, y: 70, z: -32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -385,6 +385,61 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Hero
+      objectReference: {fileID: 0}
+    - target: {fileID: 3372020188897276815, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3881973900945558220, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2b9d8b56c3f8e4276bc08a891eb07840, type: 2}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Positions.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Parameters.textureMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.g
+      value: 0.6897315
+      objectReference: {fileID: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.m_ColorSpace
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].time
+      value: 0.0025520325
+      objectReference: {fileID: 0}
+    - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 0.055360794
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -563,6 +618,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chunkSize: 16
+  passes: 2
   prefab: {fileID: 4205165150520474416, guid: 68b95a1ad9bd844dc9a0d985de67aac5, type: 3}
 --- !u!1 &1764238906
 GameObject:
