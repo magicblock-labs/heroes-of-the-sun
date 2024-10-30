@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace View
+namespace View.Exploration
 {
     [RequireComponent(typeof(Animator))]
     public class LinkSpeedToAnimator : MonoBehaviour
