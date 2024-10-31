@@ -410,7 +410,7 @@ PrefabInstance:
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
         type: 3}
       propertyPath: m_Parameters.colorGradient.key0.b
@@ -439,7 +439,7 @@ PrefabInstance:
     - target: {fileID: 8102618211572706738, guid: 9c4c038500a9941a08d00dcec5b39809,
         type: 3}
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0.055360794
+      value: 0.02127266
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
