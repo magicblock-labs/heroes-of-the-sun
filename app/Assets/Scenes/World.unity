@@ -303,7 +303,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25f2478aa6d4040fb8633fd69248959b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 32, y: 36, z: -32}
+  offset: {x: 48, y: 60, z: -48}
   target: {fileID: 797943152}
 --- !u!114 &636324512
 MonoBehaviour:

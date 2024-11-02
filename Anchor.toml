@@ -5,18 +5,25 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
+assign-settlement = "GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"
+bump_location_allocator = "At6YLXTGPoQPwqzfZwYEq667RBgAX3sJFiNUALgbpQan"
+location_allocator = "DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV"
+player = "2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU"
 reset = "J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"
 
 [programs.localnet]
+assign-settlement = "GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"
+assign-worker = "F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq"
 build = "AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c"
 claim-time = "HFx2weMbr8CrAEAPfPtgw9zzgHgUFzSz7qiTyhTHGSF"
+player = "2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU"
 repair = "4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j"
 research = "GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb"
+reset = "J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"
 sacrifice = "4Cvjz6qrVakbSg3dqBMA8vv8XL8KD3UCTbRVM8g8WkoW"
 settlement = "B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv"
 upgrade = "J3evfUppPdgjTzWhhAhuhKBVM23UU8iCU9j9r7sTHCTB"
 wait = "5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy"
-worker = "F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq"
 
 [registry]
 url = "https://api.apr.dev"
@@ -29,7 +36,7 @@ wallet = "~/.config/solana/id.json"
 members = ["programs-ecs/components/*", "programs-ecs/systems/*"]
 
 [scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"
 
 [test]
 startup_wait = 5000

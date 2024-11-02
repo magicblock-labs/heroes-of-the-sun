@@ -7,14 +7,14 @@ import {
   InitializeComponent,
   ApplySystem,
 } from "@magicblock-labs/bolt-sdk"
-import { Settlement } from "../target/types/settlement";
-import { Wait } from "../target/types/wait";
-import { Build } from "../target/types/build";
-import { AssignWorker } from "../target/types/assign_worker";
-import { Upgrade } from "../target/types/upgrade";
-import { Research } from "../target/types/research";
-import { Reset } from "../target/types/reset";
-import { Repair } from "../target/types/repair";
+import { AssignWorker } from "../../target/types/assign_worker";
+import { Build } from "../../target/types/build";
+import { Repair } from "../../target/types/repair";
+import { Research } from "../../target/types/research";
+import { Reset } from "../../target/types/reset";
+import { Settlement } from "../../target/types/settlement";
+import { Upgrade } from "../../target/types/upgrade";
+import { Wait } from "../../target/types/wait";
 
 
 export enum BuildingType {
@@ -67,7 +67,6 @@ export class SettlementWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
-
   settlementComponent: Program<Settlement>;
   waitSystem: Program<Wait>;
   buildSystem: Program<Build>;
@@ -77,10 +76,10 @@ export class SettlementWrapper {
   researchSystem: Program<Research>;
   resetSystem: Program<Reset>;
 
-  _initialized: boolean;
+  async init(worldPda: PublicKey, x: number, y: number) {
 
-  async init() {
-    if (!this._initialized) {
+    this.worldPda = worldPda;
+    if (!this.componentPda) {
       this.provider = anchor.AnchorProvider.env();
       anchor.setProvider(this.provider);
 
@@ -93,22 +92,13 @@ export class SettlementWrapper {
       this.researchSystem = anchor.workspace.Research as Program<Research>;
       this.resetSystem = anchor.workspace.Reset as Program<Reset>;
 
-      const initNewWorld = await InitializeNewWorld({
-        payer: this.provider.wallet.publicKey,
-        connection: this.provider.connection,
-      });
-      let txSign = await this.provider.sendAndConfirm(initNewWorld.transaction);
-      this.worldPda = initNewWorld.worldPda;
-
-      console.log(`Initialized a new world \x1b[31m (PDA = ${this.worldPda}, ID = ${initNewWorld.worldId}\x1b[0m).`);
-      console.log(`Initialization signature: ${txSign}`);
-
       const addEntity = await AddEntity({
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
+        seed: `${x}x${y}`
       });
-      txSign = await this.provider.sendAndConfirm(addEntity.transaction);
+      let txSign = await this.provider.sendAndConfirm(addEntity.transaction);
       this.entityPda = addEntity.entityPda;
       console.log(`Initialized a new Entity (PDA=${addEntity.entityPda}). Initialization signature: ${txSign}`);
 
@@ -117,11 +107,10 @@ export class SettlementWrapper {
         entity: this.entityPda,
         componentId: this.settlementComponent.programId,
       });
-      txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
+      txSign = await this.provider.sendAndConfirm(initializeComponent.transaction, [], { skipPreflight: true });
       this.componentPda = initializeComponent.componentPda;
       console.log(`Initialized the settlement component. Initialization signature: ${txSign}`);
     }
-    this._initialized = true;
   }
 
   async state() {
@@ -236,9 +225,6 @@ export class SettlementWrapper {
 
   async reset() {
 
-    await this.init();
-
-    // Run the reset system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
       systemId: this.resetSystem.programId,

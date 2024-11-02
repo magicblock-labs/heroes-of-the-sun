@@ -14,8 +14,9 @@ namespace View.Exploration
         [Inject] private HeroModel _hero;
 
         private LineRenderer _line;
+
         private List<Vector2Int> _path = new();
-        private Vector3[] _path3D;
+        
         private Vector3? _currentTarget;
         private float _mouseDownTime;
 
@@ -29,9 +30,8 @@ namespace View.Exploration
         void Update()
         {
             if (Input.GetMouseButtonDown(0))
-            {
                 _mouseDownTime = Time.time;
-            }
+            
 
             if (Input.GetMouseButtonUp(0) && Time.time - _mouseDownTime < .5f)
             {
@@ -44,49 +44,49 @@ namespace View.Exploration
 
                 var tile = info.collider.GetComponent<RenderTile>();
                 _path = _pathfinding.FindPath(_hero.Location, tile.Location);
-                
+
+                ApplyPathToLine();
                 MoveToNextPoint();
             }
 
-            if (_currentTarget.HasValue)
+            if (!_currentTarget.HasValue) return;
+            
+            var diff = _currentTarget.Value - transform.position;
+            transform.forward = diff;
+
+            if (diff.magnitude < .1f)
             {
-                var diff = _currentTarget.Value - transform.position;
-                Debug.Log(diff);
-                transform.forward = diff;
+                _hero.Location = _path[0];
+                _path.RemoveAt(0);
 
-                if (diff.magnitude < .1f)
-                {
-                    _hero.Location = _path[0];
-                    _path.RemoveAt(0);
+                MoveToNextPoint();
 
-                    MoveToNextPoint();
+                if (!_currentTarget.HasValue)
+                    _line.positionCount = 0;
+                else
+                    ApplyPathToLine();
 
-                    if (!_currentTarget.HasValue)
-                        _line.positionCount = 0;
-
-                    return;
-                }
-
-                transform.position += diff.normalized * Time.deltaTime * 5f;
-                _path3D[0] = transform.position;
-
-                _line.positionCount = _path3D.Length;
-                _line.SetPositions(_path3D);
+                return;
             }
+
+            transform.position += diff.normalized * Time.deltaTime * 5f;
+            if (_line.positionCount > 0)
+                _line.SetPosition(0, transform.position);
         }
 
-        private void Recreate3DPath()
+        private void ApplyPathToLine()
         {
-            _path3D = new List<Vector3>{transform.position + Vector3.up}
+            var pathWorld = new List<Vector3> { transform.position + Vector3.up }
                 .Concat(_path.Select(v =>
-                    ConfigModel.GetWorldCellPosition(v.x, v.y) + Vector3.up * (_pathfinding.GetY(v) + 2f))) 
-                .ToArray();    
+                    ConfigModel.GetWorldCellPosition(v.x, v.y) + Vector3.up * (_pathfinding.GetY(v) + 2f)))
+                .ToArray();
+                        
+            _line.positionCount = pathWorld.Length;
+            _line.SetPositions(pathWorld);
         }
 
         private void MoveToNextPoint()
         {
-            Recreate3DPath();
-            
             if (_path.Count > 0)
             {
                 _currentTarget = ConfigModel.GetWorldCellPosition(_path[0].x, _path[0].y) +
