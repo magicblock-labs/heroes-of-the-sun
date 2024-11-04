@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
+using Connectors;
 using Model;
-using Service;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
@@ -11,7 +11,7 @@ namespace View.UI
     public class DisplayEnergy : InjectableBehaviour
     {
         [Inject] private SettlementModel _model;
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
 
         [SerializeField] private Text timerLabel;
         [SerializeField] private Text energyLabel;

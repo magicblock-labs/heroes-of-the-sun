@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model;
-using Service;
 using Settlement.Types;
 using UnityEngine;
 using UnityEngine.Events;

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using Connectors;
 using Model;
 using Notifications;
 using Plugins.Demigiant.DOTween.Modules;
-using Service;
 using TMPro;
 using UnityEngine;
 using Utils.Injection;
@@ -15,7 +15,7 @@ namespace View.UI.Building
     public class BuildingInfo : BuildingUIPanel
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
         [Inject] private InteractionStateModel _interaction;
         [Inject] private ShowWorkerSelection _showWorkerSelection;
 

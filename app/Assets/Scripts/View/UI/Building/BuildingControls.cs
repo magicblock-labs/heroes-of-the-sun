@@ -1,5 +1,5 @@
+using Connectors;
 using Model;
-using Service;
 using Unity.AI.Navigation;
 using UnityEngine;
 using Utils.Injection;
@@ -12,7 +12,7 @@ namespace View.UI.Building
         [SerializeField] private BuildingInfo info;
 
         [Inject] private InteractionStateModel _interaction;
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
 
         private Camera _camera;
         private BoxCollider _collider;

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Linq;
 using Model;
-using Service;
 using UnityEngine;
 using UnityEngine.AI;
 using Utils.Injection;

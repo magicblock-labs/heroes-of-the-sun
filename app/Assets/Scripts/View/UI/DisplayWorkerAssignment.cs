@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Connectors;
 using Model;
-using Service;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -11,7 +11,7 @@ namespace View.UI
     public class DisplayWorkerAssignment : InjectableBehaviour
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
         [Inject] private InteractionStateModel _interaction;
 
         [SerializeField] private WorkerAssignmentEntry workerAssignmentEntry;

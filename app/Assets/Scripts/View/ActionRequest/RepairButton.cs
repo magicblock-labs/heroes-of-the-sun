@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Connectors;
 using Model;
-using Service;
 using Settlement.Types;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +12,7 @@ namespace View.ActionRequest
     public class RepairButton : InjectableBehaviour, IBuildingActionButton
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
         [Inject] private ConfigModel _config;
         [Inject] private InteractionStateModel _interaction;
 

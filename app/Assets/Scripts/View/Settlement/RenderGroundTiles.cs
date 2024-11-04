@@ -1,5 +1,4 @@
 using Model;
-using Service;
 using Unity.AI.Navigation;
 using UnityEngine;
 using Utils.Injection;

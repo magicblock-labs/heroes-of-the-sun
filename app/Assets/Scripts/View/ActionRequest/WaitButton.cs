@@ -1,12 +1,12 @@
+using Connectors;
 using Model;
-using Service;
 using Utils.Injection;
 
 namespace View.ActionRequest
 {
     public class WaitButton : InjectableBehaviour
     {
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
         [Inject] private SettlementModel _model;
         [Inject] private InteractionStateModel _interaction;
 

@@ -1,5 +1,5 @@
+using Connectors;
 using Model;
-using Service;
 using Utils.Injection;
 
 namespace View.UI.Building
@@ -8,7 +8,7 @@ namespace View.UI.Building
     {
         [Inject] private InteractionStateModel _interaction;
         [Inject] private SettlementModel _settlement;
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
         [Inject] private ConfigModel _config;
 
         public void OnTryDragStart()

@@ -1,6 +1,6 @@
 using System.Linq;
+using Connectors;
 using Model;
-using Service;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
@@ -9,7 +9,7 @@ namespace View.UI.Research
 {
     public class ResearchPopup : InjectableBehaviour
     {
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
         [Inject] private SettlementModel _settlement;
     
         [SerializeField] private Transform researchList;

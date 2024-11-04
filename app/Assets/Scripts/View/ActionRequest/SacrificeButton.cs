@@ -1,7 +1,7 @@
 using System;
+using Connectors;
 using Model;
 using Notifications;
-using Service;
 using Settlement.Types;
 using Utils.Injection;
 using BuildingType = Settlement.Types.BuildingType;
@@ -11,7 +11,7 @@ namespace View.ActionRequest
     public class SacrificeButton : InjectableBehaviour, IBuildingActionButton
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
         [Inject] private InteractionStateModel _interaction;
 
         private int _index;

@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Service;
 using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
@@ -18,7 +17,7 @@ namespace Model
     }
 
     [Singleton]
-    public class SettlementModel : InjectableObject<SettlementModel>
+    public class SettlementModel : InjectableObject
     {
         [Inject] private ConfigModel _config;
 

@@ -1,5 +1,4 @@
 using System;
-using Service;
 using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
@@ -18,7 +17,7 @@ namespace Model
     }
 
     [Singleton]
-    public class InteractionStateModel : InjectableObject<InteractionStateModel>
+    public class InteractionStateModel 
     {
         private InteractionState _state = InteractionState.Idle;
         public Signal Updated = new();

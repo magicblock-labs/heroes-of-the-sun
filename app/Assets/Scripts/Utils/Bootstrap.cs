@@ -2,12 +2,14 @@
 
 using System.Collections;
 using System.Linq;
-using Service;
+using Connectors;
+using Model;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using Solana.Unity.Wallet.Bip39;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Utils.Injection;
 
 namespace Utils
@@ -17,7 +19,13 @@ namespace Utils
         private const string PwdPrefKey = "pwd";
         [SerializeField] private TMP_Text label;
 
-        [Inject] private ProgramConnector _connector;
+        [Inject] private PlayerConnector _player;
+        [Inject] private LocationAllocatorConnector _allocator;
+        [Inject] private SettlementConnector _settlement;
+
+
+        [Inject] private PlayerModel _playerModel;
+
 
         private IEnumerator Start()
         {
@@ -61,12 +69,11 @@ namespace Utils
             }
         }
 
-
         private static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[UnityEngine.Random.Range(0, s.Length)]).ToArray());
+                .Select(s => s[Random.Range(0, s.Length)]).ToArray());
         }
 
 
@@ -74,18 +81,38 @@ namespace Utils
         {
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
-            
+
             Web3.OnLogin -= HandleSignIn;
             label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
 
-            await _connector.EnsureBalance();
+            await _player.EnsureBalance();
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
 
-            await _connector.ReloadData();
+            await _player.ReloadData();
             label.text = $"[{Web3.Account.PublicKey}] Loaded ";
-            
+
+            //check if settlement exists
+            var settlements = _playerModel.Get().Settlements;
+            if (settlements.Length == 0)
+            {
+                //otherwise - get state of allocator
+                var allocator = await _allocator.GetCurrentState();
+                
+                //assign settlement in player
+                //todo this should be one system instruction with settlement account passed
+                await _player.AssignSettlement(allocator.CurrentX, allocator.CurrentY);
+                await _allocator.Bump();
+                _settlement.Location = new Vector2Int(allocator.CurrentX, allocator.CurrentY);
+            }
+            else 
+                _settlement.Location = new Vector2Int(settlements[0].X, settlements[0].Y);
+
+            await _settlement.ReloadData();
+
             //sync time
-            await _connector.SyncTime();
+            await _settlement.SyncTime();
+
+            SceneManager.LoadScene("World");
         }
     }
 }

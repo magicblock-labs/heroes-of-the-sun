@@ -23,7 +23,7 @@ namespace Model
 
 
     [Singleton]
-    public class ConfigModel : InjectableObject<ConfigModel>
+    public class ConfigModel
     {
         public const int CellSize = 2; //units per cell
 

@@ -1,11 +1,11 @@
-﻿using Service;
+﻿using Connectors;
 using Utils.Injection;
 
 namespace StompyRobot.SROptions
 {
     public partial class SROptions
     {
-        [Inject] private ProgramConnector _connector;
+        [Inject] private SettlementConnector _connector;
 
         public SROptions()
         {
