@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Model;
 using UnityEngine;
@@ -17,17 +18,10 @@ namespace View.Exploration
             foreach (Transform child in tileContainer)
                 Destroy(child.gameObject);
 
-            for (var x = 0; x < size; x++)
-            for (var y = 0; y < size; y++)
-            {
-                var sampleX = (float)(x + offset.x) / size * scale.x;
-                var sampleY = (float)(y + offset.y) / size * scale.y;
-
-                var perlinNoiseSample = Mathf.PerlinNoise(sampleX, sampleY);
-                Instantiate(tile, tileContainer).Create(offset, new Vector2Int(x, y), perlinNoiseSample);
-            }
 
             GenerateWaterMesh(size, size * ConfigModel.CellSize);
+            
+            StartCoroutine(GenerateTiles(offset, size, scale));
         }
 
         private void GenerateWaterMesh(int subdivisions, int scale)
@@ -67,6 +61,24 @@ namespace View.Exploration
                 uv = uvs.ToArray(),
                 normals = normals.ToArray()
             };
+        }
+
+        IEnumerator GenerateTiles(Vector2Int offset, int size, Vector2 scale)
+        {
+            for (var x = 0; x < size; x++)
+            for (var y = 0; y < size; y++)
+            {
+                var sampleX = (float)(x + offset.x) / size * scale.x;
+                var sampleY = (float)(y + offset.y) / size * scale.y;
+
+                var perlinNoiseSample = Mathf.PerlinNoise(sampleX, sampleY);
+                Instantiate(tile, tileContainer).Create(
+                    offset, 
+                    new Vector2Int(x, y), 
+                    perlinNoiseSample,
+                    x == 0 || y == 0 || x == size - 1 || y == size - 1);
+                yield return null;
+            }
         }
     }
 }

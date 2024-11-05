@@ -1,5 +1,4 @@
 using Model;
-using UnityEngine;
 using Utils.Injection;
 
 namespace View
@@ -8,8 +7,6 @@ namespace View
     {
         [Inject] private SettlementModel _model;
         [Inject] private ConfigModel _config;
-
-        [SerializeField] private BuildingPreview prefab;
 
         private void Start()
         {

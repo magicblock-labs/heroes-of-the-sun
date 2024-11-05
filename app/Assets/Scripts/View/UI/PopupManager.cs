@@ -1,3 +1,4 @@
+using System;
 using Notifications;
 using UnityEngine;
 using Utils.Injection;
@@ -27,5 +28,11 @@ public class PopupManager : InjectableBehaviour
     private void ResearchRequested()
     {
         researchPopup.SetActive(true);
+    }
+
+    private void OnDestroy()
+    {
+        _showWorkerSelection.Remove(WorkerSelectionRequested);
+        _showResearch.Remove(ResearchRequested);
     }
 }

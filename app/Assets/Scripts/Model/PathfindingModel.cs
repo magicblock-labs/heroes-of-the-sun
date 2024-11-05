@@ -32,7 +32,7 @@ namespace Model
             _gScore.Clear();
             _fScore.Clear();
             _nodeLinks.Clear();
-        
+
             _openSet[start] = true;
             _gScore[start] = 0;
             _fScore[start] = Heuristic(start, goal);
@@ -42,7 +42,7 @@ namespace Model
                 var nullableBest = NextBest();
                 if (!nullableBest.HasValue)
                     return new List<Vector2Int>();
-                
+
                 var current = nullableBest.Value;
                 if (current.Equals(goal))
                 {
@@ -56,10 +56,10 @@ namespace Model
                 {
                     if (_closedSet.ContainsKey(neighbor))
                         continue;
-                
+
                     if (!_heightmap.ContainsKey(neighbor))
                         continue;
-                
+
                     if (GetHeightDiff(current, neighbor) > 1)
                         continue;
 
@@ -153,7 +153,7 @@ namespace Model
 
         public float GetY(Vector2Int location)
         {
-            return _heightmap[location];
+            return _heightmap.GetValueOrDefault(location, 0) ;
         }
     }
 }

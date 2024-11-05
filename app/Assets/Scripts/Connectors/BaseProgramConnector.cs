@@ -139,7 +139,7 @@ namespace Connectors
             };
 
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
-            Debug.Log($"ApplySystem: {result.Result}");
+            Debug.Log($"ApplySystem: {result.Result} {JsonConvert.SerializeObject(args)}");
 
             await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Processed);
 

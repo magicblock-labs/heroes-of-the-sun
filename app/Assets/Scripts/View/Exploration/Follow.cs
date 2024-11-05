@@ -15,7 +15,7 @@ namespace View.Exploration
         {
             var currentTargetPosition = target.position;
             var targetPoint = currentTargetPosition + Quaternion.Euler(0, _rot, 0) * offset;
-            
+
             if (Input.GetMouseButtonDown(0))
             {
                 _rotDuringMouseDown = _rot;
@@ -24,7 +24,7 @@ namespace View.Exploration
 
             if (Input.GetMouseButton(0))
             {
-                _rot = _rotDuringMouseDown + (Input.mousePosition.x-_mousePositionOnDown)/4;
+                _rot = _rotDuringMouseDown + (Input.mousePosition.x - _mousePositionOnDown) / 4;
                 transform.position = targetPoint;
             }
             else

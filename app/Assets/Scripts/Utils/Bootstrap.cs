@@ -25,6 +25,7 @@ namespace Utils
 
 
         [Inject] private PlayerModel _playerModel;
+        [Inject] private HeroModel _hero;
 
 
         private IEnumerator Start()
@@ -111,6 +112,8 @@ namespace Utils
                 _settlement.Location = new Vector2Int(settlements[0].X, settlements[0].Y);
 
             await _settlement.ReloadData();
+
+            _hero.Location = _settlement.Location.Value * 2 * 24 - Vector2Int.one;
 
             //sync time
             await _settlement.SyncTime();

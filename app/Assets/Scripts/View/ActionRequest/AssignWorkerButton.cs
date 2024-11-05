@@ -38,7 +38,7 @@ namespace View.ActionRequest
 
             if (freeWorker >= 0)
             {
-                if (await _connector.AssignLabour(Math.Max(0, freeWorker), _index))
+                if (await _connector.AssignWorker(Math.Max(0, freeWorker), _index))
                     await _connector.ReloadData();
             }
 
