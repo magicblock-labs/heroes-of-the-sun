@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Model;
 using UnityEngine;
@@ -11,9 +12,9 @@ namespace View.Exploration
 
         [SerializeField] private int chunkSize;
         [SerializeField] private int passes = 2;
-        [SerializeField] private RenderRandomChunk prefab;
+        [SerializeField] private RenderGenericChunk prefab;
 
-        private readonly Dictionary<Vector2Int, RenderRandomChunk> _visibleChunks = new();
+        private readonly HashSet<Vector2Int> _initialisedChunks = new();
 
         private void Update()
         {
@@ -32,15 +33,8 @@ namespace View.Exploration
 
                     var offsetChunkLocation = new Vector2Int(startingChunkX + chunkX, startingChunkY + chunkY);
 
-                    if (!_visibleChunks.ContainsKey(offsetChunkLocation))
-                    {
-                        _visibleChunks[offsetChunkLocation] =
-                            Instantiate(prefab,
-                                new Vector3(startingChunkX + chunkX, 0, startingChunkY + chunkY),
-                                Quaternion.identity,
-                                transform).Create(offsetChunkLocation * chunkSize, chunkSize,
-                                new Vector2(chunkSize, chunkSize) * .1f);
-                    }
+                    if (_initialisedChunks.Add(offsetChunkLocation))
+                        Instantiate(prefab, transform).Create(offsetChunkLocation, chunkSize);
                 }
 
                 pass++;

@@ -32,30 +32,13 @@ namespace Model
         {
             _data = value;
             StorageCapacity = GetStorageCapacity();
-            OccupiedData = GetCellsData();
+            OccupiedData = _config.GetCellsData(_data);
             Updated.Dispatch();
         }
 
         public Settlement.Accounts.Settlement Get()
         {
             return _data;
-        }
-
-        private byte[,] GetCellsData()
-        {
-            var result = new byte[_config.Width, _config.Height];
-
-            //this is a proper dynamic data calculated based on placed buildings
-            foreach (var building in _data.Buildings)
-            {
-                var config = _config.Buildings[building.Id];
-
-                for (var i = building.X; i < building.X + config.width; i++)
-                for (var j = building.Y; j < building.Y + config.height; j++)
-                    result[i, j] = 1;
-            }
-
-            return result;
         }
 
         public int GetFreeWorkerIndex()

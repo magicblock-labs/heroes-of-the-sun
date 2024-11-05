@@ -7,9 +7,9 @@ namespace Model
     [Singleton]
     public class PathfindingModel
     {
-        private readonly Dictionary<Vector2Int, int> _heightmap = new();
+        private readonly Dictionary<Vector2Int, float> _heightmap = new();
 
-        public void AddPoint(Vector2Int location, int value)
+        public void AddPoint(Vector2Int location, float value)
         {
             _heightmap[location] = value;
         }
@@ -101,7 +101,7 @@ namespace Model
 
         private List<Vector2Int> Reconstruct(Vector2Int current)
         {
-            List<Vector2Int> path = new List<Vector2Int>();
+            var path = new List<Vector2Int>();
             while (_nodeLinks.ContainsKey(current))
             {
                 path.Add(current);
@@ -146,12 +146,12 @@ namespace Model
             };
         }
 
-        private int GetHeightDiff(Vector2Int from, Vector2Int to)
+        private float GetHeightDiff(Vector2Int from, Vector2Int to)
         {
             return Mathf.Abs(_heightmap[from] - _heightmap[to]);
         }
 
-        public int GetY(Vector2Int location)
+        public float GetY(Vector2Int location)
         {
             return _heightmap[location];
         }

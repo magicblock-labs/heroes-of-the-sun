@@ -28,8 +28,6 @@ namespace View
         {
             _agent = GetComponent<NavMeshAgent>();
             _anim = GetComponent<Animator>();
-            _model.Updated.Add(ResetLogic);
-            ResetLogic();
         }
 
 
@@ -38,8 +36,7 @@ namespace View
             _index = value;
         }
 
-
-        private void ResetLogic()
+        public void ResetLogic()
         {
             StopAllCoroutines();
 
@@ -157,11 +154,6 @@ namespace View
 
                 yield return null;
             }
-        }
-
-        private void OnDestroy()
-        {
-            _model.Updated.Remove(ResetLogic);
         }
     }
 }

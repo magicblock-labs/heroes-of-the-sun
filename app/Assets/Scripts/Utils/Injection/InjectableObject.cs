@@ -1,8 +1,11 @@
-﻿namespace Utils.Injection
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Utils.Injection
 {
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     public class InjectableObject
-    {   
-        public InjectableObject()
+    {
+        protected InjectableObject()
         {
             Injector.Instance.Resolve(this);
         }

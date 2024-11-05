@@ -12,11 +12,8 @@ namespace View.Exploration
 
         [SerializeField] private MeshFilter waterMesh;
 
-        public RenderRandomChunk Create(Vector2Int offset, int size, Vector2 scale)
+        public void Create(Vector2Int offset, int size, Vector2 scale)
         {
-            transform.position = new Vector3(offset.x * ConfigModel.CellSize, 0, offset.y * ConfigModel.CellSize);
-            gameObject.name = $"Chunk@{transform.position.x}x{transform.position.z}";
-
             foreach (Transform child in tileContainer)
                 Destroy(child.gameObject);
 
@@ -31,7 +28,6 @@ namespace View.Exploration
             }
 
             GenerateWaterMesh(size, size * ConfigModel.CellSize);
-            return this;
         }
 
         private void GenerateWaterMesh(int subdivisions, int scale)

@@ -1,4 +1,4 @@
-// #define FTUE_TESTING
+//#define FTUE_TESTING
 
 using System.Collections;
 using System.Linq;
@@ -103,6 +103,9 @@ namespace Utils
                 await _player.AssignSettlement(allocator.CurrentX, allocator.CurrentY);
                 await _allocator.Bump();
                 _settlement.Location = new Vector2Int(allocator.CurrentX, allocator.CurrentY);
+                
+                //reload player after assignment
+                await _player.ReloadData();
             }
             else 
                 _settlement.Location = new Vector2Int(settlements[0].X, settlements[0].Y);

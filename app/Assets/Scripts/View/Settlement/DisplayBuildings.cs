@@ -2,34 +2,29 @@ using Model;
 using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
-using View.UI;
 using View.UI.Building;
 
 namespace View
 {
-    public class DisplayBuildings : InjectableBehaviour
+    public class DisplayBuildings : InjectableBehaviour, IDisplaySettlementData
     {
-        [Inject] private SettlementModel _model;
         [Inject] private ConfigModel _config;
 
         [SerializeField] private BuildingPreview prefab;
 
-        private void Start()
+
+        public void SetData(Settlement.Accounts.Settlement value)
         {
-            _model.Updated.Add(OnModelUpdated);
-            OnModelUpdated();
+            CreateBuildings(value.Buildings);
         }
 
-        private void OnModelUpdated()
+        public void CreateBuildings(Building[] buildings)
         {
-            if (!_model.HasData)
-                return;
-
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
             var i = 0;
-            foreach (var building in _model.Get().Buildings)
+            foreach (var building in buildings)
             {
                 var conf = _config.Buildings[building.Id];
                 var buildingDimensions = new Vector3(conf.width, 0, conf.height);
@@ -43,16 +38,13 @@ namespace View
                     obj.ShowConstructionSite();
                 else
                     obj.SetBuildingPrefab(conf);
-                    
+
                 obj.transform.localPosition = centerPos;
 
-                obj.GetComponent<BuildingControls>().SetData(i++, building, conf);
+                var buildingControls = obj.GetComponent<BuildingControls>();
+                if (buildingControls)
+                    buildingControls.SetData(i++, building, conf);
             }
-        }
-
-        private void OnDestroy()
-        {
-            _model.Updated.Remove(OnModelUpdated);
         }
     }
 }

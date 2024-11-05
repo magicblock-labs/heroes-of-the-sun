@@ -8,12 +8,12 @@ using Utils.Injection;
 
 namespace View
 {
-    public class RenderPlantResources : InjectableBehaviour
+    public class RenderPlantResources : InjectableBehaviour, IDisplaySettlementData
     {
         private const float EnvironmentCapacity = 1000f;
         private const float ResourcesPerPlant = 20f;
 
-        [Inject] private SettlementModel _settlement;
+        [Inject] private ConfigModel _config;
         [Inject] private ResourceLocationModel _locations;
 
         [SerializeField] private GameObject treePrefab;
@@ -24,12 +24,8 @@ namespace View
 
         [SerializeField] private float scaleFactor = 0.95f;
 
-        private void Start()
-        {
-            _settlement.Updated.Add(RedrawTiles);
-        }
 
-        void RedrawTiles()
+        public void SetData(Settlement.Accounts.Settlement value)
         {
             if (transform.childCount > 0)
                 return;
@@ -45,8 +41,8 @@ namespace View
 
                 var depleted =
                     isWood
-                        ? _settlement.Get().Environment.Wood < i * ResourcesPerPlant
-                        : _settlement.Get().Environment.Food > i * ResourcesPerPlant - EnvironmentCapacity;
+                        ? value.Environment.Wood < i * ResourcesPerPlant
+                        : value.Environment.Food > i * ResourcesPerPlant - EnvironmentCapacity;
 
                 if (!depleted)
                     _locations.Add(isWood ? ResourceType.Wood : ResourceType.Food, point);
@@ -74,11 +70,11 @@ namespace View
             if (string.IsNullOrEmpty(cacheString))
             {
                 var surroundingCells = new List<Vector2Int>();
-                for (var i = -2; i < _settlement.OccupiedData.GetLength(0) + 2; i++)
-                for (var j = -2; j < _settlement.OccupiedData.GetLength(1) + 2; j++)
+                for (var i = -2; i < _config.Width + 2; i++)
+                for (var j = -2; j < _config.Height + 2; j++)
                 {
-                    if (i >= 0 && i < _settlement.OccupiedData.GetLength(0) && j >= 0 &&
-                        j < _settlement.OccupiedData.GetLength(1))
+                    if (i >= 0 && i < _config.Width && j >= 0 &&
+                        j < _config.Height)
                         continue;
 
                     surroundingCells.Add(new Vector2Int(i, j));
@@ -96,11 +92,6 @@ namespace View
             }
 
             return randomAndClamped;
-        }
-
-        private void OnDestroy()
-        {
-            _settlement.Updated.Remove(RedrawTiles);
         }
     }
 }

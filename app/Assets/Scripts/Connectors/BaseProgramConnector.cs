@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Solana.Unity.Programs;
 using Solana.Unity.Programs.Abstract;
-using Solana.Unity.Rpc.Core.Http;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
@@ -15,24 +14,22 @@ using Utils.Injection;
 using View;
 using World.Program;
 
-// ReSharper disable InconsistentNaming (this is for args passing without renaming etc to match rust)
-
 namespace Connectors
 {
     [Singleton]
     public abstract class BaseProgramConnector<T> : InjectableObject where T : BaseClient
     {
         //this comes from program deployment
-        protected const string WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";//"GvMv6N5UF8ctteapSXMJUh2GXmXb4a7hRHWNmi69PTA8";
+        private const string WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";//"GvMv6N5UF8ctteapSXMJUh2GXmXb4a7hRHWNmi69PTA8";
         private const int WorldIndex = 2;//1318;
 
-        protected T _client;
+        protected T Client;
 
-        protected string _entityPda;
+        private string _entityPda;
         private long _timeOffset;
         private string _dataAddress;
 
-        protected string EntityPda => _entityPda ??= Pda.FindEntityPda(WorldIndex, 0, GetExtraSeed());
+        private string EntityPda => _entityPda ??= Pda.FindEntityPda(WorldIndex, 0, GetExtraSeed());
 
         protected abstract string GetExtraSeed();
         protected abstract PublicKey GetComponentProgramAddress();
@@ -50,8 +47,7 @@ namespace Connectors
         
         public async Task Airdrop()
         {
-            RequestResult<string> airdropResult = null;
-            airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 100000000);
+            var airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 100000000);
             var txResult = await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
             var balanceResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
             Debug.Log($"{Web3.Account.PublicKey} \nairdropResult.Result: {airdropResult.Result}, \ntxResult{txResult} \n balanceResult:{balanceResult} ");

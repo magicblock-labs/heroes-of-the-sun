@@ -40,7 +40,7 @@ namespace View.Exploration
 
                 var mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-                if (!Physics.Raycast(mouseRay, out var info, 100f)) return;
+                if (!Physics.Raycast(mouseRay, out var info, 1000f)) return;
 
                 var tile = info.collider.GetComponent<RenderTile>();
                 _path = _pathfinding.FindPath(_hero.Location, tile.Location);

@@ -6,6 +6,6 @@ namespace Model
     [Singleton]
     public class HeroModel
     {
-        public Vector2Int Location;
+        public Vector2Int Location = - Vector2Int.one;
     }
 }

@@ -617,9 +617,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4c48e89a7afa40bdb658a9c90e4e630, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chunkSize: 16
+  chunkSize: 24
   passes: 2
-  prefab: {fileID: 4205165150520474416, guid: 68b95a1ad9bd844dc9a0d985de67aac5, type: 3}
+  prefab: {fileID: 1123003698786603702, guid: f45c19654678242fdad1a51eae5f23a7, type: 3}
 --- !u!1 &1764238906
 GameObject:
   m_ObjectHideFlags: 0

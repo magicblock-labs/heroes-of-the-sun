@@ -3,15 +3,11 @@ using Locationallocator;
 using Locationallocator.Accounts;
 using Locationallocator.Program;
 using Newtonsoft.Json;
-using Player;
-using Player.Program;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using UnityEngine;
 using Utils.Injection;
-
-// ReSharper disable InconsistentNaming (this is for args passing without renaming etc to match rust)
 
 namespace Connectors
 {
@@ -19,7 +15,7 @@ namespace Connectors
     public class LocationAllocatorConnector : BaseProgramConnector<LocationallocatorClient>
     {
         private LocationallocatorClient LocationAllocator =>
-            _client ??= new LocationallocatorClient(Web3.Rpc, Web3.WsRpc, new PublicKey(LocationallocatorProgram.ID));
+            Client ??= new LocationallocatorClient(Web3.Rpc, Web3.WsRpc, new PublicKey(LocationallocatorProgram.ID));
 
         protected override string GetExtraSeed()
         {

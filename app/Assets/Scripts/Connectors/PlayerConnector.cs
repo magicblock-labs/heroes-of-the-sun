@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Model;
 using Newtonsoft.Json;
@@ -9,17 +10,17 @@ using Solana.Unity.Wallet;
 using UnityEngine;
 using Utils.Injection;
 
-// ReSharper disable InconsistentNaming (this is for args passing without renaming etc to match rust)
 
 namespace Connectors
 {
     [Singleton]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class PlayerConnector : BaseProgramConnector<PlayerClient>
     {
         [Inject] private PlayerModel _model;
         
         private PlayerClient Player =>
-            _client ??= new PlayerClient(Web3.Rpc, Web3.WsRpc, new PublicKey(PlayerProgram.ID));
+            Client ??= new PlayerClient(Web3.Rpc, Web3.WsRpc, new PublicKey(PlayerProgram.ID));
         
         protected override string GetExtraSeed()
         {

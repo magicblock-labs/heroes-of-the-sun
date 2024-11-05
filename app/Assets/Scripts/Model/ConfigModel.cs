@@ -189,5 +189,21 @@ namespace Model
                 (x + 0.5f) * CellSize, 0,
                 (y + 0.5f) * CellSize);
         }
+
+        public byte[,] GetCellsData(Settlement.Accounts.Settlement data)
+        {
+            var result = new byte[Width, Height];
+
+            foreach (var building in data.Buildings)
+            {
+                var config = Buildings[building.Id];
+
+                for (var i = building.X; i < building.X + config.width; i++)
+                for (var j = building.Y; j < building.Y + config.height; j++)
+                    result[i, j] = 1;
+            }
+
+            return result;
+        }
     }
 }

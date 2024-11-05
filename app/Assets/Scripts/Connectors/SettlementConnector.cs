@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Model;
 using Newtonsoft.Json;
@@ -10,11 +11,10 @@ using Solana.Unity.Wallet;
 using UnityEngine;
 using Utils.Injection;
 
-// ReSharper disable InconsistentNaming (this is for args passing without renaming etc to match rust)
-
 namespace Connectors
 {
     [Singleton]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SettlementConnector : BaseProgramConnector<SettlementClient>
     {
         [Inject] private SettlementModel _settlement;
@@ -32,10 +32,8 @@ namespace Connectors
         }
 
         private SettlementClient Settlement =>
-            _client ??= new SettlementClient(Web3.Rpc, Web3.WsRpc, new PublicKey(SettlementProgram.ID));
-
-        private string _dataAddress;
-
+            Client ??= new SettlementClient(Web3.Rpc, Web3.WsRpc, new PublicKey(SettlementProgram.ID));
+        
         public async Task ReloadData()
         {
             if (!Location.HasValue)

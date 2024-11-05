@@ -4,28 +4,21 @@ using Utils.Injection;
 
 namespace View
 {
-    public class DisplayWorkers : InjectableBehaviour
+    public class DisplayWorkers : InjectableBehaviour, IDisplaySettlementData
     {
-        [Inject] private SettlementModel _settlement;
         [SerializeField] private Worker workerPrefab;
-
-        public void Start()
+        
+        public void SetData(Settlement.Accounts.Settlement value)
         {
-            _settlement.Updated.Add(Redraw);
-            if (_settlement.HasData)
-                Redraw();
-        }
-
-        private void Redraw()
-        {
-            var allocation = _settlement.Get().WorkerAssignment;
-            for (var i = transform.childCount; i < allocation.Length; i++)
-                Instantiate(workerPrefab, transform).SetIndex(i);
-        }
-
-        public void OnDestroy()
-        {
-            _settlement.Updated.Remove(Redraw);
+            
+            var allocation = value.WorkerAssignment;
+            for (var i = 0; i < allocation.Length; i++)
+            {
+                if (i < transform.childCount)
+                    transform.GetChild(i).GetComponent<Worker>().ResetLogic();
+                else
+                    Instantiate(workerPrefab, transform).SetIndex(i);
+            }
         }
     }
 }
