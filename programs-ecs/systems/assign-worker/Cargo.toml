@@ -1,5 +1,5 @@
 [package]
-name = "worker"
+name = "assign-worker"
 version = "0.1.8"
 description = "Created with Bolt"
 edition = "2021"

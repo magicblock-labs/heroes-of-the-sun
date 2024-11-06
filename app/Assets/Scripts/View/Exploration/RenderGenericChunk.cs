@@ -14,7 +14,7 @@ namespace View.Exploration
 
         [SerializeField] private int chunksPerSettlement;
 
-        public async void Create(Vector2Int location, int chunkSize)
+        public async void Create(Vector2Int location, int chunkSize, bool instant)
         {
             transform.position = new Vector3(location.x * ConfigModel.CellSize, 0, location.y * ConfigModel.CellSize) *
                                  chunkSize;
@@ -36,7 +36,7 @@ namespace View.Exploration
             //if none found, render a perlin chunk
             gameObject.name = $"RandomChunk@{location.x}x{location.y}";
             Instantiate(randomPrefab, transform).Create(location * chunkSize, chunkSize,
-                new Vector2(chunkSize, chunkSize) * .1f);
+                new Vector2(chunkSize, chunkSize) * .1f, instant);
         }
     }
 }

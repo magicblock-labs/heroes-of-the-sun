@@ -15,7 +15,8 @@ describe("Test suite for: deterioration repair", () => {
     });
 
     it("Builds a WaterCollector", async () => {
-        let state = await settlement.build({ x: 1, y: 10, config_index: BuildingType.WaterCollector, worker_index: 0 });
+        let state = await settlement.build({ x: 1, y: 10, config_index: BuildingType.WaterCollector, worker_index: -1 });
+        state = await settlement.assignWorker({ building_index: state.buildings.length - 1, worker_index: 0 });
         state = await settlement.wait({ time: settlement.getTurnsToCompleteAll(state) })
         expect(state.buildings[1].turnsToBuild).to.eq(0);
     });

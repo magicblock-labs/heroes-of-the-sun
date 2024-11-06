@@ -34,7 +34,7 @@ namespace View.Exploration
                     var offsetChunkLocation = new Vector2Int(startingChunkX + chunkX, startingChunkY + chunkY);
 
                     if (_initialisedChunks.Add(offsetChunkLocation))
-                        Instantiate(prefab, transform).Create(offsetChunkLocation, chunkSize);
+                        Instantiate(prefab, transform).Create(offsetChunkLocation, chunkSize, pass < 2);
                 }
 
                 pass++;

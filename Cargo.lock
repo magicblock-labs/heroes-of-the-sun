@@ -363,6 +363,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "assign-worker"
+version = "0.1.8"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "serde",
+ "settlement",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2265,16 +2275,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b480ae9340fc261e6be3e95a1ba86d54ae3f9171132a73ce8d4bbaf68339507c"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "worker"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
 ]
 
 [[package]]

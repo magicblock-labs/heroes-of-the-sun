@@ -1,7 +1,7 @@
 mod errors;
 use bolt_lang::*;
 
-declare_id!("F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq");
+declare_id!("AwwNGgiwArNTsSNbjgiPShcv3fKNVDgK5SUwUb7jWq3o");
 
 #[system]
 pub mod assign_worker {

@@ -2297,7 +2297,7 @@ GameObject:
   - component: {fileID: 636030672}
   - component: {fileID: 636030671}
   m_Layer: 5
-  m_Name: WorldButton
+  m_Name: HUD_WorldButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3179,12 +3179,12 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 636030670}
   - {fileID: 19301280}
   - {fileID: 749016158}
   - {fileID: 1389758996}
   - {fileID: 162778378042834225}
   - {fileID: 759743406}
-  - {fileID: 636030670}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4195,7 +4195,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3647a2421c7c4a5fa02c6048cbf757bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
 --- !u!1001 &1389758995
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-declare_id!("GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp");
+declare_id!("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2");
 
 #[system]
 pub mod assign_settlement {

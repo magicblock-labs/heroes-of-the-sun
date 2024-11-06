@@ -13,6 +13,7 @@ reset = "J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"
 
 [programs.localnet]
 assign-settlement = "GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"
+location_allocator = "DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV"
 assign-worker = "F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq"
 build = "AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c"
 claim-time = "HFx2weMbr8CrAEAPfPtgw9zzgHgUFzSz7qiTyhTHGSF"

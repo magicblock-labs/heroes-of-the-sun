@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-declare_id!("At6YLXTGPoQPwqzfZwYEq667RBgAX3sJFiNUALgbpQan");
+declare_id!("C2H1sb7ZVpgEZFWqXujRK3rx5C2543GNN251wmgfbhUH");
 
 const DIRECTION_UP: u8 = 0;
 const DIRECTION_RIGHT: u8 = 1;

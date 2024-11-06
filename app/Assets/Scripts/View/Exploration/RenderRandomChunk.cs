@@ -13,15 +13,15 @@ namespace View.Exploration
 
         [SerializeField] private MeshFilter waterMesh;
 
-        public void Create(Vector2Int offset, int size, Vector2 scale)
+        public void Create(Vector2Int offset, int size, Vector2 scale, bool instant)
         {
             foreach (Transform child in tileContainer)
                 Destroy(child.gameObject);
 
 
             GenerateWaterMesh(size, size * ConfigModel.CellSize);
-            
-            StartCoroutine(GenerateTiles(offset, size, scale));
+
+            StartCoroutine(GenerateTiles(offset, size, scale, instant));
         }
 
         private void GenerateWaterMesh(int subdivisions, int scale)
@@ -63,7 +63,7 @@ namespace View.Exploration
             };
         }
 
-        IEnumerator GenerateTiles(Vector2Int offset, int size, Vector2 scale)
+        private IEnumerator GenerateTiles(Vector2Int offset, int size, Vector2 scale, bool instant)
         {
             for (var x = 0; x < size; x++)
             for (var y = 0; y < size; y++)
@@ -73,11 +73,13 @@ namespace View.Exploration
 
                 var perlinNoiseSample = Mathf.PerlinNoise(sampleX, sampleY);
                 Instantiate(tile, tileContainer).Create(
-                    offset, 
-                    new Vector2Int(x, y), 
+                    offset,
+                    new Vector2Int(x, y),
                     perlinNoiseSample,
                     x == 0 || y == 0 || x == size - 1 || y == size - 1);
-                yield return null;
+
+                if (!instant)
+                    yield return null;
             }
         }
     }

@@ -46,7 +46,7 @@ namespace Connectors
         
         public async Task<bool> AssignSettlement(short location_x, short location_y)
         {
-            return await ApplySystem(new PublicKey("GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"),
+            return await ApplySystem(new PublicKey("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"),
                 new { location_x, location_y });
         }
     }
