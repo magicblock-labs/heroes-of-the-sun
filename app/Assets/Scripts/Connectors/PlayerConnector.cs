@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Model;
@@ -27,7 +28,7 @@ namespace Connectors
             return Web3.Account.PublicKey.Key[..20];
         }
 
-        protected override PublicKey GetComponentProgramAddress()
+        public override PublicKey GetComponentProgramAddress()
         {
             return new PublicKey("2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU");
         }
@@ -44,10 +45,10 @@ namespace Connectors
             _model.Set(rawData.ParsedResult);
         }
         
-        public async Task<bool> AssignSettlement(short location_x, short location_y)
+        public async Task<bool> AssignSettlement(Dictionary<PublicKey, PublicKey> extraEntities)
         {
             return await ApplySystem(new PublicKey("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"),
-                new { location_x, location_y });
+                new { }, extraEntities);
         }
     }
 }

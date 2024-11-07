@@ -1,6 +1,7 @@
 //#define FTUE_TESTING
 
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Connectors;
 using Model;
@@ -98,20 +99,23 @@ namespace Utils
             {
                 //otherwise - get state of allocator
                 var allocator = await _allocator.GetCurrentState();
-                
-                //assign settlement in player
-                //todo this should be one system instruction with settlement account passed
-                await _player.AssignSettlement(allocator.CurrentX, allocator.CurrentY);
-                await _allocator.Bump();
                 _settlement.Location = new Vector2Int(allocator.CurrentX, allocator.CurrentY);
+
+                //assign settlement in player
+                await _player.AssignSettlement(
+                    new Dictionary<PublicKey, PublicKey>
+                    {
+                        { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
+                        { new PublicKey(_allocator.EntityPda), _allocator.GetComponentProgramAddress() },
+                    });
                 
                 //reload player after assignment
                 await _player.ReloadData();
             }
-            else 
+            else
                 _settlement.Location = new Vector2Int(settlements[0].X, settlements[0].Y);
 
-            await _settlement.ReloadData();
+            await _settlement.ReloadData();            
 
             _hero.Location = _settlement.Location.Value * 2 * 24 - Vector2Int.one;
 

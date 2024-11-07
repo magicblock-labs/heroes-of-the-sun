@@ -22,7 +22,7 @@ namespace Connectors
             return "hots_allocator";
         }
 
-        protected override PublicKey GetComponentProgramAddress()
+        public override PublicKey GetComponentProgramAddress()
         {
             return new PublicKey("DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV");
         }

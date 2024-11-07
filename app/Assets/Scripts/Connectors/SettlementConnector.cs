@@ -26,7 +26,7 @@ namespace Connectors
             return $"{Location?.x}x{Location?.y}";
         }
 
-        protected override PublicKey GetComponentProgramAddress()
+        public override PublicKey GetComponentProgramAddress()
         {
             return new("B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv");
         }

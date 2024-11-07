@@ -53,6 +53,8 @@ namespace Settlement
             public static string ACCOUNT_DISCRIMINATOR_B58 => "AD24AwEsvU5";
             public Building[] Buildings { get; set; }
 
+            public PublicKey Owner { get; set; }
+
             public EnvironmentState Environment { get; set; }
 
             public ResourceBalance Treasury { get; set; }
@@ -89,6 +91,8 @@ namespace Settlement
                     result.Buildings[resultBuildingsIdx] = resultBuildingsresultBuildingsIdx;
                 }
 
+                result.Owner = _data.GetPubKey(offset);
+                offset += 32;
                 offset += EnvironmentState.Deserialize(_data, offset, out var resultEnvironment);
                 result.Environment = resultEnvironment;
                 offset += ResourceBalance.Deserialize(_data, offset, out var resultTreasury);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -20,8 +21,10 @@ namespace Connectors
     public abstract class BaseProgramConnector<T> : InjectableObject where T : BaseClient
     {
         //this comes from program deployment
-        private const string WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";//"GvMv6N5UF8ctteapSXMJUh2GXmXb4a7hRHWNmi69PTA8";
-        private const int WorldIndex = 2;//1318;
+        private const string
+            WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH"; //"GvMv6N5UF8ctteapSXMJUh2GXmXb4a7hRHWNmi69PTA8";
+
+        private const int WorldIndex = 2; //1318;
 
         protected T Client;
 
@@ -29,30 +32,31 @@ namespace Connectors
         private long _timeOffset;
         private string _dataAddress;
 
-        private string EntityPda => _entityPda ??= Pda.FindEntityPda(WorldIndex, 0, GetExtraSeed());
+        public string EntityPda => _entityPda ??= Pda.FindEntityPda(WorldIndex, 0, GetExtraSeed());
 
         protected abstract string GetExtraSeed();
-        protected abstract PublicKey GetComponentProgramAddress();
-        
+        public abstract PublicKey GetComponentProgramAddress();
+
         public async Task EnsureBalance()
         {
             var requestResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
             Debug.Log($"{Web3.Account.PublicKey} {requestResult.Result} ");
-            
+
             if (requestResult.Result.Value < 50000000)
             {
                 await Airdrop();
             }
         }
-        
+
         public async Task Airdrop()
         {
             var airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 100000000);
             var txResult = await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
             var balanceResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
-            Debug.Log($"{Web3.Account.PublicKey} \nairdropResult.Result: {airdropResult.Result}, \ntxResult{txResult} \n balanceResult:{balanceResult} ");
+            Debug.Log(
+                $"{Web3.Account.PublicKey} \nairdropResult.Result: {airdropResult.Result}, \ntxResult{txResult} \n balanceResult:{balanceResult} ");
         }
-        
+
         protected async Task<string> GetComponentDataAddress()
         {
             if (Web3.Account == null) throw new NullReferenceException("No Web3 Account");
@@ -116,9 +120,22 @@ namespace Connectors
             return _dataAddress;
         }
 
-        protected async Task<bool> ApplySystem(PublicKey system, object args)
+        protected async Task<bool> ApplySystem(PublicKey system, object args,
+            Dictionary<PublicKey, PublicKey> extraEntities = null)
         {
             Dimmer.Visible = true;
+            var entities = new[]
+            {
+                new WorldProgram.EntityType(new(EntityPda),
+                    new[] { GetComponentProgramAddress() })
+            };
+
+            if (extraEntities != null)
+                entities = entities.Concat(
+                    extraEntities.Select(kvp => new WorldProgram.EntityType(kvp.Key,
+                        new[] { kvp.Value })).ToArray()
+                ).ToArray();
+            
             var tx = new Transaction
             {
                 FeePayer = Web3.Account,
@@ -126,11 +143,7 @@ namespace Connectors
                 {
                     WorldProgram.ApplySystem(
                         system,
-                        new[]
-                        {
-                            new WorldProgram.EntityType(new(EntityPda),
-                                new[] { GetComponentProgramAddress() })
-                        },
+                        entities,
                         Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
                         Web3.Account.PublicKey
                     )
