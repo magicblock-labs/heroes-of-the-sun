@@ -6,7 +6,7 @@ pub struct Location {
     pub x: i16,
     pub y: i16,
 }
-#[component]
+#[component(delegate)]
 pub struct Player {
     #[max_len(5)]
     pub settlements: Vec<Location>,

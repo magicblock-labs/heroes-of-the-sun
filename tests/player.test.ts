@@ -14,23 +14,24 @@ describe("Creates A Player And Assigns a Settlement", async () => {
 
   it("Initializes a player", async () => {
     await player.init(await world.getWorldPda());
+    await locationAllocator.init(await world.getWorldPda())
+
     const state = await player.state();
     expect(state.settlements.length).to.eq(0);
   });
 
 
-  it("Bumps settlement allocator", async () => {
-    await locationAllocator.init(await world.getWorldPda())
-    let state = await locationAllocator.bump();
-    expect(state.currentY).to.eq(1);
-  });
-
-
   it("Assigns settlement to a player", async () => {
-    const allocator = (await locationAllocator.state());
-    await settlement.init(await world.getWorldPda(), allocator.currentX, allocator.currentY)
-    const allocatorState = await locationAllocator.state();
-    const state = await player.assignSettlement({ location_x: allocatorState.currentX, location_y: allocatorState.currentY });
+    const allocatorState = (await locationAllocator.state());
+    console.log("!", allocatorState);
+    await settlement.init(await world.getWorldPda(), allocatorState.currentX, allocatorState.currentY)
+    console.log("!", await settlement.state());
+    const state = await player.assignSettlement(
+      settlement.entityPda,
+      settlement.settlementComponent.programId,
+      locationAllocator.entityPda,
+      locationAllocator.locationAllocatorComponent.programId,
+    );
     expect(state.settlements.length).to.gt(0);
   });
 

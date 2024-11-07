@@ -11,12 +11,6 @@ import { AssignSettlement } from "../../target/types/assign_settlement";
 import { Player } from "../../target/types/player";
 
 
-
-export type AssignSettlementArgs = {
-  location_x: number,
-  location_y: number
-}
-
 export class PlayerWrapper {
 
   provider: anchor.AnchorProvider;
@@ -63,7 +57,7 @@ export class PlayerWrapper {
     return await this.playerComponent.account.player.fetch(this.componentPda);
   }
 
-  async assignSettlement(args: AssignSettlementArgs) {
+  async assignSettlement(settlementPDA: PublicKey, settlementProgramID: PublicKey, allocatorPDA: PublicKey, allocatorProgramID: PublicKey) {
 
     // Run the build system
     const applySystem = await ApplySystem({
@@ -72,9 +66,26 @@ export class PlayerWrapper {
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.playerComponent.programId }],
+      },
+      {
+        entity: settlementPDA,
+        components: [{ componentId: settlementProgramID }],
+      },
+      {
+        entity: allocatorPDA,
+        components: [{ componentId: allocatorProgramID }],
       }],
-      args
+
     });
+
+    console.log("!!", JSON.stringify([{
+      entity: this.entityPda,
+      components: [{ componentId: this.playerComponent.programId }],
+    },
+    {
+      entity: settlementPDA,
+      components: [{ componentId: settlementProgramID }],
+    }]));
 
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
     console.log(`build tx: ${txSign}`);

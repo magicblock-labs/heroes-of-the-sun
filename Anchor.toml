@@ -6,7 +6,6 @@ skip-lint = false
 
 [programs.devnet]
 assign-settlement = "GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"
-bump_location_allocator = "At6YLXTGPoQPwqzfZwYEq667RBgAX3sJFiNUALgbpQan"
 location_allocator = "DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV"
 player = "2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU"
 reset = "J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"

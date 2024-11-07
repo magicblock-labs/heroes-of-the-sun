@@ -35,6 +35,7 @@ pub struct Building {
 pub struct Settlement {
     #[max_len(20, 6)]
     pub buildings: Vec<Building>,
+    pub owner: Pubkey,
 
     pub environment: EnvironmentState,
     pub treasury: ResourceBalance,
@@ -58,6 +59,7 @@ impl Default for Settlement {
         }
 
         Self::new(SettlementInit {
+            owner: Pubkey::default(),
             buildings: vec![Building {
                 x: 8,
                 y: 8,

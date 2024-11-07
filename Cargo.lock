@@ -357,6 +357,7 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "location_allocator",
  "player",
  "serde",
  "settlement",
@@ -764,16 +765,6 @@ dependencies = [
  "bolt-lang",
  "serde",
  "settlement",
-]
-
-[[package]]
-name = "bump_location_allocator"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "location_allocator",
- "serde",
 ]
 
 [[package]]

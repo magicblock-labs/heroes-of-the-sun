@@ -7,7 +7,6 @@ import {
   ApplySystem,
 } from "@magicblock-labs/bolt-sdk"
 import { Locationallocator } from "../../target/types/locationallocator";
-import { BumpLocationAllocator } from "../../target/types/bump_location_allocator";
 
 
 
@@ -20,7 +19,6 @@ export class LocationAllocatorWrapper {
   componentPda: PublicKey;
 
   locationAllocatorComponent: Program<Locationallocator>;
-  bumpLocationAllocatorSystem: Program<BumpLocationAllocator>;
 
   async init(worldPda: PublicKey) {
 
@@ -37,7 +35,6 @@ export class LocationAllocatorWrapper {
       });
 
       this.locationAllocatorComponent = anchor.workspace.Locationallocator as Program<Locationallocator>;
-      this.bumpLocationAllocatorSystem = anchor.workspace.BumpLocationAllocator as Program<BumpLocationAllocator>;
 
       let txSign = await this.provider.sendAndConfirm(allocatorEntity.transaction);
       this.entityPda = allocatorEntity.entityPda;
@@ -56,24 +53,6 @@ export class LocationAllocatorWrapper {
 
   async state() {
     return await this.locationAllocatorComponent.account.locationAllocator.fetch(this.componentPda);
-  }
-
-  async bump() {
-
-    // Run the build system
-    const applySystem = await ApplySystem({
-      authority: this.provider.wallet.publicKey,
-      systemId: this.bumpLocationAllocatorSystem.programId,
-      entities: [{
-        entity: this.entityPda,
-        components: [{ componentId: this.locationAllocatorComponent.programId }],
-      }]
-    });
-
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`build tx: ${txSign}`);
-
-    return await this.state();
   }
 
 };
