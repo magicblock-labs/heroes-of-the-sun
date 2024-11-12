@@ -34,8 +34,7 @@ namespace View.ActionRequest
                 workerIndex = 0;
 
 
-            if (await _connector.Sacrifice(workerIndex))
-                await _connector.ReloadData();
+            await _connector.Sacrifice(workerIndex);
         }
     }
 }

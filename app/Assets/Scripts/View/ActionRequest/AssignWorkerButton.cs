@@ -37,10 +37,7 @@ namespace View.ActionRequest
             var freeWorker = _settlement.GetFreeWorkerIndex();
 
             if (freeWorker >= 0)
-            {
-                if (await _connector.AssignWorker(Math.Max(0, freeWorker), _index))
-                    await _connector.ReloadData();
-            }
+                await _connector.AssignWorker(Math.Max(0, freeWorker), _index);
 
             else
             {

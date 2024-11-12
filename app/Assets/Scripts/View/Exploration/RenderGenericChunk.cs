@@ -7,7 +7,7 @@ namespace View.Exploration
 {
     public class RenderGenericChunk : InjectableBehaviour
     {
-        [Inject] private OtherPlayersSettlementConnector _settlement;
+        [Inject] private SettlementConnector _settlement;
 
         [SerializeField] private RenderRandomChunk randomPrefab;
         [SerializeField] private RenderSettlementChunk settlementPrefab;
@@ -20,10 +20,10 @@ namespace View.Exploration
                                  chunkSize;
 
             //try to load settlement at location.
-
             if (location.x % chunksPerSettlement == 0 && location.y % chunksPerSettlement == 0)
             {
-                _settlement.Location = location / chunksPerSettlement;
+                var settlementLocation = location / chunksPerSettlement;
+                await _settlement.SetSeed($"{settlementLocation.x}x{settlementLocation.y}", false);
                 var data = await _settlement.LoadData();
                 if (data != null)
                 {

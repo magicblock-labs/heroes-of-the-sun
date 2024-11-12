@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -16,33 +17,18 @@ namespace Connectors
 {
     [Singleton]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class PlayerConnector : BaseProgramConnector<PlayerClient>
+    public class PlayerConnector : BaseComponentConnector<Player.Accounts.Player>
     {
         [Inject] private PlayerModel _model;
-        
-        private PlayerClient Player =>
-            Client ??= new PlayerClient(Web3.Rpc, Web3.WsRpc, new PublicKey(PlayerProgram.ID));
-        
-        protected override string GetExtraSeed()
-        {
-            return Web3.Account.PublicKey.Key[..20];
-        }
 
         public override PublicKey GetComponentProgramAddress()
         {
             return new PublicKey("2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU");
         }
-        
-        public async Task ReloadData()
-        {
-            var rawData = await Player.GetPlayerAsync(
-                await GetComponentDataAddress(), 
-                Commitment.Processed);
-            if (rawData.ParsedResult == null) return;
 
-            Debug.Log($"Data:\n {JsonConvert.SerializeObject(rawData.ParsedResult)}");
-            
-            _model.Set(rawData.ParsedResult);
+        protected override Player.Accounts.Player DeserialiseBytes(byte[] value)
+        {
+            return Player.Accounts.Player.Deserialize(value);
         }
         
         public async Task<bool> AssignSettlement(Dictionary<PublicKey, PublicKey> extraEntities)
@@ -50,5 +36,12 @@ namespace Connectors
             return await ApplySystem(new PublicKey("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"),
                 new { }, extraEntities);
         }
+        
+        
+        public async Task<bool> AssignHero(Dictionary<PublicKey, PublicKey> extraEntities)
+        {
+            return await ApplySystem(new PublicKey("7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"),
+                new {}, extraEntities);
+        }       
     }
 }

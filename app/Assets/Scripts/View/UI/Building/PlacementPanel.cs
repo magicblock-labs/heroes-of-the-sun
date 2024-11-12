@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Connectors;
 using Model;
 using Utils.Injection;
@@ -22,16 +23,15 @@ namespace View.UI.Building
             _interaction.SetState(InteractionState.Idle);
         }
 
-        public async void OnSubmit()
+        public async Task OnSubmit()
         {
-            if (_interaction.ValidPlacement)
+            if (_interaction.ValidPlacement && _interaction.SelectedBuildingType.HasValue)
             {
-                if (await _connector.PlaceBuilding(
-                        (byte)_interaction.CellPosX,
-                        (byte)_interaction.CellPosZ,
-                        (byte)_interaction.SelectedBuildingType,
-                        _settlement.GetFreeWorkerIndex()))
-                    await _connector.ReloadData();
+                await _connector.PlaceBuilding(
+                    (byte)_interaction.CellPosX,
+                    (byte)_interaction.CellPosZ,
+                    (byte)_interaction.SelectedBuildingType,
+                    _settlement.GetFreeWorkerIndex());
 
                 _interaction.FinishPlacement();
             }

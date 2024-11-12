@@ -5,17 +5,20 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
+assign-hero = "7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"
 assign-settlement = "GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"
+hero = "GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh"
 location_allocator = "DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV"
+move-hero = "6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv"
 player = "2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU"
 reset = "J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"
 
 [programs.localnet]
 assign-settlement = "GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"
-location_allocator = "DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV"
 assign-worker = "F7m12a5YbScFwNPrKXwg4ua6Z9e7R1ZqXvXigoUfFDMq"
 build = "AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c"
 claim-time = "HFx2weMbr8CrAEAPfPtgw9zzgHgUFzSz7qiTyhTHGSF"
+location_allocator = "DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV"
 player = "2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU"
 repair = "4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j"
 research = "GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb"

@@ -14,8 +14,8 @@ namespace View.ActionRequest
         {
             _interaction.LockInteraction();
             
-            if (_model.HasData && _model.Get().TimeUnits > 0 && await _connector.Wait(1))
-                await _connector.ReloadData();
+            if (_model.HasData && _model.Get().TimeUnits > 0 )
+                await _connector.Wait(1);
         }
     }
 }

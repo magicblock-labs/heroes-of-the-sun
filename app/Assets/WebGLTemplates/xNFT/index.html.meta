@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a2f54865a05cf4b2d8883383b167ff02
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 246931
+  packageName: Solana SDK for Unity
+  packageVersion: 1.2
+  assetPath: Packages/com.solana.unity_sdk/Runtime/codebase/WebGLTemplates/xNFT/index.html
+  uploadId: 620774

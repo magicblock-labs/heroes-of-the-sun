@@ -1,0 +1,27 @@
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using Solana.Unity.Wallet;
+
+namespace Connectors
+{
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public class HeroConnector : BaseComponentConnector<Hero.Accounts.Hero>
+    {
+        protected override Hero.Accounts.Hero DeserialiseBytes(byte[] value)
+        {
+            return Hero.Accounts.Hero.Deserialize(value);
+        }
+
+        public override PublicKey GetComponentProgramAddress()
+        {
+            return new PublicKey("GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh");
+        }
+
+        public async Task<bool> Move(int x, int y)
+        {
+            return await ApplySystem(new PublicKey("6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv"),
+                new { x, y }, null, true);
+        }
+    }
+}

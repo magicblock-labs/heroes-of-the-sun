@@ -433,7 +433,7 @@ namespace Solana.Unity.SDK
         {
             if(WsRpc == null) return;
             await Wallet.AwaitWsRpcConnection();
-            await WsRpc.SubscribeAccountInfoAsync(
+            var res = await WsRpc.SubscribeAccountInfoAsync(
                 Account.PublicKey,
                 (_, accountInfo) =>
                 {
@@ -444,6 +444,9 @@ namespace Solana.Unity.SDK
                 },
                 commitment
             );
+            
+            
+            Debug.Log("sub res: " + res);
         }
         
         private IRpcClient GetDefaultRpc()

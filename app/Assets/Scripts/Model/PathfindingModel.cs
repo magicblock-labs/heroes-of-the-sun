@@ -148,7 +148,7 @@ namespace Model
 
         private float GetHeightDiff(Vector2Int from, Vector2Int to)
         {
-            return Mathf.Abs(_heightmap[from] - _heightmap[to]);
+            return Mathf.Abs(_heightmap.GetValueOrDefault(from, 0) - _heightmap.GetValueOrDefault(to, 0));
         }
 
         public float GetY(Vector2Int location)

@@ -1,4 +1,4 @@
-//#define FTUE_TESTING
+#define FTUE_TESTING
 
 using System.Collections;
 using System.Collections.Generic;
@@ -23,10 +23,11 @@ namespace Utils
         [Inject] private PlayerConnector _player;
         [Inject] private LocationAllocatorConnector _allocator;
         [Inject] private SettlementConnector _settlement;
+        [Inject] private HeroConnector _hero;
 
 
         [Inject] private PlayerModel _playerModel;
-        [Inject] private HeroModel _hero;
+        [Inject] private SettlementModel _settlementModel;
 
 
         private IEnumerator Start()
@@ -61,12 +62,12 @@ namespace Utils
 
                 else
                 {
-                    var mnemonic = new Mnemonic(WordList.English, WordCount.Twelve);
+                    var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
                     password = RandomString(10);
 
                     PlayerPrefs.SetString(PwdPrefKey, password);
 
-                    await Web3.Instance.CreateAccount(mnemonic.ToString(), password);
+                    await Web3.Instance.CreateAccount(mnemonic, password);
                 }
             }
         }
@@ -87,10 +88,13 @@ namespace Utils
             Web3.OnLogin -= HandleSignIn;
             label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
 
-            await _player.EnsureBalance();
+            await Web3Utils.EnsureBalance();
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
 
-            await _player.ReloadData();
+
+            await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
+                
+            _playerModel.Set(await _player.LoadData());
             label.text = $"[{Web3.Account.PublicKey}] Loaded ";
 
             //check if settlement exists
@@ -98,8 +102,10 @@ namespace Utils
             if (settlements.Length == 0)
             {
                 //otherwise - get state of allocator
-                var allocator = await _allocator.GetCurrentState();
-                _settlement.Location = new Vector2Int(allocator.CurrentX, allocator.CurrentY);
+                await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
+                var allocator = await _allocator.LoadData();
+
+                await _settlement.SetSeed($"{allocator.CurrentX}x{allocator.CurrentY}");
 
                 //assign settlement in player
                 await _player.AssignSettlement(
@@ -108,20 +114,28 @@ namespace Utils
                         { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
                         { new PublicKey(_allocator.EntityPda), _allocator.GetComponentProgramAddress() },
                     });
-                
-                //reload player after assignment
-                await _player.ReloadData();
+
+                _playerModel.Set(await _player.LoadData());
             }
             else
-                _settlement.Location = new Vector2Int(settlements[0].X, settlements[0].Y);
+                await _settlement.SetSeed($"{settlements[0].X}x{settlements[0].Y}");
 
-            await _settlement.ReloadData();            
+            _settlementModel.Set(await _settlement.LoadData());
 
-            _hero.Location = _settlement.Location.Value * 2 * 24 - Vector2Int.one;
+            //ensure hero is created
+            await _hero.SetEntityPda(_player.EntityPda);
+            var hero = await _hero.LoadData();
+            if (hero.Owner == null || hero.Owner.ToString().All(c=>c == '1'))
+            {
+                await _player.AssignHero(
+                    new Dictionary<PublicKey, PublicKey>
+                    {
+                        { new PublicKey(_hero.EntityPda), _hero.GetComponentProgramAddress() },
+                    });
+            }
 
             //sync time
-            await _settlement.SyncTime();
-
+            await Web3Utils.SyncTime();
             SceneManager.LoadScene("World");
         }
     }

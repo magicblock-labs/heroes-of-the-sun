@@ -53,9 +53,8 @@ namespace View.UI
             
             if (_interaction.SelectedBuildingIndex < 0) return;
             _interaction.LockInteraction();
-            if (await _connector.AssignWorker(index, _interaction.SelectedBuildingIndex))
-                await _connector.ReloadData();
-            
+            await _connector.AssignWorker(index, _interaction.SelectedBuildingIndex);
+
         }
     }
 }

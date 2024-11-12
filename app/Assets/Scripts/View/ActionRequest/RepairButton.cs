@@ -1,5 +1,3 @@
-using System;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Connectors;
 using Model;
 using Settlement.Types;
@@ -68,8 +66,8 @@ namespace View.ActionRequest
         {
             _interaction.LockInteraction();
 
-            if (_canAfford && await _connector.Repair(_index))
-                await _connector.ReloadData();
+            if (_canAfford)
+                await _connector.Repair(_index);
         }
     }
 }

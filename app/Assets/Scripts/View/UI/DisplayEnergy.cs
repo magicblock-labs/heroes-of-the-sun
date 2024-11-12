@@ -4,6 +4,7 @@ using Connectors;
 using Model;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 using Utils.Injection;
 
 namespace View.UI
@@ -45,7 +46,7 @@ namespace View.UI
         {
             while (true)
             {
-                var secondsUntilClaim = _claimTimestamp - _connector.GetNodeTime();
+                var secondsUntilClaim = _claimTimestamp - Web3Utils.GetNodeTime();
                 if (secondsUntilClaim < 0)
                 {
                     yield return new WaitForSeconds(1);
@@ -62,8 +63,7 @@ namespace View.UI
 
         private async void TryClaim()
         {
-            if (await _connector.ClaimTime())
-                await _connector.ReloadData();
+            await _connector.ClaimTime();
         }
 
         private void OnDestroy()

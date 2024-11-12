@@ -6,14 +6,26 @@ namespace View.Exploration
     {
         [SerializeField] private Vector3 offset;
 
-        public Transform target;
+        private Transform _target;
         private float _rot;
         private float _rotDuringMouseDown;
         private float _mousePositionOnDown;
 
         void Update()
         {
-            var currentTargetPosition = target.position;
+            if (_target == null)
+            {
+                var hero = FindFirstObjectByType<PointAndClickMovement>();
+                if (hero!=null)
+                    _target = hero.transform;
+            }
+            
+            if (_target == null)
+            {
+                return;
+            }
+            
+            var currentTargetPosition = _target.position;
             var targetPoint = currentTargetPosition + Quaternion.Euler(0, _rot, 0) * offset;
 
             if (Input.GetMouseButtonDown(0))

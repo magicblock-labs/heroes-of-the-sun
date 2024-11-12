@@ -8,8 +8,6 @@ namespace View.Exploration
 {
     public class CreateChunks : InjectableBehaviour
     {
-        [Inject] private HeroModel _heroModel;
-
         [SerializeField] private int chunkSize;
         [SerializeField] private int passes = 2;
         [SerializeField] private RenderGenericChunk prefab;
@@ -18,8 +16,8 @@ namespace View.Exploration
 
         private void Update()
         {
-            var startingChunkX = Mathf.FloorToInt((float)_heroModel.Location.x / chunkSize);
-            var startingChunkY = Mathf.FloorToInt((float)_heroModel.Location.y / chunkSize);
+            var startingChunkX = 0;// Mathf.FloorToInt((float)_playerHeroLocationModel.Location.x / chunkSize);
+            var startingChunkY = 0;// Mathf.FloorToInt((float)_playerHeroLocationModel.Location.y / chunkSize);
 
             var pass = 0;
 

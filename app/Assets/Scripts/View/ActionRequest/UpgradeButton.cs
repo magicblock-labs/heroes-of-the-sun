@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Connectors;
 using Model;
 using Settlement.Types;
@@ -59,12 +60,12 @@ namespace View.ActionRequest
             _canAfford &= cost.Wood <= treasury.Wood;
         }
 
-        public async void Upgrade()
+        public async Task Upgrade()
         {
             _interaction.LockInteraction();
 
-            if (_canAfford && await _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex()))
-                await _connector.ReloadData();
+            if (_canAfford) 
+                await _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex());
         }
     }
 }

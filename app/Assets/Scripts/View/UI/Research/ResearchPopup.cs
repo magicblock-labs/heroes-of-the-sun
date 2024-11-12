@@ -97,8 +97,7 @@ namespace View.UI.Research
 
         public async void OnSubmit()
         {
-            if (await _connector.Research((int)_selectedResearch))
-                await _connector.ReloadData();
+            await _connector.Research((int)_selectedResearch);
         }
     }
 }

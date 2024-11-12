@@ -1,11 +1,14 @@
 ﻿using Connectors;
+using Model;
 using Utils.Injection;
+using Utils;
 
 namespace StompyRobot.SROptions
 {
     public partial class SROptions
     {
         [Inject] private SettlementConnector _connector;
+        [Inject] private SettlementModel _model;
 
         public SROptions()
         {
@@ -14,13 +17,13 @@ namespace StompyRobot.SROptions
         
         public async void Airdrop()
         {
-            await _connector.Airdrop();
+            await Web3Utils.Airdrop();
         }
         
         public async void Reset()
         {
             if (await _connector.Reset())
-                await _connector.ReloadData();
+                _model.Set(await _connector.LoadData());
         }
     }
 }

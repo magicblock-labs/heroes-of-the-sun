@@ -1,52 +1,24 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Model;
-using Newtonsoft.Json;
-using Settlement;
-using Settlement.Program;
-using Solana.Unity.Rpc.Types;
-using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
-using UnityEngine;
 using Utils.Injection;
 
 namespace Connectors
 {
-    [Singleton]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class SettlementConnector : BaseProgramConnector<SettlementClient>
+    public class SettlementConnector : BaseComponentConnector<Settlement.Accounts.Settlement>
     {
         [Inject] private SettlementModel _settlement;
-
-        public Vector2Int? Location;
-
-        protected override string GetExtraSeed()
-        {
-            return $"{Location?.x}x{Location?.y}";
-        }
 
         public override PublicKey GetComponentProgramAddress()
         {
             return new("B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv");
         }
 
-        private SettlementClient Settlement =>
-            Client ??= new SettlementClient(Web3.Rpc, Web3.WsRpc, new PublicKey(SettlementProgram.ID));
-        
-        public async Task ReloadData()
+        protected override Settlement.Accounts.Settlement DeserialiseBytes(byte[] value)
         {
-            if (!Location.HasValue)
-                throw new Exception("Settlement connector needs a valid location"); 
-                    
-            var rawData = await Settlement.GetSettlementAsync(
-                await GetComponentDataAddress(), 
-                Commitment.Processed);
-            if (rawData.ParsedResult == null) return;
-
-            Debug.Log($"Data:\n {JsonConvert.SerializeObject(rawData.ParsedResult)}");
-
-            _settlement.Set(rawData.ParsedResult);
+            return Settlement.Accounts.Settlement.Deserialize(value);
         }
 
         public async Task<bool> PlaceBuilding(byte x, byte y, byte type, int worker_index)
