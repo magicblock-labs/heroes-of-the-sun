@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
+using Merkator.BitCoin;
 using Model;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utils;
@@ -15,6 +17,8 @@ namespace View.Exploration
         [Inject] private PlayerConnector _player;
         [Inject] private HeroConnector _connector;
         [Inject] private PathfindingModel _pathfinding;
+        
+        [SerializeField] private TMP_Text keyLabel;
 
         private LineRenderer _line;
 
@@ -26,6 +30,7 @@ namespace View.Exploration
 
 
         private Hero.Accounts.Hero _data;
+        private Vector2Int _position;
 
         private void Start()
         {
@@ -36,6 +41,7 @@ namespace View.Exploration
         {
             _connector.SetDataAddress(value);
             _data = await _connector.LoadData();
+            keyLabel.text = _data.Owner.ToString()[..4];
 
             //this should be used after the rollup
             //await _connector.Subscribe((_, _, hero) => { OnDataUpdate(hero); });
@@ -62,7 +68,7 @@ namespace View.Exploration
 
         private void OnDataUpdate(Hero.Accounts.Hero value)
         {
-            _path = _pathfinding.FindPath(new Vector2Int(_data.X, _data.Y), new Vector2Int(value.X, value.Y));
+            _path = _pathfinding.FindPath(_position, new Vector2Int(value.X, value.Y));
             _data = value;
             ApplyPathToLine();
             MoveToNextPoint();
@@ -80,6 +86,7 @@ namespace View.Exploration
 
             if (diff.magnitude < .1f)
             {
+                _position = _path[0];
                 _path.RemoveAt(0);
                 MoveToNextPoint();
 
@@ -120,7 +127,8 @@ namespace View.Exploration
                 transform.position =
                     ConfigModel.GetWorldCellPosition(_data.X, _data.Y) +
                     Vector3.up * (_pathfinding.GetY(new Vector2Int(_data.X, _data.Y)) + 1f);
-
+                
+                _position = new Vector2Int(_data.X, _data.Y);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
             }
         }
