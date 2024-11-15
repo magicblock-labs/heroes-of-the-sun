@@ -6,7 +6,7 @@ namespace View.ActionRequest
 {
     public class WaitButton : InjectableBehaviour
     {
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private SettlementModel _model;
         [Inject] private InteractionStateModel _interaction;
 

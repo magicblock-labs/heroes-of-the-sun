@@ -1,0 +1,27 @@
+[package]
+name = "claim-loot"
+version = "0.1.8"
+description = "Created with Bolt"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "claim_loot"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+bolt-lang = "0.1.8"
+anchor-lang = "0.30.1"
+serde = { version = "1.0", features = ["derive"] }
+
+player = { version = "0.1.8", path = "../../components/player", features = ["cpi"] }
+hero = { version = "0.1.8", path = "../../components/hero", features = ["cpi"] }
+settlement = { version = "0.1.8", path = "../../components/settlement", features = ["cpi"] }
+loot-distribution = { version = "0.1.8", path = "../../components/loot-distribution", features = ["cpi"] }

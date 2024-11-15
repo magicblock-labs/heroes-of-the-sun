@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
-using Merkator.BitCoin;
 using Model;
+using Solana.Unity.Wallet;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using Utils;
 using Utils.Injection;
 
@@ -16,7 +15,12 @@ namespace View.Exploration
     {
         [Inject] private PlayerConnector _player;
         [Inject] private HeroConnector _connector;
+        [Inject] private PlayerSettlementConnector _settlement;
+        [Inject] private LootDistributionConnector _lootConnector;
+        
         [Inject] private PathfindingModel _pathfinding;
+        [Inject] private PlayerHeroModel _playerHero;
+        [Inject] private LootModel _loot;
         
         [SerializeField] private TMP_Text keyLabel;
 
@@ -44,25 +48,29 @@ namespace View.Exploration
             keyLabel.text = _data.Owner.ToString()[..4];
 
             //this should be used after the rollup
-            //await _connector.Subscribe((_, _, hero) => { OnDataUpdate(hero); });
+            //todo move to point_and_click and rename to player hero controller?
+            //await _connector.Subscribe((_, _, hero) => { _playerHero.Set(hero); });
 
             //todo remove this after subscription is enabled (this is basically client prediction code)
             if (_data.Owner == _player.DataAddress)
             {
+                _playerHero.Set(_data);
+                
                 gameObject.AddComponent<PointAndClickMovement>().SetDataAddress(value, pos =>
                 {
-                    OnDataUpdate(new Hero.Accounts.Hero()
+                    var hero = new Hero.Accounts.Hero()
                     {
                         Owner = _data.Owner,
                         X = pos.x,
                         Y = pos.y,
                         LastActivity = Web3Utils.GetNodeTime()
-                    });
+                    };
+                    _playerHero.Set(hero);
+                    OnDataUpdate(hero);
                 });
             }
 
             MoveToNextPoint();
-
             _initialised = true;
         }
 
@@ -130,6 +138,21 @@ namespace View.Exploration
                 
                 _position = new Vector2Int(_data.X, _data.Y);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+
+                if (_data.Owner == _player.DataAddress && _loot.HasLootAt(_position, out var index))
+                    
+                    /*#[system_input]
+                       pub struct Components {
+                           pub loot: LootDistribution, << this is the caller entity
+                           pub hero: Hero,
+                           pub settlement: Settlement,
+                       }
+                       */
+                    _=_lootConnector.Claim(index, new Dictionary<PublicKey, PublicKey>()
+                    {
+                        { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },
+                        { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
+                    });
             }
         }
     }

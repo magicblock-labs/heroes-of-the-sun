@@ -29,14 +29,15 @@ namespace View.Exploration
                 {
                     gameObject.name = $"Settlement@{location.x}x{location.y}";
                     Instantiate(settlementPrefab, transform).Create(data);
-                    return;
                 }
             }
-
-            //if none found, render a perlin chunk
-            gameObject.name = $"RandomChunk@{location.x}x{location.y}";
-            Instantiate(randomPrefab, transform).Create(location * chunkSize, chunkSize,
-                new Vector2(chunkSize, chunkSize) * .1f, instant);
+            else
+            {
+                //if none found, render a perlin chunk
+                gameObject.name = $"RandomChunk@{location.x}x{location.y}";
+                Instantiate(randomPrefab, transform).Create(location * chunkSize, chunkSize,
+                    new Vector2(chunkSize, chunkSize) * .1f, instant);
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ namespace View.UI.Building
     public class BuildingInfo : BuildingUIPanel
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private InteractionStateModel _interaction;
         [Inject] private ShowWorkerSelection _showWorkerSelection;
 

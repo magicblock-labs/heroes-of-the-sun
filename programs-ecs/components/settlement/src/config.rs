@@ -33,6 +33,7 @@ pub const MAP_HEIGHT: u8 = 20;
 
 pub const INITIAL_TIME_UNITS: u8 = 50;
 pub const INITIAL_FAITH: u8 = 50;
+pub const CHUNK_SIZE: u8 = 24;
 
 pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
     water: 40,

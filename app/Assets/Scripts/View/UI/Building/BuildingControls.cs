@@ -12,7 +12,7 @@ namespace View.UI.Building
         [SerializeField] private BuildingInfo info;
 
         [Inject] private InteractionStateModel _interaction;
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
 
         private Camera _camera;
         private BoxCollider _collider;

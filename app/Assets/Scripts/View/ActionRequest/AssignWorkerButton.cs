@@ -11,7 +11,7 @@ namespace View.ActionRequest
     public class AssignWorkerButton : InjectableBehaviour, IBuildingActionButton
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private ShowWorkerSelection _showWorkerSelection;
         [Inject] private InteractionStateModel _interaction;
 

@@ -7,7 +7,7 @@ namespace StompyRobot.SROptions
 {
     public partial class SROptions
     {
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private SettlementModel _model;
 
         public SROptions()

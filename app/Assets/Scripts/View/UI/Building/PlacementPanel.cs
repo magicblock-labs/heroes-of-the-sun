@@ -9,7 +9,7 @@ namespace View.UI.Building
     {
         [Inject] private InteractionStateModel _interaction;
         [Inject] private SettlementModel _settlement;
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private ConfigModel _config;
 
         public void OnTryDragStart()
@@ -23,7 +23,7 @@ namespace View.UI.Building
             _interaction.SetState(InteractionState.Idle);
         }
 
-        public async Task OnSubmit()
+        public async void OnSubmit()
         {
             if (_interaction.ValidPlacement && _interaction.SelectedBuildingType.HasValue)
             {

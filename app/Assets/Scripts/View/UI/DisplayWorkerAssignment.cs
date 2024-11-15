@@ -11,7 +11,7 @@ namespace View.UI
     public class DisplayWorkerAssignment : InjectableBehaviour
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private InteractionStateModel _interaction;
 
         [SerializeField] private WorkerAssignmentEntry workerAssignmentEntry;

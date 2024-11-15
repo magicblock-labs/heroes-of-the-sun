@@ -12,7 +12,7 @@ namespace View.UI
     public class DisplayEnergy : InjectableBehaviour
     {
         [Inject] private SettlementModel _model;
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
 
         [SerializeField] private Text timerLabel;
         [SerializeField] private Text energyLabel;

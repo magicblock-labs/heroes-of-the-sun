@@ -11,7 +11,7 @@ namespace View.ActionRequest
     public class SacrificeButton : InjectableBehaviour, IBuildingActionButton
     {
         [Inject] private SettlementModel _settlement;
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private InteractionStateModel _interaction;
 
         private int _index;

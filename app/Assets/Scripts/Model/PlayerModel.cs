@@ -12,7 +12,6 @@ namespace Model
     {
         public readonly Signal Updated = new();
 
-        public bool HasData => _data != null;
 
         private Player.Accounts.Player _data;
 

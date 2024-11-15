@@ -22,18 +22,22 @@ namespace Utils
 
         [Inject] private PlayerConnector _player;
         [Inject] private LocationAllocatorConnector _allocator;
-        [Inject] private SettlementConnector _settlement;
+        [Inject] private LootDistributionConnector _loot;
+        [Inject] private PlayerSettlementConnector _settlement;
         [Inject] private HeroConnector _hero;
 
 
         [Inject] private PlayerModel _playerModel;
         [Inject] private SettlementModel _settlementModel;
+        [Inject] private LootModel _lootModel;
 
 
         private IEnumerator Start()
         {
             yield return null;
             label.text = "Sign In..";
+            
+            DontDestroyOnLoad(gameObject);
 
             Login();
         }
@@ -91,7 +95,6 @@ namespace Utils
             await Web3Utils.EnsureBalance();
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
 
-
             await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
                 
             _playerModel.Set(await _player.LoadData());
@@ -120,8 +123,21 @@ namespace Utils
             else
                 await _settlement.SetSeed($"{settlements[0].X}x{settlements[0].Y}");
 
+            //todo make connectors subscribe and dont keep bootstrap alive
             _settlementModel.Set(await _settlement.LoadData());
-
+            await _settlement.Subscribe((_, _, settlement) =>
+            {
+                _settlementModel.Set(settlement);
+            });
+            
+            //load loot
+            await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
+            _lootModel.Set(await _loot.LoadData());
+            await _loot.Subscribe((_, _, loot) =>
+            {
+                _lootModel.Set(loot);
+            });
+            
             //ensure hero is created
             await _hero.SetEntityPda(_player.EntityPda);
             var hero = await _hero.LoadData();

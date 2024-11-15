@@ -9,7 +9,7 @@ namespace View.UI.Research
 {
     public class ResearchPopup : InjectableBehaviour
     {
-        [Inject] private SettlementConnector _connector;
+        [Inject] private PlayerSettlementConnector _connector;
         [Inject] private SettlementModel _settlement;
     
         [SerializeField] private Transform researchList;
