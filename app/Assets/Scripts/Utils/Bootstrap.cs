@@ -125,10 +125,7 @@ namespace Utils
 
             //todo make connectors subscribe and dont keep bootstrap alive
             _settlementModel.Set(await _settlement.LoadData());
-            await _settlement.Subscribe((_, _, settlement) =>
-            {
-                _settlementModel.Set(settlement);
-            });
+            
             
             //load loot
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
@@ -136,6 +133,11 @@ namespace Utils
             await _loot.Subscribe((_, _, loot) =>
             {
                 _lootModel.Set(loot);
+            });
+            
+            await _settlement.Subscribe((_, _, settlement) =>
+            {
+                _settlementModel.Set(settlement);
             });
             
             //ensure hero is created

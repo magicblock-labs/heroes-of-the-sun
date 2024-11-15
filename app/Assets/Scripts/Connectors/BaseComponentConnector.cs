@@ -146,7 +146,7 @@ namespace Connectors
                 if (e.Value?.Data?.Count > 0)
                     parsingResult = DeserialiseBytes(Convert.FromBase64String(e.Value.Data[0]));
                 callback(s, e, parsingResult);
-            });
+            }, Commitment.Processed);
         }
 
         protected abstract T DeserialiseBytes(byte[] value);
