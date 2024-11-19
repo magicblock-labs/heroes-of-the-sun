@@ -17,6 +17,7 @@
         "prettier": "^2.6.2",
         "@metaplex-foundation/beet": "^0.7.1",
         "@metaplex-foundation/beet-solana": "^0.4.0",
-        "@magicblock-labs/bolt-sdk": "latest"
-    }
+        "@magicblock-labs/bolt-sdk": "0.1.10"
+    },
+    "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

@@ -1,6 +1,6 @@
 [package]
 name = "bolt-types"
-version = "0.1.8"
+version = "0.1.10"
 description = "Autogenerate types for the bolt language"
 edition = "2021"
 
@@ -9,5 +9,5 @@ crate-type = ["cdylib", "lib"]
 name = "bolt_types"
 
 [dependencies]
-bolt-lang = "0.1.8"
+bolt-lang = "0.1.10"
 anchor-lang = "0.30.1"
