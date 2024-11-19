@@ -132,6 +132,7 @@ export class SettlementWrapper {
     // Run the build system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.buildSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -148,6 +149,7 @@ export class SettlementWrapper {
   async assignWorker(args: AssignWorkerArgs) {
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.assignWorkerSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -167,6 +169,7 @@ export class SettlementWrapper {
     // Run the build system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.upgradeSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -184,6 +187,7 @@ export class SettlementWrapper {
     // Run the build system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.repairSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -201,6 +205,7 @@ export class SettlementWrapper {
     // Run the build system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.researchSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -219,6 +224,7 @@ export class SettlementWrapper {
     // Run the movement system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.waitSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -241,6 +247,7 @@ export class SettlementWrapper {
     // Run the reset system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.resetSystem.programId,
       entities: [{
         entity: this.entityPda,
