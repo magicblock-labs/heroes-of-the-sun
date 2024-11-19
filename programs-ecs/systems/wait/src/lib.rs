@@ -16,7 +16,36 @@ pub mod wait {
         Settlement,
     };
 
+    use token_minter::cpi::accounts::MintToken;
+
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
+        let minter_program = ctx.minter_program().unwrap().clone();
+
+        let payer = ctx.accounts.authority.to_account_info().clone();
+        let mint_account = ctx.mint_account().unwrap().clone();
+        let associated_token_account = ctx.associated_token_account().unwrap().clone();
+
+        let token_program = ctx.token_program().unwrap().clone();
+        let associated_token_program = ctx.associated_token_program().unwrap().clone();
+        let system_program = ctx.system_program().unwrap().clone();
+
+        let cpi_context = CpiContext::new(
+            minter_program,
+            MintToken {
+                payer,
+                mint_account,
+                associated_token_account,
+
+                //SPL programs.
+                token_program,
+                associated_token_program,
+                system_program,
+            },
+        );
+
+        token_minter::cpi::mint_token(cpi_context, 1);
+        //amount * 10u64.pow(ctx.accounts.mint_account.decimals as u32) // Mint tokens, adjust for decimals
+
         let settlement = &mut ctx.accounts.settlement;
 
         let time_to_wait = u16::min(args.time, settlement.time_units as u16);
@@ -128,7 +157,6 @@ pub mod wait {
                 settlement.buildings[building_index_usize].turns_to_build -=
                     u8::min(time_to_wait as u8, building.turns_to_build);
 
-                    
                 if settlement.buildings[building_index_usize].turns_to_build <= 0 {
                     settlement.buildings[building_index_usize].level += 1;
 
@@ -320,5 +348,26 @@ pub mod wait {
     #[arguments]
     struct WaitArgs {
         time: u16,
+    }
+
+    #[extra_accounts]
+    pub struct ExtraAccounts {
+        #[account()]
+        pub associated_token_account: Account<'info, TokenAccount>,
+
+        #[account()]
+        pub mint_account: Account<'info, Mint>,
+
+        #[account()]
+        minter_program: AccountInfo,
+
+        #[account()]
+        token_program: Program<'info, Token>,
+
+        #[account()]
+        associated_token_program: Program<'info, AssociatedToken>,
+
+        #[account()]
+        system_program: Program<'info, System>,
     }
 }

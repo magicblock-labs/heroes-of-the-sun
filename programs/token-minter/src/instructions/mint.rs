@@ -20,12 +20,6 @@ pub struct MintToken<'info> {
     )]
     pub mint_account: Account<'info, Mint>,
 
-    // /// CHECK:`player_data` is the account that holds the player data
-    // #[account()]
-    // pub player_data: AccountInfo<'info>,
-
-    // Create Associated Token Account, if needed
-    // This is the account that will hold the minted tokens
     #[account(
         init_if_needed,
         payer = payer,

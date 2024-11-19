@@ -2845,6 +2845,7 @@ dependencies = [
  "bolt-lang",
  "serde",
  "settlement",
+ "token-minter",
 ]
 
 [[package]]
