@@ -14,6 +14,7 @@ loot-distribution = "5F9tMTcNhgjL3tWCaF5HwLkQP9z4XJ4nTXmbYeS8UXRW"
 move-hero = "6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv"
 player = "2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU"
 reset = "J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"
+token-minter = "4ZxRnucEWC62kVktmx27cz9d1PzWWNgiZLT5VWFLbfB2"
 
 [programs.localnet]
 assign-settlement = "GgTkjpRSLRFmw27h7uCD9Bh1MWSvKv5aPxkMjko3mxWp"
@@ -38,7 +39,7 @@ cluster = "Devnet"
 wallet = "~/.config/solana/id.json"
 
 [workspace]
-members = ["programs-ecs/components/*", "programs-ecs/systems/*"]
+members = ["programs-ecs/components/*", "programs-ecs/systems/*", "programs/*"]
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"
@@ -51,6 +52,16 @@ upgradeable = false
 [[test.genesis]]
 address = "WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n"
 program = "tests/fixtures/world.so"
+upgradeable = false
+
+[[test.genesis]]
+address = "DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh"
+program = "tests/fixtures/dlp.so"
+upgradeable = false
+
+[[test.genesis]]
+address = "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
+program = "tests/fixtures/metadata.so"
 upgradeable = false
 
 [test.validator]
