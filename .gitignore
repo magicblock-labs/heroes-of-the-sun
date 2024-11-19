@@ -1,4 +1,5 @@
-
+.idea
+!target/deploy/*.json
 .anchor
 .bolt
 .DS_Store
