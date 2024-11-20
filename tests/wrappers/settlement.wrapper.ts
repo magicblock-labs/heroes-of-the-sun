@@ -120,6 +120,7 @@ export class SettlementWrapper {
   async build(args: BuildArgs) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.buildSystem.programId,
       entities: [{
@@ -136,6 +137,7 @@ export class SettlementWrapper {
 
   async assignWorker(args: AssignWorkerArgs) {
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.assignWorkerSystem.programId,
       entities: [{
@@ -155,6 +157,7 @@ export class SettlementWrapper {
   async upgrade(args: UpgradeArgs) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.upgradeSystem.programId,
       entities: [{
@@ -172,6 +175,7 @@ export class SettlementWrapper {
   async repair(args: RepairArgs) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.repairSystem.programId,
       entities: [{
@@ -189,6 +193,7 @@ export class SettlementWrapper {
   async research(args: ResearchArgs) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.researchSystem.programId,
       entities: [{
@@ -207,6 +212,7 @@ export class SettlementWrapper {
 
     // Run the movement system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.waitSystem.programId,
       entities: [{
@@ -226,6 +232,7 @@ export class SettlementWrapper {
   async reset() {
 
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.resetSystem.programId,
       entities: [{

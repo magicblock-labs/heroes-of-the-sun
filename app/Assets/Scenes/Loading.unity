@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b75a4e92c14884ea6bf3e46d07a33eb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rpcCluster: 1
+  rpcCluster: 3
   customRpc: http://localhost:8899
   webSocketsRpc: ws://localhost:8900
   autoConnectOnStartup: 1
@@ -158,13 +158,14 @@ MonoBehaviour:
     appName: Solana Unity SDK
     logoLight: 
     logoDark: 
-    defaultLanguage: en
-    dark: 1
+    defaultLanguage: 0
+    mode: 2
     themeName: primary
     themeColor: '#123456'
     redirectUrl: torusapp://com.torus.Web3AuthUnity/auth
     clientId: BO4zGEzyV6DT1vHU46b6GEngOcg2jl5Pmd9Boi8dLdBpBZnS351ulHDz2k7XJ1dEm-DcvyyARivGCZDXrbZng-0
     network: 0
+    loginConfig: []
   solanaWalletAdapterOptions:
     solanaMobileWalletAdapterOptions:
       identityUri: https://solana.unity-sdk.gg/
@@ -175,9 +176,12 @@ MonoBehaviour:
       walletAdapterButtonPrefab: {fileID: 0}
       walletAdapterUIPrefab: {fileID: 0}
     phantomWalletOptions:
-      phantomApiVersion: v1
+      apiVersion: v1
       appMetaDataUrl: https://github.com/garbles-labs/Solana.Unity-SDK
       deeplinkUrlScheme: unitydl
+      sessionEncryptionPassword: use a strong password
+      baseUrl: https://phantom.app
+      walletName: phantom
 --- !u!114 &416530331
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -567,7 +571,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -10, y: 0}
+  m_AnchoredPosition: {x: -10.000061, y: 0}
   m_SizeDelta: {x: -10, y: 30}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &1201110477
