@@ -122,11 +122,13 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.buildSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
+      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -139,11 +141,13 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.assignWorkerSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
+      world: this.worldPda,
       args
     }
     );
@@ -159,11 +163,13 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.upgradeSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
+      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -177,11 +183,13 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.repairSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
+      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -195,11 +203,13 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.researchSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
+      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -214,11 +224,13 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.waitSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
+      world: this.worldPda,
       args
     }
     );
@@ -234,11 +246,13 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
+      world: this.worldPda,
       systemId: this.resetSystem.programId,
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
-      }]
+      }],
+      world: this.worldPda,
     }
     );
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);

@@ -76,7 +76,7 @@ export class PlayerWrapper {
         entity: allocatorPDA,
         components: [{ componentId: allocatorProgramID }],
       }],
-
+      world: this.worldPda,
     });
 
     console.log("!!", JSON.stringify([{
