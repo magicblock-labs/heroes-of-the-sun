@@ -1,33 +1,29 @@
 use bolt_lang::*;
+use std::u16;
 
-declare_id!("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy");
+use settlement::{
+    self,
+    config::{
+        self, get_collection_level_multiplier, get_extraction_cap, get_research_level,
+        get_storage_level_multiplier, BuildingType, ResearchType, ENVIRONMENT_MAX,
+    },
+    Settlement,
+};
+use token_minter::cpi::accounts::MintToken;
 
-#[system]
+declare_id!("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4");
+
 pub mod wait {
 
-    use std::u16;
-
-    use settlement::{
-        self,
-        config::{
-            self, get_collection_level_multiplier, get_extraction_cap, get_research_level,
-            get_storage_level_multiplier, BuildingType, ResearchType, ENVIRONMENT_MAX,
-        },
-        Settlement,
-    };
-
-    use token_minter::cpi::accounts::MintToken;
-
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
-        let minter_program = ctx.minter_program().unwrap().clone();
-
-        let payer = ctx.accounts.authority.to_account_info().clone();
-        let mint_account = ctx.mint_account().unwrap().clone();
-        let associated_token_account = ctx.associated_token_account().unwrap().clone();
-
-        let token_program = ctx.token_program().unwrap().clone();
-        let associated_token_program = ctx.associated_token_program().unwrap().clone();
-        let system_program = ctx.system_program().unwrap().clone();
+        // Extract and clone all necessary accounts upfront
+        let minter_program = ctx.minter_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
+        let mint_account = ctx.mint_account().map_err(|_| ProgramError::InvalidAccountData)?.clone();
+        let associated_token_account = ctx.associated_token_account().map_err(|_| ProgramError::InvalidAccountData)?.clone();
+        let token_program = ctx.token_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
+        let associated_token_program = ctx.associated_token_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
+        let system_program = ctx.system_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
+        let payer = ctx.signer().map_err(|_| ProgramError::InvalidAccountData)?.clone();
 
         let cpi_context = CpiContext::new(
             minter_program,
@@ -35,15 +31,15 @@ pub mod wait {
                 payer,
                 mint_account,
                 associated_token_account,
-
-                //SPL programs.
                 token_program,
                 associated_token_program,
                 system_program,
             },
         );
 
-        token_minter::cpi::mint_token(cpi_context, 1);
+        let res = token_minter::cpi::mint_token(cpi_context, 1);
+        msg!("Minted correctly: {:?}", res.is_ok());
+
         //amount * 10u64.pow(ctx.accounts.mint_account.decimals as u32) // Mint tokens, adjust for decimals
 
         let settlement = &mut ctx.accounts.settlement;
@@ -352,11 +348,14 @@ pub mod wait {
 
     #[extra_accounts]
     pub struct ExtraAccounts {
-        #[account()]
-        pub associated_token_account: Account<'info, TokenAccount>,
+        #[account(mut)]
+        signer: Signer<'info>,
 
         #[account()]
-        pub mint_account: Account<'info, Mint>,
+        associated_token_account: Account<'info, TokenAccount>,
+
+        #[account()]
+        mint_account: Account<'info, Mint>,
 
         #[account()]
         minter_program: AccountInfo,

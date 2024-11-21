@@ -127,7 +127,6 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -145,7 +144,6 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      world: this.worldPda,
       args
     }
     );
@@ -166,7 +164,6 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -185,7 +182,6 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -204,7 +200,6 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      world: this.worldPda,
       args
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
@@ -224,7 +219,14 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      world: this.worldPda,
+      extraAccounts: [
+        {
+          pubkey: this.provider.wallet.publicKey,
+          isWritable: true,
+          isSigner: true,
+        },
+        /// TODO: Add all the extra accounts we need here
+      ],
       args
     }
     );
@@ -245,7 +247,6 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
-      world: this.worldPda,
     }
     );
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
