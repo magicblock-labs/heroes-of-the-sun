@@ -61,6 +61,7 @@ export class PlayerWrapper {
 
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       systemId: this.assignSettlementSystem.programId,
       entities: [{

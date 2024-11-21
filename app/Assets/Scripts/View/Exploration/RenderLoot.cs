@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using Model;
 using UnityEngine;
 using Utils.Injection;
@@ -38,7 +37,7 @@ namespace View.Exploration
             }
         }
 
-        private void Redraw()
+        private async void Redraw()
         {
             _lootMap.Clear();
 
