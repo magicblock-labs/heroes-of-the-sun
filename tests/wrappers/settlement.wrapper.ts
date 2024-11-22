@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { PublicKey } from "@solana/web3.js";
+import { AccountMeta, PublicKey } from "@solana/web3.js";
 import {
   InitializeNewWorld,
   AddEntity,
@@ -208,7 +208,7 @@ export class SettlementWrapper {
     return await this.state();
   }
 
-  async wait(args: WaitArgs) {
+  async wait(args: WaitArgs, extraAccounts: AccountMeta[]) {
 
     // Run the movement system
     const applySystem = await ApplySystem({
@@ -226,7 +226,7 @@ export class SettlementWrapper {
           isSigner: true,
         },
         /// TODO: Add all the extra accounts we need here
-      ],
+      ].concat(extraAccounts),
       args
     }
     );
@@ -257,7 +257,7 @@ export class SettlementWrapper {
 
   async upgradeAndWait(index: number, worker_index: number) {
     let state = await this.upgrade({ index, worker_index });
-    return await this.wait({ time: this.getTurnsToCompleteAll(state) });
+    return state;//await this.wait({ time: this.getTurnsToCompleteAll(state) });
   }
 
   getTurnsToCompleteAll(state: { buildings: { turnsToBuild: number; }[]; }): number {

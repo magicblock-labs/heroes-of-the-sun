@@ -11,19 +11,48 @@ use settlement::{
 };
 use token_minter::cpi::accounts::MintToken;
 
-declare_id!("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4");
+declare_id!("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy");
 
+#[system]
 pub mod wait {
 
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
         // Extract and clone all necessary accounts upfront
-        let minter_program = ctx.minter_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
-        let mint_account = ctx.mint_account().map_err(|_| ProgramError::InvalidAccountData)?.clone();
-        let associated_token_account = ctx.associated_token_account().map_err(|_| ProgramError::InvalidAccountData)?.clone();
-        let token_program = ctx.token_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
-        let associated_token_program = ctx.associated_token_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
-        let system_program = ctx.system_program().map_err(|_| ProgramError::InvalidAccountData)?.clone();
-        let payer = ctx.signer().map_err(|_| ProgramError::InvalidAccountData)?.clone();
+        let minter_program = ctx
+            .minter_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        let mint_account = ctx
+            .mint_account()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        let associated_token_account = ctx
+            .associated_token_account()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        let token_program = ctx
+            .token_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        let associated_token_program = ctx
+            .associated_token_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        let system_program = ctx
+            .system_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        let payer = ctx
+            .signer()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+
+        msg!("payer: {}", payer.key);
+        msg!("mint_account: {}", mint_account.key);
+        msg!("associated_token_account: {}", associated_token_account.key);
+        msg!("token_program: {}", token_program.key);
+        msg!("associated_token_program: {}", associated_token_program.key);
+        msg!("system_program: {}", system_program.key);
 
         let cpi_context = CpiContext::new(
             minter_program,

@@ -7,7 +7,8 @@ import { LocationAllocatorWrapper } from "./wrappers/location_allocator.wrapper"
 import * as anchor from "@coral-xyz/anchor";
 import { TokenMinter } from "../target/types/token_minter";
 import { PublicKey } from "@solana/web3.js";
-import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 
 
 describe("Creates A Player And Assigns a Settlement", async () => {
@@ -62,10 +63,11 @@ describe("Creates A Player And Assigns a Settlement", async () => {
   });
 
 
+  let associatedTokenAccountAddress;
 
   it("Mint 1 Token for player", async () => {
     // Derive the associated token address account for the mint and payer.
-    const associatedTokenAccountAddress = getAssociatedTokenAddressSync(
+    associatedTokenAccountAddress = getAssociatedTokenAddressSync(
       mintPDA,
       provider.wallet.publicKey
     );
@@ -101,6 +103,82 @@ describe("Creates A Player And Assigns a Settlement", async () => {
       locationAllocator.locationAllocatorComponent.programId,
     );
     expect(state.settlements.length).to.gt(0);
+  });
+
+
+  /*
+  
+  
+  
+          #[account(mut)]
+          signer: Signer<'info>,
+  
+          #[account()]
+          associated_token_account: Account<'info, TokenAccount>,
+  
+          #[account()]
+          mint_account: Account<'info, Mint>,
+  
+          #[account()]
+          minter_program: AccountInfo,
+  
+          #[account()]
+          token_program: Program<'info, Token>,
+  
+          #[account()]
+          associated_token_program: Program<'info, AssociatedToken>,
+  
+          #[account()]
+          system_program: Program<'info, System>,
+  
+  
+  */
+
+
+  it("Waits a move and mints a token", async () => {
+    let state = await settlement.wait({ time: 1 },
+      [
+        // {
+        //   pubkey: provider.wallet.publicKey,
+        //   isSigner: true,
+        //   isWritable: true
+        // },
+        {
+          pubkey: associatedTokenAccountAddress,
+          isSigner: false,
+          isWritable: true
+        },
+        {
+          pubkey: mintPDA,
+          isSigner: false,
+          isWritable: true
+        },
+        {
+          pubkey: program.programId,
+          isSigner: false,
+          isWritable: false
+        },
+        {
+          pubkey: TOKEN_PROGRAM_ID,
+          isSigner: false,
+          isWritable: false
+        },
+        {
+          pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
+          isSigner: false,
+          isWritable: false
+        },
+        {
+          pubkey: SYSTEM_PROGRAM_ID,
+          isSigner: false,
+          isWritable: false
+        }
+      ]
+    );
+
+    console.log("!", await settlement.state());
+
+    expect(state.faith).to.gt(0);
   });
 
 

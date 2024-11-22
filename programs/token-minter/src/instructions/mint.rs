@@ -1,4 +1,3 @@
-// use player_data::PlayerData;
 use {
     anchor_lang::prelude::*,
     anchor_spl::{
@@ -40,17 +39,6 @@ pub fn mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
         "Token Address: {}",
         &ctx.accounts.associated_token_account.key()
     );
-
-    // let player_data = PlayerData::try_deserialize_unchecked(
-    //     &mut &*(*ctx.accounts.player_data.data.borrow()).as_ref(),
-    // )
-    // .map_err(Into::<Error>::into)?;
-    // msg!(
-    //     "Player position: x: {:?}, y: {:?}",
-    //     player_data.world_pos_x,
-    //     player_data.world_pos_y
-    // );
-    // msg!("Player owner: {:?}", player_data.owner);
 
     // PDA signer seeds
     let signer_seeds: &[&[&[u8]]] = &[&[b"mint", &[ctx.bumps.mint_account]]];
