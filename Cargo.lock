@@ -1983,9 +1983,11 @@ name = "research"
 version = "0.1.10"
 dependencies = [
  "anchor-lang",
+ "anchor-spl",
  "bolt-lang",
  "serde",
  "settlement",
+ "token-minter",
 ]
 
 [[package]]

@@ -22,4 +22,8 @@ pub mod token_minter {
     pub fn mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
         mint::mint_token(ctx, amount)
     }
+
+    pub fn burn_token(ctx: Context<BurnToken>, amount: u64) -> Result<()> {
+        burn::burn_token(ctx, amount)
+    }
 }

@@ -1,6 +1,6 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { AccountMeta, PublicKey } from "@solana/web3.js";
+import { AccountMeta, ComputeBudgetProgram, PublicKey } from "@solana/web3.js";
 import {
   InitializeNewWorld,
   AddEntity,
@@ -190,7 +190,7 @@ export class SettlementWrapper {
     return await this.state();
   }
 
-  async research(args: ResearchArgs) {
+  async research(args: ResearchArgs, extraAccounts: AccountMeta[]) {
     // Run the build system
     const applySystem = await ApplySystem({
       authority: this.provider.wallet.publicKey,
@@ -200,9 +200,16 @@ export class SettlementWrapper {
         entity: this.entityPda,
         components: [{ componentId: this.settlementComponent.programId }],
       }],
+      extraAccounts: [
+        {
+          pubkey: this.provider.wallet.publicKey,
+          isWritable: true,
+          isSigner: true,
+        },
+      ].concat(extraAccounts),
       args
     });
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction, null, { skipPreflight: false });
     console.log(`build tx: ${txSign}`);
 
     return await this.state();
@@ -225,7 +232,6 @@ export class SettlementWrapper {
           isWritable: true,
           isSigner: true,
         },
-        /// TODO: Add all the extra accounts we need here
       ].concat(extraAccounts),
       args
     }

@@ -39,6 +39,14 @@ describe("Creates A Player And Assigns a Settlement", async () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
+  console.log(`SPL Token: \x1b[31m (mintPDA = ${mintPDA}\x1b[0m).`);
+
+  // Derive the associated token address account for the mint and payer.
+  let associatedTokenAccountAddress = getAssociatedTokenAddressSync(
+    mintPDA,
+    provider.wallet.publicKey
+  );
+
   it("creates a token", async () => {
     const transactionSignature = await program.methods
       .createToken(metadata.name, metadata.symbol, metadata.uri)
@@ -60,35 +68,6 @@ describe("Creates A Player And Assigns a Settlement", async () => {
 
     const state = await player.state();
     expect(state.settlements.length).to.eq(0);
-  });
-
-
-  let associatedTokenAccountAddress;
-
-  it("Mint 1 Token for player", async () => {
-    // Derive the associated token address account for the mint and payer.
-    associatedTokenAccountAddress = getAssociatedTokenAddressSync(
-      mintPDA,
-      provider.wallet.publicKey
-    );
-
-    // Amount of tokens to mint.
-    const amount = new anchor.BN(1);
-
-    const transactionSignature = await program.methods
-      .mintToken(amount)
-      .accounts({
-        payer: provider.wallet.publicKey,
-        associatedTokenAccount: associatedTokenAccountAddress,
-        playerData: player.entityPda,
-      })
-      .rpc();
-
-    console.log("Success!");
-    console.log(
-      `   Associated Token Account Address: ${associatedTokenAccountAddress}`
-    );
-    console.log(`   Transaction Signature: ${transactionSignature}`);
   });
 
   it("Assigns settlement to a player", async () => {
@@ -138,11 +117,6 @@ describe("Creates A Player And Assigns a Settlement", async () => {
   it("Waits a move and mints a token", async () => {
     let state = await settlement.wait({ time: 1 },
       [
-        // {
-        //   pubkey: provider.wallet.publicKey,
-        //   isSigner: true,
-        //   isWritable: true
-        // },
         {
           pubkey: associatedTokenAccountAddress,
           isSigner: false,
@@ -181,11 +155,49 @@ describe("Creates A Player And Assigns a Settlement", async () => {
     expect(state.faith).to.gt(0);
   });
 
+  it("Researches and burns a token", async () => {
+    let state = await settlement.research({ research_type: 1 },
+      [
+        {
+          pubkey: associatedTokenAccountAddress,
+          isSigner: false,
+          isWritable: true
+        },
+        {
+          pubkey: mintPDA,
+          isSigner: false,
+          isWritable: true
+        },
+        {
+          pubkey: program.programId,
+          isSigner: false,
+          isWritable: false
+        },
+        {
+          pubkey: TOKEN_PROGRAM_ID,
+          isSigner: false,
+          isWritable: false
+        },
+        {
+          pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
+          isSigner: false,
+          isWritable: false
+        }
+      ]
+    );
+
+    console.log("!", await settlement.state());
+
+    expect(state.faith).to.gt(0);
+  });
+
 
   after(async () => {
     console.log(await player.state());
     console.log(await settlement.state());
     console.log(await locationAllocator.state());
+    console.log(await locationAllocator.state());
+    console.log(await provider.connection.getTokenAccountBalance(associatedTokenAccountAddress));
   })
 });
 

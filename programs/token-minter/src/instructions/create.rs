@@ -81,9 +81,9 @@ pub fn create_token(
             collection: None,
             uses: None,
         },
-        false, // Is mutable
-        true,  // Update authority is signer
-        None,  // Collection details
+        true, // Is mutable
+        true, // Update authority is signer
+        None, // Collection details
     )?;
 
     msg!("Token created successfully.");
