@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
-using Model;
-using Newtonsoft.Json;
-using Player;
-using Player.Program;
+using Solana.Unity.Programs;
+using Solana.Unity.Rpc.Core.Sockets;
+using Solana.Unity.Rpc.Messages;
+using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
@@ -15,33 +13,28 @@ using Utils.Injection;
 
 namespace Connectors
 {
-    [Singleton]
-    [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class PlayerConnector : BaseComponentConnector<Player.Accounts.Player>
+    struct TokenBalance
     {
-        [Inject] private PlayerModel _model;
+        public int uiAmount;
+    }
+    
+    [Singleton]
+    public class TokenConnector
+    {
+        private const string TokenMintPda = "Fn7ndp5EocCfzDkFMdWUZj5B55AoM7nA5o5cXSUbtDrn";
 
-        public override PublicKey GetComponentProgramAddress()
-        {
-            return new PublicKey("2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU");
-        }
+        private string _ata;
 
-        protected override Player.Accounts.Player DeserialiseBytes(byte[] value)
+        private string AssociatedTokenAccount => _ata ??=
+            AssociatedTokenAccountProgram
+                .DeriveAssociatedTokenAccount(Web3.Account, new PublicKey(TokenMintPda));
+
+        public async Task Subscribe(Action<SubscriptionState, ResponseValue<AccountInfo>, AccountInfo> callback)
         {
-            return Player.Accounts.Player.Deserialize(value);
+            await Web3.Wallet.ActiveStreamingRpcClient.SubscribeAccountInfoAsync(AssociatedTokenAccount, (s, e) =>
+            {
+                Debug.Log(e.Value.Data[0]);
+            }, Commitment.Processed);
         }
-        
-        public async Task<bool> AssignSettlement(Dictionary<PublicKey, PublicKey> extraEntities)
-        {
-            return await ApplySystem(new PublicKey("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"),
-                new { }, extraEntities);
-        }
-        
-        
-        public async Task<bool> AssignHero(Dictionary<PublicKey, PublicKey> extraEntities)
-        {
-            return await ApplySystem(new PublicKey("7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"),
-                new {}, extraEntities);
-        }       
     }
 }

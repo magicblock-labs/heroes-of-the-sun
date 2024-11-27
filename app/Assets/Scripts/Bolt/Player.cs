@@ -220,19 +220,6 @@ namespace Player
 
     namespace Program
     {
-        public class AllowUndelegationAccounts
-        {
-            public PublicKey BaseAccount { get; set; }
-
-            public PublicKey DelegationRecord { get; set; }
-
-            public PublicKey DelegationMetadata { get; set; }
-
-            public PublicKey Buffer { get; set; }
-
-            public PublicKey DelegationProgram { get; set; }
-        }
-
         public class DelegateAccounts
         {
             public PublicKey Payer { get; set; }
@@ -271,13 +258,24 @@ namespace Player
 
         public class ProcessUndelegationAccounts
         {
-            public PublicKey BaseAccount { get; set; }
+            public PublicKey DelegatedAccount { get; set; }
 
             public PublicKey Buffer { get; set; }
 
             public PublicKey Payer { get; set; }
 
             public PublicKey SystemProgram { get; set; }
+        }
+
+        public class UndelegateAccounts
+        {
+            public PublicKey Payer { get; set; }
+
+            public PublicKey DelegatedAccount { get; set; }
+
+            public PublicKey MagicContext { get; set; }
+
+            public PublicKey MagicProgram { get; set; }
         }
 
         public class UpdateAccounts
@@ -292,19 +290,6 @@ namespace Player
         public static class PlayerProgram
         {
             public const string ID = "11111111111111111111111111111111";
-            public static Solana.Unity.Rpc.Models.TransactionInstruction AllowUndelegation(AllowUndelegationAccounts accounts, PublicKey programId)
-            {
-                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.BaseAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.DelegationRecord, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegationMetadata, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Buffer, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.DelegationProgram, false)};
-                byte[] _data = new byte[1200];
-                int offset = 0;
-                _data.WriteU64(9138373155798270719UL, offset);
-                offset += 8;
-                byte[] resultData = new byte[offset];
-                Array.Copy(_data, resultData, offset);
-                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
-            }
-
             public static Solana.Unity.Rpc.Models.TransactionInstruction Delegate(DelegateAccounts accounts, long valid_until, uint commit_frequency_ms, PublicKey programId)
             {
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
@@ -338,7 +323,7 @@ namespace Player
             public static Solana.Unity.Rpc.Models.TransactionInstruction ProcessUndelegation(ProcessUndelegationAccounts accounts, byte[][] account_seeds, PublicKey programId)
             {
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BaseAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Buffer, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegatedAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Buffer, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(12048014319693667524UL, offset);
@@ -353,6 +338,19 @@ namespace Player
                     offset += account_seedsElement.Length;
                 }
 
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
+            public static Solana.Unity.Rpc.Models.TransactionInstruction Undelegate(UndelegateAccounts accounts, PublicKey programId)
+            {
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegatedAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MagicContext, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MagicProgram, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(17161644073433732227UL, offset);
+                offset += 8;
                 byte[] resultData = new byte[offset];
                 Array.Copy(_data, resultData, offset);
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};

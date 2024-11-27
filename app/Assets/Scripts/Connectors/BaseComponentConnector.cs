@@ -247,7 +247,7 @@ namespace Connectors
             };
 
             var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
-            Debug.Log($"System Application Result: {result.Result}");
+            Debug.Log($"System Application Result: {result.WasSuccessful} {result.Result}");
 
             await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Processed);
             return result.WasSuccessful;

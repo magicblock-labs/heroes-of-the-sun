@@ -21,6 +21,7 @@ namespace Utils
         [SerializeField] private TMP_Text label;
 
         [Inject] private PlayerConnector _player;
+        [Inject] private TokenConnector _token;
         [Inject] private LocationAllocatorConnector _allocator;
         [Inject] private LootDistributionConnector _loot;
         [Inject] private PlayerSettlementConnector _settlement;
@@ -139,6 +140,8 @@ namespace Utils
             {
                 _settlementModel.Set(settlement);
             });
+
+            await _token.Subscribe(null);
             
             //ensure hero is created
             await _hero.SetEntityPda(_player.EntityPda);
