@@ -120,6 +120,7 @@ export class SettlementWrapper {
   async build(args: BuildArgs) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       world: this.worldPda,
       systemId: this.buildSystem.programId,
@@ -137,6 +138,7 @@ export class SettlementWrapper {
 
   async assignWorker(args: AssignWorkerArgs) {
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       world: this.worldPda,
       systemId: this.assignWorkerSystem.programId,
@@ -157,6 +159,7 @@ export class SettlementWrapper {
   async upgrade(args: UpgradeArgs) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       world: this.worldPda,
       systemId: this.upgradeSystem.programId,
@@ -175,6 +178,7 @@ export class SettlementWrapper {
   async repair(args: RepairArgs) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       world: this.worldPda,
       systemId: this.repairSystem.programId,
@@ -193,6 +197,7 @@ export class SettlementWrapper {
   async research(args: ResearchArgs, extraAccounts: AccountMeta[]) {
     // Run the build system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       world: this.worldPda,
       systemId: this.researchSystem.programId,
@@ -219,6 +224,7 @@ export class SettlementWrapper {
 
     // Run the movement system
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       world: this.worldPda,
       systemId: this.waitSystem.programId,
@@ -246,6 +252,7 @@ export class SettlementWrapper {
   async reset() {
 
     const applySystem = await ApplySystem({
+      world: this.worldPda,
       authority: this.provider.wallet.publicKey,
       world: this.worldPda,
       systemId: this.resetSystem.programId,

@@ -136,7 +136,7 @@ namespace Utils
                 _lootModel.Set(loot);
             });
             
-            await _settlement.Subscribe((_, _, settlement) =>
+            await _settlement.Subscribe((sub, _, settlement) =>
             {
                 _settlementModel.Set(settlement);
             });

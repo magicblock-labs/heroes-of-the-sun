@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using Solana.Unity.Programs;
 using Solana.Unity.Programs.Utilities;
@@ -137,11 +138,16 @@ namespace Connectors
 
         public async Task Subscribe(Action<SubscriptionState, ResponseValue<AccountInfo>, T> callback)
         {
+            Debug.Log("Subscribing to data address: " + _dataAddress);
             if (string.IsNullOrEmpty(_dataAddress))
                 return;
 
-            await Web3.Wallet.ActiveStreamingRpcClient.SubscribeAccountInfoAsync(_dataAddress, (s, e) =>
+            await Web3.Wallet.ActiveStreamingRpcClient.SubscribeAccountInfoAsync(_dataAddress, async (s, e) =>
             {
+                Debug.Log("Data account updated: " + _dataAddress);
+                // TODO: This is a hack to make sure we are on the main thread when the callback is called.
+                // Can be removed after updating to the master version of the Unity SDK.
+                await UniTask.SwitchToMainThread();
                 var parsingResult = default(T);
                 if (e.Value?.Data?.Count > 0)
                     parsingResult = DeserialiseBytes(Convert.FromBase64String(e.Value.Data[0]));
