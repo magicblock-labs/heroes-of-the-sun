@@ -17,11 +17,11 @@ namespace View.Exploration
         [Inject] private HeroConnector _connector;
         [Inject] private PlayerSettlementConnector _settlement;
         [Inject] private LootDistributionConnector _lootConnector;
-        
+
         [Inject] private PathfindingModel _pathfinding;
         [Inject] private PlayerHeroModel _playerHero;
         [Inject] private LootModel _loot;
-        
+
         [SerializeField] private TMP_Text keyLabel;
 
         private LineRenderer _line;
@@ -52,10 +52,10 @@ namespace View.Exploration
             //await _connector.Subscribe((_, _, hero) => { _playerHero.Set(hero); });
 
             //todo remove this after subscription is enabled (this is basically client prediction code)
-            if (_data.Owner == _player.DataAddress)
+            if (_data.Owner.ToString() == _player.DataAddress)
             {
                 _playerHero.Set(_data);
-                
+
                 gameObject.AddComponent<PointAndClickMovement>().SetDataAddress(value, pos =>
                 {
                     var hero = new Hero.Accounts.Hero()
@@ -135,12 +135,11 @@ namespace View.Exploration
                 transform.position =
                     ConfigModel.GetWorldCellPosition(_data.X, _data.Y) +
                     Vector3.up * (_pathfinding.GetY(new Vector2Int(_data.X, _data.Y)) + 1f);
-                
+
                 _position = new Vector2Int(_data.X, _data.Y);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
                 if (_data.Owner == _player.DataAddress && _loot.HasLootAt(_position, out var index))
-                    
                     /*#[system_input]
                        pub struct Components {
                            pub loot: LootDistribution, << this is the caller entity
@@ -148,7 +147,7 @@ namespace View.Exploration
                            pub settlement: Settlement,
                        }
                        */
-                    _=_lootConnector.Claim(index, new Dictionary<PublicKey, PublicKey>()
+                    _ = _lootConnector.Claim(index, new Dictionary<PublicKey, PublicKey>()
                     {
                         { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },
                         { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },

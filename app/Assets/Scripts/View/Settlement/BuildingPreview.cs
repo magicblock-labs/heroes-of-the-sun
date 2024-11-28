@@ -51,7 +51,7 @@ namespace View
         {
             foreach (Transform child in container)
                 Destroy(child.gameObject);
-            
+
             Instantiate(Resources.Load<GameObject>(config.prefab), container);
         }
     }

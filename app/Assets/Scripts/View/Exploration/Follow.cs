@@ -16,15 +16,15 @@ namespace View.Exploration
             if (_target == null)
             {
                 var hero = FindFirstObjectByType<PointAndClickMovement>();
-                if (hero!=null)
+                if (hero != null)
                     _target = hero.transform;
             }
-            
+
             if (_target == null)
             {
                 return;
             }
-            
+
             var currentTargetPosition = _target.position;
             var targetPoint = currentTargetPosition + Quaternion.Euler(0, _rot, 0) * offset;
 

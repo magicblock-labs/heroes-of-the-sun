@@ -10,7 +10,7 @@ namespace View.UI.Building
     public class BuildingProgress : BuildingUIPanel
     {
         [Inject] private SettlementModel _settlement;
-        
+
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private Image bg;
         [SerializeField] private Image fill;
@@ -29,7 +29,7 @@ namespace View.UI.Building
 
             nameLabel.text = value.Id.ToString();
 
-            var totalBuildTime = _settlement.GetBuildTime(config.buildTimeTier, value.Level) ;
+            var totalBuildTime = _settlement.GetBuildTime(config.buildTimeTier, value.Level);
             var percentage =
                 totalBuildTime > 0
                     ? Mathf.Clamp((float)(totalBuildTime - value.TurnsToBuild) / totalBuildTime, 0, 1)

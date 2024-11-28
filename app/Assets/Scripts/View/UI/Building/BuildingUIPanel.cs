@@ -30,7 +30,7 @@ namespace View.UI
             if (canvas != null)
                 canvas.worldCamera = _camera;
         }
-        
+
         void OnEnable()
         {
             RenderPipelineManager.beginCameraRendering += OnBeginCameraRendering;
@@ -43,7 +43,6 @@ namespace View.UI
 
         private void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
         {
-            
             if (worldAnchor == null)
                 return;
 

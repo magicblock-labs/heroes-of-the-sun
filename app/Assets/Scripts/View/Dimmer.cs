@@ -20,8 +20,8 @@ namespace View
         {
             var color = _img.color;
 
-            color.a += ((Visible ? 1 : 0) - color.a) * 5 * Time.deltaTime; 
-        
+            color.a += ((Visible ? 1 : 0) - color.a) * 5 * Time.deltaTime;
+
             _img.color = color;
         }
     }

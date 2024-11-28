@@ -36,14 +36,14 @@ namespace View.UI.Building
         {
             if (!_interaction.CanInteract)
                 return;
-            
+
             var mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
             var intersectRay = _collider.bounds.IntersectRay(mouseRay, out _);
 
             if (Input.GetMouseButtonUp(0))
                 info.ShowExtendedControls(
                     intersectRay
-                    && _interaction.State == InteractionState.Idle 
+                    && _interaction.State == InteractionState.Idle
                     && !_interaction.SelectedBuildingType.HasValue);
         }
     }

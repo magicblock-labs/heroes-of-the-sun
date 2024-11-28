@@ -16,6 +16,7 @@ namespace View.UI
         }
 
         [Inject] private SettlementModel _model;
+        [Inject] private TokenModel _token;
 
         [SerializeField] private Text foodLabel;
         [SerializeField] private Text foodDiff;
@@ -40,6 +41,7 @@ namespace View.UI
         private void Start()
         {
             _model.Updated.Add(OnUpdated);
+            _token.Updated.Add(OnUpdated);
             OnUpdated();
         }
 
@@ -65,8 +67,8 @@ namespace View.UI
                 stoneBar.fillAmount = GetProgress(settlement.Treasury.Stone, caps.Stone);
                 stoneDiff.text = FormatDiff(CalculateStoneDiff());
 
-                coinsLabel.text = FormatResource(settlement.Treasury.Gold, caps.Gold);
-                coinsBar.fillAmount = GetProgress(settlement.Treasury.Gold, caps.Gold);
+                coinsLabel.text = _token.Get().ToString();
+                coinsBar.fillAmount = 0;
                 coinsDiff.text = FormatDiff(CalculateGoldDiff());
             }
         }
@@ -145,6 +147,7 @@ namespace View.UI
         private void OnDestroy()
         {
             _model.Updated.Remove(OnUpdated);
+            _token.Updated.Remove(OnUpdated);
         }
     }
 }

@@ -4,8 +4,7 @@ using Utils.Signal;
 namespace Notifications
 {
     [Singleton]
-    public class ShowResearch: Signal
+    public class ShowResearch : Signal
     {
-        
     }
 }

@@ -42,11 +42,11 @@ namespace View.UI.Building
             costWood.SetActive(cost.Wood > 0);
             costWoodLabel.text = cost.Wood.ToString();
             costWoodLabel.color = cost.Wood <= treasury.Wood ? Color.white : Color.red;
-            
+
             costStone.SetActive(cost.Stone > 0);
             costStoneLabel.text = cost.Stone.ToString();
             costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
-            
+
             costGold.SetActive(cost.Gold > 0);
             costGoldLabel.text = cost.Gold.ToString();
             costGoldLabel.color = cost.Gold <= treasury.Gold ? Color.white : Color.red;

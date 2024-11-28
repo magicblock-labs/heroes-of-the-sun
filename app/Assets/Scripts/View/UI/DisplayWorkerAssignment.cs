@@ -21,12 +21,12 @@ namespace View.UI
         {
             if (!_settlement.HasData)
                 return;
-            
+
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
             var allocation = _settlement.Get().WorkerAssignment;
-            
+
             //group by building ID
             var grouped = new Dictionary<sbyte, List<int>>();
 
@@ -50,11 +50,10 @@ namespace View.UI
         private async void TryAssignLabour(int index)
         {
             close?.Invoke();
-            
+
             if (_interaction.SelectedBuildingIndex < 0) return;
             _interaction.LockInteraction();
             await _connector.AssignWorker(index, _interaction.SelectedBuildingIndex);
-
         }
     }
 }

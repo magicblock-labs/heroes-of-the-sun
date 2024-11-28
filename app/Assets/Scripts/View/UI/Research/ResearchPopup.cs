@@ -11,7 +11,7 @@ namespace View.UI.Research
     {
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private SettlementModel _settlement;
-    
+
         [SerializeField] private Transform researchList;
         [SerializeField] private ResearchItem researchPrefab;
 
@@ -74,7 +74,7 @@ namespace View.UI.Research
                 return;
 
             _selectedTab = tabIndex;
-        
+
             foreach (Transform child in researchList)
                 Destroy(child.gameObject);
 

@@ -105,7 +105,7 @@ namespace View
 
                     ApplyWorldPoint(worldPoint, buildingDimensions);
                 }
-                
+
                 _preview.transform.localPosition =
                     (new Vector3(_interaction.CellPosX, 0, _interaction.CellPosZ) + buildingDimensions / 2) *
                     ConfigModel.CellSize;

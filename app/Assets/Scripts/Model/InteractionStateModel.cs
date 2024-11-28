@@ -17,11 +17,11 @@ namespace Model
     }
 
     [Singleton]
-    public class InteractionStateModel 
+    public class InteractionStateModel
     {
         private InteractionState _state = InteractionState.Idle;
         public Signal Updated = new();
-        
+
         public BuildingType? SelectedBuildingType;
 
         public InteractionState State => _state;
@@ -30,7 +30,7 @@ namespace Model
 
         public int CellPosX;
         public int CellPosZ;
-        
+
         public int SelectedBuildingIndex = -1;
         private float _lockInteractionUntil;
 
@@ -38,11 +38,11 @@ namespace Model
         {
             if (SelectedBuildingType == type)
                 return;
-            
+
             SelectedBuildingType = type;
             Updated.Dispatch();
         }
-        
+
         public void SetState(InteractionState value)
         {
             if (_state == value) return;
@@ -54,7 +54,6 @@ namespace Model
 
         public void SetPlacementLocation(int cellPosX, int cellPosZ, bool valid)
         {
-
             ValidPlacement = valid;
             CellPosX = cellPosX;
             CellPosZ = cellPosZ;

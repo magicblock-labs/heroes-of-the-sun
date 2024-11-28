@@ -153,7 +153,7 @@ namespace Model
 
         public float GetY(Vector2Int location)
         {
-            return _heightmap.GetValueOrDefault(location, 0) ;
+            return _heightmap.GetValueOrDefault(location, 0);
         }
     }
 }

@@ -6,7 +6,6 @@ namespace View
 {
     public class ZoomCameraController : InjectableBehaviour
     {
-
         [SerializeField] private EventSystem eventSystem;
         [SerializeField] private float zoomSpeedTouch = 0.1f;
         [SerializeField] private float zoomSpeedMouse = 0.5f;
@@ -16,7 +15,7 @@ namespace View
         private Camera _cam;
         private bool _wasZoomingLastFrame; // Touch mode only
         private Vector2[] _lastZoomPositions; // Touch mode only
-        
+
         private void Start()
         {
             _cam = GetComponent<Camera>();
@@ -76,7 +75,8 @@ namespace View
             if (offset == 0)
                 return;
 
-            _cam.orthographicSize = Mathf.Clamp(_cam.orthographicSize - (offset * speed * UnityEngine.Time.deltaTime * 60),
+            _cam.orthographicSize = Mathf.Clamp(
+                _cam.orthographicSize - (offset * speed * UnityEngine.Time.deltaTime * 60),
                 zoomBounds[0], zoomBounds[1]);
         }
     }

@@ -7,8 +7,8 @@ using Utils.Injection;
 
 public class ResearchItem : InjectableBehaviour, IPointerClickHandler
 {
-    [Inject] private SettlementModel _settlement; 
-    
+    [Inject] private SettlementModel _settlement;
+
     private Action<SettlementModel.ResearchType> _callback;
     private SettlementModel.ResearchType _type;
 

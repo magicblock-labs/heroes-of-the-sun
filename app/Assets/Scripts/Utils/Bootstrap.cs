@@ -37,7 +37,7 @@ namespace Utils
         {
             yield return null;
             label.text = "Sign In..";
-            
+
             DontDestroyOnLoad(gameObject);
 
             Login();
@@ -97,7 +97,7 @@ namespace Utils
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
 
             await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
-                
+
             _playerModel.Set(await _player.LoadData());
             label.text = $"[{Web3.Account.PublicKey}] Loaded ";
 
@@ -126,27 +126,22 @@ namespace Utils
 
             //todo make connectors subscribe and dont keep bootstrap alive
             _settlementModel.Set(await _settlement.LoadData());
-            
-            
+
+
             //load loot
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
             _lootModel.Set(await _loot.LoadData());
-            await _loot.Subscribe((_, _, loot) =>
-            {
-                _lootModel.Set(loot);
-            });
-            
-            await _settlement.Subscribe((sub, _, settlement) =>
-            {
-                _settlementModel.Set(settlement);
-            });
+            await _loot.Subscribe((_, _, loot) => { _lootModel.Set(loot); });
 
+            await _settlement.Subscribe((sub, _, settlement) => { _settlementModel.Set(settlement); });
+
+            await _token.LoadData();
             await _token.Subscribe(null);
-            
+
             //ensure hero is created
             await _hero.SetEntityPda(_player.EntityPda);
             var hero = await _hero.LoadData();
-            if (hero.Owner == null || hero.Owner.ToString().All(c=>c == '1'))
+            if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
             {
                 await _player.AssignHero(
                     new Dictionary<PublicKey, PublicKey>

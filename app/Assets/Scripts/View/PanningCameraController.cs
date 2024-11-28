@@ -16,7 +16,7 @@ namespace View
         private Vector3 _lastPanPosition;
 
         private int _panFingerId; // Touch mode only
-        
+
         private void Start()
         {
             _cam = GetComponent<Camera>();
@@ -84,19 +84,19 @@ namespace View
 
         private void PanCamera(Vector3 value)
         {
-            
             var eulerAngles = transform.rotation.eulerAngles;
             var radRotation = eulerAngles * (float)Math.PI / 180f;
 
-            
+
             //rewrite while we can resize (no need on device if no rotation enabled)
             var screenVector = new Vector2(Screen.width, Screen.height).normalized;
-            
-            var diff = _cam.ScreenToViewportPoint(_lastPanPosition - value) * screenVector * (2 * _cam.orthographicSize * (1/screenVector.y));
-            
+
+            var diff = _cam.ScreenToViewportPoint(_lastPanPosition - value) * screenVector *
+                       (2 * _cam.orthographicSize * (1 / screenVector.y));
+
             // this math is a bit flaky, recheck
             var rotated = new Vector3(
-                -diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.y), 
+                -diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.y),
                 0,
                 diff.y * (float)Math.Sin(radRotation.x) + diff.x * (float)Math.Cos(radRotation.y)
             );

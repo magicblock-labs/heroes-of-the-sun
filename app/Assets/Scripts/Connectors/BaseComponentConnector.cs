@@ -50,7 +50,7 @@ namespace Connectors
             _entityPda = value;
             await AcquireComponentDataAddress(forceCreateEntity);
         }
-        
+
 
         public void SetDataAddress(string value)
         {
@@ -128,7 +128,7 @@ namespace Connectors
 
             var res = await Web3.Rpc.GetAccountInfoAsync(new PublicKey(_dataAddress),
                 Commitment.Processed);
-            if (!res.WasSuccessful)
+            if (!res.WasSuccessful || res.Result.Value == null)
                 return default;
 
             var resultingAccount = DeserialiseBytes(Convert.FromBase64String(res.Result.Value.Data[0]));
@@ -158,7 +158,8 @@ namespace Connectors
         protected abstract T DeserialiseBytes(byte[] value);
 
         protected async Task<bool> ApplySystem(PublicKey systemAddress, object args,
-            Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false)
+            Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
+            AccountMeta[] accounts = null)
         {
             var componentProgramAddress = GetComponentProgramAddress();
             if (componentProgramAddress == null)
@@ -180,6 +181,11 @@ namespace Connectors
                     : GetSystemApplicationInstructionFromEntities(componentProgramAddress, systemAddress, args,
                         extraEntities);
 
+            systemApplicationInstruction.Keys.Add(AccountMeta.ReadOnly(new(WorldPda), false));
+
+            if (accounts != null)
+                foreach (var account in accounts)
+                    systemApplicationInstruction.Keys.Add(account);
 
             Debug.Log($"Applying System with args.. :  {JsonConvert.SerializeObject(args)}");
             return await ExecuteSystemApplicationInstruction(systemApplicationInstruction);

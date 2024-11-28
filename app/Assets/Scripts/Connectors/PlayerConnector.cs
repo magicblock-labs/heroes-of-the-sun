@@ -30,18 +30,18 @@ namespace Connectors
         {
             return Player.Accounts.Player.Deserialize(value);
         }
-        
+
         public async Task<bool> AssignSettlement(Dictionary<PublicKey, PublicKey> extraEntities)
         {
             return await ApplySystem(new PublicKey("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"),
                 new { }, extraEntities);
         }
-        
-        
+
+
         public async Task<bool> AssignHero(Dictionary<PublicKey, PublicKey> extraEntities)
         {
             return await ApplySystem(new PublicKey("7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"),
-                new {}, extraEntities);
-        }       
+                new { }, extraEntities);
+        }
     }
 }

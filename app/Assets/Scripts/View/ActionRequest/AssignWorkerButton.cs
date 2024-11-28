@@ -33,7 +33,7 @@ namespace View.ActionRequest
         public async void AssignWorker()
         {
             _interaction.LockInteraction();
-            
+
             var freeWorker = _settlement.GetFreeWorkerIndex();
 
             if (freeWorker >= 0)

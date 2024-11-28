@@ -7,7 +7,6 @@ namespace View.UI.Building
 {
     public class BuildingSnapshot : InjectableBehaviour
     {
-
         [SerializeField] private RawImage snapshot;
         [SerializeField] private Camera cam;
         [SerializeField] private Transform buildingContainer;

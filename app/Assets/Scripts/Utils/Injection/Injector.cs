@@ -15,6 +15,7 @@ namespace Utils.Injection
                                                   System.Reflection.BindingFlags.Instance;
 
         private static Injector _instance;
+
         public static Injector Instance
         {
             get
@@ -40,7 +41,7 @@ namespace Utils.Injection
             {
                 if (a != assembly)
                     continue;
-                
+
                 a.GetTypes().ToList().ForEach(Instance.ProcessType);
             }
         }
@@ -63,7 +64,7 @@ namespace Utils.Injection
                 if (_injectionPoints.ContainsKey(owner))
                     _injectionPoints[owner].Add(member);
                 else
-                    _injectionPoints.Add(owner, new List<FieldInfo> {member});
+                    _injectionPoints.Add(owner, new List<FieldInfo> { member });
             }
 
             if (type.BaseType != null)
@@ -88,7 +89,7 @@ namespace Utils.Injection
                 return GetValue(member.FieldType);
 
             var resolveValue = GetValue(member.FieldType, ownerId);
-            
+
             return resolveValue;
         }
 
@@ -99,9 +100,9 @@ namespace Utils.Injection
             if (!_cache.ContainsKey(key))
             {
                 var instance = Activator.CreateInstance(type);
-                
+
                 _cache.Add(key, instance);
-                
+
                 Resolve(instance);
             }
 

@@ -24,7 +24,7 @@ namespace View.UI
             if (_model.HasData)
             {
                 var settlement = _model.Get();
-                var percentage =Mathf.Clamp((float)settlement.Faith /Cap, 0, 1);
+                var percentage = Mathf.Clamp((float)settlement.Faith / Cap, 0, 1);
 
                 progressBar.fillAmount = percentage;
                 var r = (byte)(byte.MaxValue * Math.Clamp((1 - percentage) * 2f, 0, 1f));

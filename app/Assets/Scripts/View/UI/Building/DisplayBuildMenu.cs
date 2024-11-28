@@ -34,7 +34,7 @@ namespace View.UI.Building
         {
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
-            
+
             foreach (var type in GetFilteredBuildings())
             {
                 if (type is not BuildingType.TownHall)

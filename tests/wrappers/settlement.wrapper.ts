@@ -122,7 +122,6 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      world: this.worldPda,
       systemId: this.buildSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -140,7 +139,6 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      world: this.worldPda,
       systemId: this.assignWorkerSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -161,7 +159,6 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      world: this.worldPda,
       systemId: this.upgradeSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -180,7 +177,6 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      world: this.worldPda,
       systemId: this.repairSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -199,7 +195,6 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      world: this.worldPda,
       systemId: this.researchSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -226,7 +221,6 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      world: this.worldPda,
       systemId: this.waitSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -254,7 +248,6 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      world: this.worldPda,
       systemId: this.resetSystem.programId,
       entities: [{
         entity: this.entityPda,
@@ -268,9 +261,9 @@ export class SettlementWrapper {
     return await this.state();
   }
 
-  async upgradeAndWait(index: number, worker_index: number) {
+  async upgradeAndWait(index: number, worker_index: number, extraAccounts: AccountMeta[]) {
     let state = await this.upgrade({ index, worker_index });
-    return state;//await this.wait({ time: this.getTurnsToCompleteAll(state) });
+    return await this.wait({ time: this.getTurnsToCompleteAll(state) }, extraAccounts);
   }
 
   getTurnsToCompleteAll(state: { buildings: { turnsToBuild: number; }[]; }): number {

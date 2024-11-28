@@ -14,12 +14,12 @@ namespace StompyRobot.SROptions
         {
             Injector.Instance.Resolve(this);
         }
-        
+
         public async void Airdrop()
         {
             await Web3Utils.Airdrop();
         }
-        
+
         public async void Reset()
         {
             if (await _connector.Reset())

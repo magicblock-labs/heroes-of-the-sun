@@ -27,12 +27,11 @@ namespace View.Exploration
         {
             while (true)
             {
-
                 //this is because _pathfinding gets populated upon world generation. potentially could be statically calculated (currently exact values come from chunk view) 
                 foreach (var (cellPos, lootTransform) in _lootMap)
                     lootTransform.localPosition = new Vector3(lootTransform.localPosition.x,
                         _pathfinding.GetY(cellPos) + 2f, lootTransform.localPosition.z);
-                
+
                 yield return new WaitForSeconds(1);
             }
         }

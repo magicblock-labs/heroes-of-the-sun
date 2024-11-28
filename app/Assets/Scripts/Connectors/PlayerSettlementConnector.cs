@@ -9,6 +9,8 @@ namespace Connectors
     [Singleton]
     public class PlayerSettlementConnector : SettlementConnector
     {
+        [Inject] private TokenConnector _token;
+
         public async Task<bool> PlaceBuilding(byte x, byte y, byte type, int worker_index)
         {
             return await ApplySystem(new PublicKey("AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c"),
@@ -18,7 +20,7 @@ namespace Connectors
         public async Task<bool> Wait(int time)
         {
             return await ApplySystem(new PublicKey("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy"),
-                new { time });
+                new { time }, null, false, _token.GetMintExtraAccounts());
         }
 
         public async Task<bool> AssignWorker(int worker_index, int building_index)
@@ -47,7 +49,7 @@ namespace Connectors
         public async Task<bool> Research(int research_type)
         {
             return await ApplySystem(new PublicKey("GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb"),
-                new { research_type });
+                new { research_type }, null, false, _token.GetBurnExtraAccounts());
         }
 
         public async Task<bool> Sacrifice(int index)

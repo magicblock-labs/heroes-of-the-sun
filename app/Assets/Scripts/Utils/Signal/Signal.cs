@@ -2,7 +2,7 @@
 
 namespace Utils.Signal
 {
-    public class Signal  //TODO implement iSubuscribable visible to consumers (so they cant dispatch)
+    public class Signal //TODO implement iSubuscribable visible to consumers (so they cant dispatch)
     {
         public delegate void Callback();
 
@@ -27,13 +27,13 @@ namespace Utils.Signal
         {
             _callbacks.Remove(callback);
         }
-        
+
         public void Clear()
         {
             _callbacks.Clear();
         }
     }
-    
+
     public class Signal<T>
     {
         public delegate void Callback(T p);
@@ -61,7 +61,7 @@ namespace Utils.Signal
         {
             _callbacks.Remove(callback);
         }
-        
+
         public void Clear()
         {
             _callbacks.Clear();
@@ -95,7 +95,7 @@ namespace Utils.Signal
         {
             _callbacks.Remove(callback);
         }
-        
+
         public void Clear()
         {
             _callbacks.Clear();

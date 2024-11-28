@@ -28,15 +28,15 @@ namespace View.UI
         private void OnUpdated()
         {
             if (!_model.HasData) return;
-            
+
             var settlement = _model.Get();
             energyLabel.text = $"{settlement.TimeUnits}/{_model.GetEnergyCap()}";
 
             nextButton.color = settlement.TimeUnits > 0
                 ? Color.green * 0.8f
                 : Color.red * 0.6f;
-                
-                
+
+
             _claimTimestamp = _model.GetNextEnergyClaimTimestamp();
             StopAllCoroutines();
             StartCoroutine(UpdateTimer());

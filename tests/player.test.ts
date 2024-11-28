@@ -3,12 +3,8 @@ import { WorldWrapper } from "./wrappers/world.wrapper";
 import { PlayerWrapper } from "./wrappers/player.wrapper";
 import { SettlementWrapper } from "./wrappers/settlement.wrapper";
 import { LocationAllocatorWrapper } from "./wrappers/location_allocator.wrapper";
+import { TokenWrapper } from "./wrappers/token.wrapper";
 
-import * as anchor from "@coral-xyz/anchor";
-import { TokenMinter } from "../target/types/token_minter";
-import { PublicKey } from "@solana/web3.js";
-import { ASSOCIATED_TOKEN_PROGRAM_ID, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { SYSTEM_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/native/system";
 
 
 describe("Creates A Player And Assigns a Settlement", async () => {
@@ -17,50 +13,13 @@ describe("Creates A Player And Assigns a Settlement", async () => {
   const world = new WorldWrapper();
   const settlement = new SettlementWrapper();
   const locationAllocator = new LocationAllocatorWrapper();
+  const token = new TokenWrapper();
 
 
-  ///todo TOKEN WRAPPER
-
-  const program = anchor.workspace.TokenMinter as anchor.Program<TokenMinter>;
-  // Derive the PDA to use as mint account address.
-  // This same PDA is also used as the mint authority.
-  const [mintPDA] = PublicKey.findProgramAddressSync(
-    [Buffer.from("mint")],
-    program.programId
-  );
-
-  const metadata = {
-    name: "Magical Gem",
-    symbol: "MBGEM",
-    uri: "https://shdw-drive.genesysgo.net/4PMP1MG5vYGkT7gnAMb7E5kqPLLjjDzTiAaZ3xRx5Czd/gem.json",
-  };
-
-
-  const provider = anchor.AnchorProvider.env();
-  anchor.setProvider(provider);
-
-  console.log(`SPL Token: \x1b[31m (mintPDA = ${mintPDA}\x1b[0m).`);
-
-  // Derive the associated token address account for the mint and payer.
-  let associatedTokenAccountAddress = getAssociatedTokenAddressSync(
-    mintPDA,
-    provider.wallet.publicKey
-  );
 
   it("creates a token", async () => {
-    const transactionSignature = await program.methods
-      .createToken(metadata.name, metadata.symbol, metadata.uri)
-      .accounts({
-        payer: provider.wallet.publicKey,
-      })
-      .rpc();
-
-    console.log("Success!");
-    console.log(`   Mint Address: ${mintPDA}`);
-    console.log(`   Transaction Signature: ${transactionSignature}`);
+    await token.createToken();//
   });
-
-  ///todo TOKEN WRAPPER ====================
 
   it("Initializes a player", async () => {
     await player.init(await world.getWorldPda());
@@ -85,70 +44,8 @@ describe("Creates A Player And Assigns a Settlement", async () => {
   });
 
 
-  /*
-  
-  
-  
-          #[account(mut)]
-          signer: Signer<'info>,
-  
-          #[account()]
-          associated_token_account: Account<'info, TokenAccount>,
-  
-          #[account()]
-          mint_account: Account<'info, Mint>,
-  
-          #[account()]
-          minter_program: AccountInfo,
-  
-          #[account()]
-          token_program: Program<'info, Token>,
-  
-          #[account()]
-          associated_token_program: Program<'info, AssociatedToken>,
-  
-          #[account()]
-          system_program: Program<'info, System>,
-  
-  
-  */
-
-
   it("Waits a move and mints a token", async () => {
-    let state = await settlement.wait({ time: 1 },
-      [
-        {
-          pubkey: associatedTokenAccountAddress,
-          isSigner: false,
-          isWritable: true
-        },
-        {
-          pubkey: mintPDA,
-          isSigner: false,
-          isWritable: true
-        },
-        {
-          pubkey: program.programId,
-          isSigner: false,
-          isWritable: false
-        },
-        {
-          pubkey: TOKEN_PROGRAM_ID,
-          isSigner: false,
-          isWritable: false
-        },
-        {
-          pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-          isSigner: false,
-          isWritable: false
-        },
-        {
-          pubkey: SYSTEM_PROGRAM_ID,
-          isSigner: false,
-          isWritable: false
-        }
-      ]
-    );
+    let state = await settlement.wait({ time: 1 }, token.getMintExtraAccounts());
 
     console.log("!", await settlement.state());
 
@@ -156,35 +53,7 @@ describe("Creates A Player And Assigns a Settlement", async () => {
   });
 
   it("Researches and burns a token", async () => {
-    let state = await settlement.research({ research_type: 1 },
-      [
-        {
-          pubkey: associatedTokenAccountAddress,
-          isSigner: false,
-          isWritable: true
-        },
-        {
-          pubkey: mintPDA,
-          isSigner: false,
-          isWritable: true
-        },
-        {
-          pubkey: program.programId,
-          isSigner: false,
-          isWritable: false
-        },
-        {
-          pubkey: TOKEN_PROGRAM_ID,
-          isSigner: false,
-          isWritable: false
-        },
-        {
-          pubkey: ASSOCIATED_TOKEN_PROGRAM_ID,
-          isSigner: false,
-          isWritable: false
-        }
-      ]
-    );
+    let state = await settlement.research({ research_type: 1 }, token.getBurnExtraAccounts());
 
     console.log("!", await settlement.state());
 
@@ -197,7 +66,7 @@ describe("Creates A Player And Assigns a Settlement", async () => {
     console.log(await settlement.state());
     console.log(await locationAllocator.state());
     console.log(await locationAllocator.state());
-    console.log(await provider.connection.getTokenAccountBalance(associatedTokenAccountAddress));
+    console.log(await token.provider.connection.getTokenAccountBalance(token.associatedTokenAccountAddress));
   })
 });
 

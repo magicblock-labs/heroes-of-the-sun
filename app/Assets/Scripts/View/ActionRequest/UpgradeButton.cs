@@ -64,7 +64,7 @@ namespace View.ActionRequest
         {
             _interaction.LockInteraction();
 
-            if (_canAfford) 
+            if (_canAfford)
                 await _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex());
         }
     }

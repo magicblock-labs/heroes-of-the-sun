@@ -13,8 +13,8 @@ namespace View.ActionRequest
         public async void Wait()
         {
             _interaction.LockInteraction();
-            
-            if (_model.HasData && _model.Get().TimeUnits > 0 )
+
+            if (_model.HasData && _model.Get().TimeUnits > 0)
                 await _connector.Wait(1);
         }
     }

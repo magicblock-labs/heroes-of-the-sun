@@ -14,13 +14,12 @@ namespace View.Exploration
 
         public RenderTile Create(Vector2Int offset, Vector2Int position, float value, bool edge)
         {
-            
             gameObject.name = $"Tile@{transform.localPosition.x}x{transform.localPosition.z}";
             var yPos = (int)(value * tiles.Length * 4) - 6.5f;
-            
+
             Location = offset + position;
             _pathfinder.AddPoint(Location, yPos);
-            
+
             var tileIndex = Mathf.Min((int)(tiles.Length * value), tiles.Length - 1);
             var prefab = tiles[tileIndex];
             Instantiate(prefab, transform);

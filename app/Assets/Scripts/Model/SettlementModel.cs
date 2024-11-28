@@ -13,7 +13,6 @@ namespace Model
         public int Wood;
         public int Water;
         public int Stone;
-        public int Gold;
     }
 
     [Singleton]
@@ -132,9 +131,6 @@ namespace Model
                         storage.Stone += ConfigModel.STONE_STORAGE_PER_LEVEL *
                                          GetStorageLevelMultiplier(building.Level);
                         break;
-                    case BuildingType.GoldStorage:
-                        storage.Gold += ConfigModel.GOLD_STORAGE_PER_LEVEL * GetStorageLevelMultiplier(building.Level);
-                        break;
                 }
             }
 
@@ -147,7 +143,6 @@ namespace Model
             storage.Food = (int)Math.Floor(storage.Food * storageMultiplier);
             storage.Wood = (int)Math.Floor(storage.Wood * storageMultiplier);
             storage.Stone = (int)Math.Floor(storage.Stone * storageMultiplier);
-            storage.Gold = (int)Math.Floor(storage.Gold * storageMultiplier);
 
             return storage;
         }
@@ -233,7 +228,7 @@ namespace Model
                    + MaxEnergyCapResearchMultiplier
                    * (int)GetResearchLevel(ResearchType.MaxEnergyCap);
         }
-        
+
         private const int BaseMinutePerEnergyUnit = 10;
         private const int EnergyRegenResearchMultiplier = 1;
         private const int SecondsInMinute = 60;
@@ -296,8 +291,8 @@ namespace Model
         public float GetMaxDeterioration()
         {
             return ConfigModel.BASE_DETERIORATION_CAP
-                + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
-                * GetResearchLevel(ResearchType.DeteriorationCap);
+                   + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
+                   * GetResearchLevel(ResearchType.DeteriorationCap);
         }
 
         private const int BaseResearchCost = 5;

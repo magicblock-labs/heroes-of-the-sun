@@ -19,7 +19,7 @@ namespace View.ActionRequest
             if (value == null)
                 return;
 
-            gameObject.SetActive(value.TurnsToBuild<=0 && value.Id == BuildingType.Research);
+            gameObject.SetActive(value.TurnsToBuild <= 0 && value.Id == BuildingType.Research);
         }
 
         public void ShowResearch()

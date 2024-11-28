@@ -19,7 +19,7 @@ namespace Model
         {
             if (!_data.ContainsKey(type))
                 _data[type] = new List<Vector2Int>();
-            
+
             _data[type].Add(coordinates);
         }
 
