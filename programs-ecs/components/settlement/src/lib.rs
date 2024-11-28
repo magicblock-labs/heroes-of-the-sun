@@ -10,8 +10,7 @@ pub struct ResourceBalance {
     pub food: u16,
     pub water: u16,
     pub wood: u16,
-    pub stone: u16,
-    pub gold: u16,
+    pub stone: u16
 }
 
 #[component_deserialize]

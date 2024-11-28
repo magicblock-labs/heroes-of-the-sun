@@ -44,21 +44,21 @@ describe("Creates A Player And Assigns a Settlement", async () => {
   });
 
 
-  it("Waits a move and mints a token", async () => {
-    let state = await settlement.wait({ time: 1 }, token.getMintExtraAccounts());
+  // it("Waits a move and mints a token", async () => {
+  //   let state = await settlement.wait({ time: 1 }, token.getMintExtraAccounts());
 
-    console.log("!", await settlement.state());
+  //   console.log("!", await settlement.state());
 
-    expect(state.faith).to.gt(0);
-  });
+  //   expect(state.faith).to.gt(0);
+  // });
 
-  it("Researches and burns a token", async () => {
-    let state = await settlement.research({ research_type: 1 }, token.getBurnExtraAccounts());
+  // it("Researches and burns a token", async () => {
+  //   let state = await settlement.research({ research_type: 1 }, token.getBurnExtraAccounts());
 
-    console.log("!", await settlement.state());
+  //   console.log("!", await settlement.state());
 
-    expect(state.faith).to.gt(0);
-  });
+  //   expect(state.faith).to.gt(0);
+  // });
 
 
   after(async () => {
@@ -66,7 +66,7 @@ describe("Creates A Player And Assigns a Settlement", async () => {
     console.log(await settlement.state());
     console.log(await locationAllocator.state());
     console.log(await locationAllocator.state());
-    console.log(await token.provider.connection.getTokenAccountBalance(token.associatedTokenAccountAddress));
+    // console.log(await token.provider.connection.getTokenAccountBalance(token.associatedTokenAccountAddress));
   })
 });
 

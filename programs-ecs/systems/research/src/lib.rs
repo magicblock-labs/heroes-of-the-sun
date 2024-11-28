@@ -4,68 +4,46 @@ mod errors;
 
 declare_id!("GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb");
 
-fn burn(ctx: &Context<Components>, amount: u64) -> anchor_lang::Result<()> {
-    // Extract and clone all necessary accounts upfront
-    let minter_program = ctx
-        .minter_program()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    let mint_account = ctx
-        .mint_account()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    msg!("mint_account: {}", mint_account.key);
-    let associated_token_account = ctx
-        .associated_token_account()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    msg!("associated_token_account: {}", associated_token_account.key);
-    let token_program = ctx
-        .token_program()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    msg!("token_program: {}", token_program.key);
-    let associated_token_program = ctx
-        .associated_token_program()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    msg!("associated_token_program: {}", associated_token_program.key);
-    let payer = ctx
-        .signer()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    msg!("payer: {}", payer.key);
-
-    let res = token_minter::cpi::burn_token(
-        CpiContext::new(
-            minter_program,
-            BurnToken {
-                payer,
-                mint_account,
-                associated_token_account,
-                token_program,
-                associated_token_program,
-            },
-        ),
-        5,
-    );
-    msg!("Burned correctly: {:?}", res.is_ok());
-    res
-}
-
 #[system]
 pub mod research {
 
     use settlement::{
-        config::{get_research_level_u8, ResearchType, BITS_PER_RESEARCH, RESEARCH_MASK},
+        config::{self, get_research_level_u8, ResearchType, BITS_PER_RESEARCH, RESEARCH_MASK},
         Settlement,
     };
 
     pub fn execute(ctx: Context<Components>, args: ResearchArgs) -> Result<Components> {
         msg!("execute research!: ");
 
-        _ = burn(&ctx, 5);
-        msg!("burn done!: ");
+        let minter_program = ctx
+            .minter_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        let mint_account = ctx
+            .mint_account()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        msg!("mint_account: {}", mint_account.key);
+        let associated_token_account = ctx
+            .associated_token_account()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        msg!("associated_token_account: {}", associated_token_account.key);
+        let token_program = ctx
+            .token_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        msg!("token_program: {}", token_program.key);
+        let associated_token_program = ctx
+            .associated_token_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        msg!("associated_token_program: {}", associated_token_program.key);
+        let payer = ctx
+            .signer()
+            .map_err(|_| ProgramError::InvalidAccountData)?
+            .clone();
+        msg!("payer: {}", payer.key);
 
         let settlement = &mut ctx.accounts.settlement;
 
@@ -76,10 +54,25 @@ pub mod research {
 
         let mut research_level = get_research_level_u8(settlement.research, args.research_type);
 
-        // let research_cost = config::get_research_cost(args.research_type, research_level);
-        // if settlement.treasury.gold < research_cost {
-        //     return err!(errors::ResearchError::NotEnoughResources);
-        // }
+        let research_cost = config::get_research_cost(args.research_type, research_level);
+
+        let res = token_minter::cpi::burn_token(
+            CpiContext::new(
+                minter_program,
+                BurnToken {
+                    payer,
+                    mint_account,
+                    associated_token_account,
+                    token_program,
+                    associated_token_program,
+                },
+            ),
+            research_cost as u64,
+        );
+        if !res.is_ok() {
+            return err!(errors::ResearchError::NotEnoughResources);
+        }
+        msg!("burn done!: ");
 
         if research_level >= RESEARCH_MASK {
             return err!(errors::ResearchError::AlreadyMaxedOut);

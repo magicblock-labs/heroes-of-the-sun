@@ -22,9 +22,6 @@ namespace View.UI.Building
         [SerializeField] private GameObject costStone;
         [SerializeField] private Text costStoneLabel;
 
-        [SerializeField] private GameObject costGold;
-        [SerializeField] private Text costGoldLabel;
-
         private Action<BuildingType> _selectedCallback;
         private BuildingType _type;
 
@@ -46,10 +43,6 @@ namespace View.UI.Building
             costStone.SetActive(cost.Stone > 0);
             costStoneLabel.text = cost.Stone.ToString();
             costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
-
-            costGold.SetActive(cost.Gold > 0);
-            costGoldLabel.text = cost.Gold.ToString();
-            costGoldLabel.color = cost.Gold <= treasury.Gold ? Color.white : Color.red;
         }
 
         public void OnClick()

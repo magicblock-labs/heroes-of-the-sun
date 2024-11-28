@@ -35,7 +35,6 @@ pub mod repair {
             || settlement.treasury.water < build_cost.water
             || settlement.treasury.food < build_cost.food
             || settlement.treasury.stone < build_cost.stone
-            || settlement.treasury.gold < build_cost.gold
         {
             return err!(errors::RepairError::NotEnoughResources);
         } else {
@@ -43,7 +42,6 @@ pub mod repair {
             settlement.treasury.water -= build_cost.water;
             settlement.treasury.food -= build_cost.food;
             settlement.treasury.stone -= build_cost.stone;
-            settlement.treasury.gold -= build_cost.gold;
         }
 
         //all checks passed

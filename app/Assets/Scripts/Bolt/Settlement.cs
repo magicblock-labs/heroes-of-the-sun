@@ -223,8 +223,7 @@ namespace Settlement
             WaterStorage,
             StoneCollector,
             StoneStorage,
-            GoldCollector,
-            GoldStorage
+            GoldCollector
         }
 
         public partial class EnvironmentState
@@ -265,8 +264,6 @@ namespace Settlement
 
             public ushort Stone { get; set; }
 
-            public ushort Gold { get; set; }
-
             public int Serialize(byte[] _data, int initialOffset)
             {
                 int offset = initialOffset;
@@ -277,8 +274,6 @@ namespace Settlement
                 _data.WriteU16(Wood, offset);
                 offset += 2;
                 _data.WriteU16(Stone, offset);
-                offset += 2;
-                _data.WriteU16(Gold, offset);
                 offset += 2;
                 return offset - initialOffset;
             }
@@ -294,8 +289,6 @@ namespace Settlement
                 result.Wood = _data.GetU16(offset);
                 offset += 2;
                 result.Stone = _data.GetU16(offset);
-                offset += 2;
-                result.Gold = _data.GetU16(offset);
                 offset += 2;
                 return offset - initialOffset;
             }

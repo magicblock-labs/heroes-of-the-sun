@@ -1,6 +1,7 @@
 {
     "makefile.configureOnOpen": false,
     "cSpell.words": [
+        "LERP",
         "powf",
         "repr"
     ]

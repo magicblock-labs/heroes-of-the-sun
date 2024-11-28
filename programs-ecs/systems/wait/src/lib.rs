@@ -13,68 +13,37 @@ use token_minter::cpi::accounts::MintToken;
 
 declare_id!("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy");
 
-fn mint(ctx: &Context<Components>, amount: u64) -> anchor_lang::Result<()> {
-    // Extract and clone all necessary accounts upfront
-    let minter_program = ctx
-        .minter_program()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    let mint_account = ctx
-        .mint_account()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    let associated_token_account = ctx
-        .associated_token_account()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    let token_program = ctx
-        .token_program()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    let associated_token_program = ctx
-        .associated_token_program()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    let system_program = ctx
-        .system_program()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-    let payer = ctx
-        .signer()
-        .map_err(|_| ProgramError::InvalidAccountData)?
-        .clone();
-
-    msg!("payer: {}", payer.key);
-    msg!("mint_account: {}", mint_account.key);
-    msg!("associated_token_account: {}", associated_token_account.key);
-    msg!("token_program: {}", token_program.key);
-    msg!("associated_token_program: {}", associated_token_program.key);
-    msg!("system_program: {}", system_program.key);
-
-    let res = token_minter::cpi::mint_token(
-        CpiContext::new(
-            minter_program,
-            MintToken {
-                payer,
-                mint_account,
-                associated_token_account,
-                token_program,
-                associated_token_program,
-                system_program,
-            },
-        ),
-        amount,
-    );
-    msg!("Minted correctly: {:?}", res.is_ok());
-    res
-}
-
-
 #[system]
 pub mod wait {
 
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
-        _ = mint(&ctx, 10);
+        // Extract and clone all necessary accounts upfront
+        let minter_program = ctx
+            .minter_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
+        let mint_account = ctx
+            .mint_account()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
+        let associated_token_account = ctx
+            .associated_token_account()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
+        let token_program = ctx
+            .token_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
+        let associated_token_program = ctx
+            .associated_token_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
+        let system_program = ctx
+            .system_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
+        let payer = ctx.signer().map_err(|_| ProgramError::InvalidAccountData)?;
+
+        msg!("payer: {}", payer.key);
+        msg!("mint_account: {}", mint_account.key);
+        msg!("associated_token_account: {}", associated_token_account.key);
+        msg!("token_program: {}", token_program.key);
+        msg!("associated_token_program: {}", associated_token_program.key);
+        msg!("system_program: {}", system_program.key);
 
         let settlement = &mut ctx.accounts.settlement;
 
@@ -85,7 +54,6 @@ pub mod wait {
         let mut food_storage: u16 = 0;
         let mut wood_storage: u16 = 0;
         let mut stone_storage: u16 = 0;
-        let mut gold_storage: u16 = 0;
 
         //calc current storage capacity for all resources
         for building in settlement.buildings.to_vec() {
@@ -110,10 +78,6 @@ pub mod wait {
                     stone_storage += config::STONE_STORAGE_PER_LEVEL
                         * get_storage_level_multiplier(building.level);
                 }
-                BuildingType::GoldStorage => {
-                    gold_storage += config::GOLD_STORAGE_PER_LEVEL
-                        * get_storage_level_multiplier(building.level);
-                }
                 _ => {}
             }
         }
@@ -127,7 +91,6 @@ pub mod wait {
             food_storage = (food_storage as f32 * storage_multiplier).floor() as u16;
             wood_storage = (wood_storage as f32 * storage_multiplier).floor() as u16;
             stone_storage = (stone_storage as f32 * storage_multiplier).floor() as u16;
-            gold_storage = (gold_storage as f32 * storage_multiplier).floor() as u16;
         }
 
         //wells generate water without worker assigned
@@ -249,7 +212,7 @@ pub mod wait {
                     }
                     if collected > 0 {
                         settlement.environment.wood -= collected;
-                        settlement.treasury.wood += collected; //* faith +technology + env capacity */
+                        settlement.treasury.wood += collected;
                     }
                 }
                 BuildingType::StoneCollector => {
@@ -268,22 +231,38 @@ pub mod wait {
                     }
                     if collected > 0 {
                         settlement.buildings[building_index_usize].extraction -= collected;
-                        settlement.treasury.stone += collected; //* faith +technology + env capacity */
+                        settlement.treasury.stone += collected;
                     }
                 }
                 BuildingType::GoldCollector => {
-                    let mut collected = 0;
+                    let collected = u16::min(
+                        time_to_wait * get_collection_level_multiplier(building.level)
+                            + get_research_level(
+                                settlement.research,
+                                ResearchType::ResourceCollectionSpeed,
+                            ) as u16,
+                        building.extraction,
+                    );
 
-                    if gold_storage > settlement.treasury.gold {
-                        collected = u16::min(
-                            time_to_wait * get_storage_level_multiplier(building.level),
-                            building.extraction,
-                        );
-                        collected = u16::min(collected, gold_storage - settlement.treasury.gold);
-                    }
                     if collected > 0 {
-                        settlement.buildings[building_index_usize].extraction -= collected;
-                        settlement.treasury.gold += collected; //* faith +technology + env capacity */
+                        let res = token_minter::cpi::mint_token(
+                            CpiContext::new(
+                                minter_program.clone(),
+                                MintToken {
+                                    payer: payer.clone(),
+                                    mint_account: mint_account.clone(),
+                                    associated_token_account: associated_token_account.clone(),
+                                    token_program: token_program.clone(),
+                                    associated_token_program: associated_token_program.clone(),
+                                    system_program: system_program.clone(),
+                                },
+                            ),
+                            collected as u64,
+                        );
+
+                        if res.is_ok() {
+                            settlement.buildings[building_index_usize].extraction -= collected;
+                        }
                     }
                 }
                 _ => {}

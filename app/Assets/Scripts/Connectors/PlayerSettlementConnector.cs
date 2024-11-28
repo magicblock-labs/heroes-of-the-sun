@@ -25,7 +25,7 @@ namespace Connectors
 
         public async Task<bool> AssignWorker(int worker_index, int building_index)
         {
-            return await ApplySystem(new PublicKey("AwwNGgiwArNTsSNbjgiPShcv3fKNVDgK5SUwUb7jWq3o"),
+            return await ApplySystem(new PublicKey("BExuAEwcKxKeqHSN8C1WetUAd6Tm71cZEiP8EBSrH55T"),
                 new { worker_index, building_index });
         }
 

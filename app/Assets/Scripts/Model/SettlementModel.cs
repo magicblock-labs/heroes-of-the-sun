@@ -272,8 +272,7 @@ namespace Model
                 Food = 0,
                 Water = 0,
                 Wood = CalculateCost(tier, level, 0, multiplier),
-                Stone = CalculateCost(tier, level, 4, multiplier),
-                Gold = CalculateCost(tier, level, 8, multiplier)
+                Stone = CalculateCost(tier, level, 4, multiplier)
             };
         }
 

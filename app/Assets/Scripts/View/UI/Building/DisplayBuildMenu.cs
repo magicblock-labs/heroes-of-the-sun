@@ -60,7 +60,6 @@ namespace View.UI.Building
                     BuildingType.FoodStorage,
                     BuildingType.WoodStorage,
                     BuildingType.StoneStorage,
-                    BuildingType.GoldStorage,
                 },
                 BuildingFilter.Special => new[]
                 {

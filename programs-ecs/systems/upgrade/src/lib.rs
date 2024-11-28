@@ -41,7 +41,6 @@ pub mod upgrade {
             || settlement.treasury.water < build_cost.water
             || settlement.treasury.food < build_cost.food
             || settlement.treasury.stone < build_cost.stone
-            || settlement.treasury.gold < build_cost.gold
         {
             return err!(errors::UpgradeError::NotEnoughResources);
         } else {
@@ -49,7 +48,6 @@ pub mod upgrade {
             settlement.treasury.water -= build_cost.water;
             settlement.treasury.food -= build_cost.food;
             settlement.treasury.stone -= build_cost.stone;
-            settlement.treasury.gold -= build_cost.gold;
         }
 
         if args.worker_index >= 0 {

@@ -16,8 +16,7 @@ pub enum BuildingType {
     WaterStorage = 8,
     StoneCollector = 9,
     StoneStorage = 10,
-    GoldCollector = 11,
-    GoldStorage = 12,
+    GoldCollector = 11
 }
 
 pub struct BuildingConfig {
@@ -39,8 +38,7 @@ pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
     water: 40,
     food: 80,
     wood: 200,
-    stone: 10,
-    gold: 10,
+    stone: 10
 };
 
 pub const INITIAL_ENVIRONMENT: EnvironmentState = EnvironmentState {
@@ -53,7 +51,7 @@ pub const ENVIRONMENT_MAX: EnvironmentState = EnvironmentState {
     wood: 1000,
 };
 
-pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
+pub const BUILDINGS_CONFIG: [BuildingConfig; 12] = [
     BuildingConfig {
         id: BuildingType::TownHall,
         width: 4,
@@ -137,14 +135,7 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 13] = [
         height: 3,
         cost_tier: 1,
         build_time_tier: 2,
-    },
-    BuildingConfig {
-        id: BuildingType::GoldStorage,
-        width: 3,
-        height: 3,
-        cost_tier: 2,
-        build_time_tier: 4,
-    },
+    }
 ];
 
 pub const BASE_ENERGY_CAP: u8 = 30;
@@ -255,7 +246,6 @@ pub fn get_construction_cost(
         water: 0,
         wood: calculate_cost(research, tier, level, 0, multiplier),
         stone: calculate_cost(research, tier, level, 4, multiplier),
-        gold: calculate_cost(research, tier, level, 8, multiplier),
     };
 }
 
