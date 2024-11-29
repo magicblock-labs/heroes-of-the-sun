@@ -17,11 +17,7 @@ describe("Exploration and multiplayer tests", async () => {
   const settlement = new SettlementWrapper();
   const locationAllocator = new LocationAllocatorWrapper();
   const lootDistribution = new LootDistributionWrapper();
-  const token = new TokenWrapper();
 
-  it("creates a token", async () => {
-    await token.createToken();//
-  });
 
   it("Initializes a player", async () => {
     await player.init(await world.getWorldPda());
