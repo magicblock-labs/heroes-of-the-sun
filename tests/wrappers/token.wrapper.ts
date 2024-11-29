@@ -62,6 +62,10 @@ export class TokenWrapper {
 
   }
 
+  async getBalance() {
+    return await this.provider.connection.getTokenAccountBalance(this.associatedTokenAccountAddress)
+  }
+
 
 
   getMintExtraAccounts(): AccountMeta[] {

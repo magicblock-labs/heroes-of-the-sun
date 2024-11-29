@@ -9,6 +9,7 @@ import {
 } from "@magicblock-labs/bolt-sdk"
 import { AssignSettlement } from "../../target/types/assign_settlement";
 import { Player } from "../../target/types/player";
+import { AssignHero } from "../../target/types/assign_hero";
 
 
 export class PlayerWrapper {
@@ -21,6 +22,7 @@ export class PlayerWrapper {
 
   playerComponent: Program<Player>;
   assignSettlementSystem: Program<AssignSettlement>;
+  assignHeroSystem: Program<AssignHero>;
 
   async init(worldPda: PublicKey) {
 
@@ -37,6 +39,7 @@ export class PlayerWrapper {
 
       this.playerComponent = anchor.workspace.Player as Program<Player>;
       this.assignSettlementSystem = anchor.workspace.AssignSettlement as Program<AssignSettlement>;
+      this.assignHeroSystem = anchor.workspace.AssignHero as Program<AssignHero>;
 
       let txSign = await this.provider.sendAndConfirm(playerEntity.transaction);
       this.entityPda = playerEntity.entityPda;
@@ -78,19 +81,33 @@ export class PlayerWrapper {
       }],
     });
 
-    console.log("!!", JSON.stringify([{
-      entity: this.entityPda,
-      components: [{ componentId: this.playerComponent.programId }],
-    },
-    {
-      entity: settlementPDA,
-      components: [{ componentId: settlementProgramID }],
-    }]));
-
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`build tx: ${txSign}`);
+    console.log(`assignSettlement tx: ${txSign}`);
 
     return await this.state();
   }
 
+
+  async assignHero(heroPDA: PublicKey, heroProgramID: PublicKey) {
+
+    // Run the build system
+    const applySystem = await ApplySystem({
+      world: this.worldPda,
+      authority: this.provider.wallet.publicKey,
+      systemId: this.assignHeroSystem.programId,
+      entities: [{
+        entity: this.entityPda,
+        components: [{ componentId: this.playerComponent.programId }],
+      },
+      {
+        entity: heroPDA,
+        components: [{ componentId: heroProgramID }],
+      }],
+    });
+
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`assignHero tx: ${txSign}`);
+
+    return await this.state();
+  }
 };
