@@ -3,14 +3,14 @@ pub mod config;
 use bolt_lang::*;
 use config::{get_extraction_cap, BuildingType};
 
-declare_id!("B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv");
+declare_id!("5bKBE1HgusXC5jVVjpk4CvxUM8UGnVPQyvGt7cB6Jk7W");
 
 #[component_deserialize]
 pub struct ResourceBalance {
     pub food: u16,
     pub water: u16,
     pub wood: u16,
-    pub stone: u16
+    pub stone: u16,
 }
 
 #[component_deserialize]

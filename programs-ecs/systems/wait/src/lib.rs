@@ -11,7 +11,7 @@ use settlement::{
 };
 use token_minter::cpi::accounts::MintToken;
 
-declare_id!("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy");
+declare_id!("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4");
 
 #[system]
 pub mod wait {

@@ -2,7 +2,7 @@ use bolt_lang::*;
 use token_minter::cpi::accounts::BurnToken;
 mod errors;
 
-declare_id!("GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb");
+declare_id!("3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP");
 
 #[system]
 pub mod research {

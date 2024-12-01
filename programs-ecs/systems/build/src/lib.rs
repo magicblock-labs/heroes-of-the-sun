@@ -10,7 +10,7 @@ use settlement::{
 };
 use std::u8;
 
-declare_id!("AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c");
+declare_id!("fkiWK1Wn6ouGcHb3icX4XGKynef5MpsTQ478ZMdgB1g");
 
 //move to settlement trait?
 fn fits(settlement: &mut Account<Settlement>, x: u8, y: u8, new_config: &BuildingConfig) -> bool {

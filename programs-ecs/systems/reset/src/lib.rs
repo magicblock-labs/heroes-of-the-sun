@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-declare_id!("J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2");
+declare_id!("3VEXJoAZkYxDXigSWso8FnJY8z6C6inpPxU798vqc9um");
 
 #[system]
 pub mod reset {
