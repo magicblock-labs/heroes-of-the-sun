@@ -18,6 +18,8 @@ export class TokenWrapper {
 
   constructor() {
 
+    this.provider = anchor.AnchorProvider.env();
+    anchor.setProvider(this.provider);
 
     this.program = anchor.workspace.TokenMinter as anchor.Program<TokenMinter>;
     // Derive the PDA to use as mint account address.
@@ -34,8 +36,6 @@ export class TokenWrapper {
     };
 
 
-    this.provider = anchor.AnchorProvider.env();
-    anchor.setProvider(this.provider);
 
     console.log(`SPL Token: \x1b[31m (mintPDA = ${this.mintPDA} \x1b[0m).`);
 
@@ -49,6 +49,7 @@ export class TokenWrapper {
   }
 
   async createToken() {
+    console.log("recent blockhash", await this.program.provider.connection.getLatestBlockhashAndContext());
     const transactionSignature = await this.program.methods
       .createToken(this.metadata.name, this.metadata.symbol, this.metadata.uri)
       .accounts({

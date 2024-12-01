@@ -6,7 +6,7 @@ import { TokenWrapper } from "./wrappers/token.wrapper";
 
 describe("Test suite for: deterioration repair", () => {
 
-    const settlement = new SettlementWrapper();const token = new TokenWrapper();
+    const settlement = new SettlementWrapper(); const token = new TokenWrapper();
     const world = new WorldWrapper();
 
     it("Initializes (with a default town hall) if needed", async () => {
