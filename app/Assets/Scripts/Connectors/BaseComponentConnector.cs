@@ -24,9 +24,9 @@ namespace Connectors
     {
         //this comes from program deployment
         private const string
-            WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH"; //"5NfBQiYeyexbvJZvaysWkcdn8amtPPw5GQLgHomyhemz";
+            WorldPda = "7U6fFqwbzCULK7y1PXUe5nqQpgKiFwoFiMR4vTSrYdkt";
 
-        private const int WorldIndex = 2; //1691;
+        private const int WorldIndex = 1709;
 
         public string EntityPda => _entityPda;
         public string DataAddress => _dataAddress;

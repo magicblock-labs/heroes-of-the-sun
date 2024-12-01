@@ -11,7 +11,7 @@ namespace Utils
         public static async Task EnsureBalance()
         {
             var requestResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
-            Debug.Log($"{Web3.Account.PublicKey} {requestResult.Result} ");
+            Debug.Log($"{Web3.Account.PublicKey} {requestResult.Result.Value} ");
 
             if (requestResult.Result.Value < 50000000)
             {

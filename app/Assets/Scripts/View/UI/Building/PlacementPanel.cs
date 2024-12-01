@@ -27,7 +27,7 @@ namespace View.UI.Building
         {
             if (_interaction.ValidPlacement && _interaction.SelectedBuildingType.HasValue)
             {
-                await _connector.PlaceBuilding(
+                await _connector.Build(
                     (byte)_interaction.CellPosX,
                     (byte)_interaction.CellPosZ,
                     (byte)_interaction.SelectedBuildingType,

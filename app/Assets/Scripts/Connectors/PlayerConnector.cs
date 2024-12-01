@@ -23,7 +23,7 @@ namespace Connectors
 
         public override PublicKey GetComponentProgramAddress()
         {
-            return new PublicKey("2JDZnj8f2tTvQhyQtoPrFxcfGJvuunVt9aGG8rDnpkKU");
+            return new PublicKey("FDY4hyNT9yaV3oXowH7u4guB2gW3Aj8psvLnGwQ9BuT6");
         }
 
         protected override Player.Accounts.Player DeserialiseBytes(byte[] value)

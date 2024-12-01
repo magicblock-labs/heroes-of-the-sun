@@ -13,7 +13,7 @@ namespace Connectors
 
         public override PublicKey GetComponentProgramAddress()
         {
-            return new("B2h45ZJwpiuD9jBY7Dfjky7AmEzdzGsty4qWQxjX9ycv");
+            return new("5bKBE1HgusXC5jVVjpk4CvxUM8UGnVPQyvGt7cB6Jk7W");
         }
 
         protected override Settlement.Accounts.Settlement DeserialiseBytes(byte[] value)

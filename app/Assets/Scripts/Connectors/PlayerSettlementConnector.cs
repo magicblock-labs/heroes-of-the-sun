@@ -11,15 +11,15 @@ namespace Connectors
     {
         [Inject] private TokenConnector _token;
 
-        public async Task<bool> PlaceBuilding(byte x, byte y, byte type, int worker_index)
+        public async Task<bool> Build(byte x, byte y, byte type, int worker_index)
         {
-            return await ApplySystem(new PublicKey("AoKVKur4mczZtuzeMQwydkMe6ZSrJGxTWqZU6grPnd9c"),
+            return await ApplySystem(new PublicKey("fkiWK1Wn6ouGcHb3icX4XGKynef5MpsTQ478ZMdgB1g"),
                 new { x, y, config_index = type, worker_index });
         }
 
         public async Task<bool> Wait(int time)
         {
-            return await ApplySystem(new PublicKey("5LiZ8jP6fqAWT5V6B3C13H9VCwiQoqdyPwUYzWDfMUSy"),
+            return await ApplySystem(new PublicKey("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4"),
                 new { time }, null, false, _token.GetMintExtraAccounts());
         }
 
@@ -32,35 +32,35 @@ namespace Connectors
 
         public async Task<bool> Repair(int index)
         {
-            return await ApplySystem(new PublicKey("4MA6KhwEUsLbZJqJK9rqwVjdZgdxy7vbebuD2MeLKm5j"), new { index });
+            return await ApplySystem(new PublicKey("5xPJt6GDcmGphNAs6qU3hWAvzLwXuSqhTco6RtoAR9aY"), new { index });
         }
 
         public async Task<bool> Upgrade(int index, int worker_index)
         {
-            return await ApplySystem(new PublicKey("J3evfUppPdgjTzWhhAhuhKBVM23UU8iCU9j9r7sTHCTB"),
+            return await ApplySystem(new PublicKey("76wsz7SjNtvoFK8aUvojEyfjep5pMSaHQihGVxcjc1EA"),
                 new { index, worker_index });
         }
 
         public async Task<bool> ClaimTime()
         {
-            return await ApplySystem(new PublicKey("HFx2weMbr8CrAEAPfPtgw9zzgHgUFzSz7qiTyhTHGSF"), new { });
+            return await ApplySystem(new PublicKey("4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"), new { });
         }
 
         public async Task<bool> Research(int research_type)
         {
-            return await ApplySystem(new PublicKey("GnVJxqk8dExpXhVidSEFNQcjTY1sCAYWcwM1GGVKKVHb"),
+            return await ApplySystem(new PublicKey("3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP"),
                 new { research_type }, null, false, _token.GetBurnExtraAccounts());
         }
 
         public async Task<bool> Sacrifice(int index)
         {
-            return await ApplySystem(new PublicKey("4Cvjz6qrVakbSg3dqBMA8vv8XL8KD3UCTbRVM8g8WkoW"),
+            return await ApplySystem(new PublicKey("6JwZJNAtkciXVGenFSoa99VBNcxyb2W8mvzcMK1vTWKs"),
                 new { index });
         }
 
         public async Task<bool> Reset()
         {
-            return await ApplySystem(new PublicKey("J2HTjpKDf317Q7Pg9kUVFDregE2Ld34P61M5m4XnVSh2"),
+            return await ApplySystem(new PublicKey("3VEXJoAZkYxDXigSWso8FnJY8z6C6inpPxU798vqc9um"),
                 new { });
         }
     }

@@ -12,7 +12,7 @@ namespace Connectors
 
         public override PublicKey GetComponentProgramAddress()
         {
-            return new PublicKey("DvznnhhpuH3WkBsUonUytkHhd6MYz91c2iLvRuvLeSnV");
+            return new PublicKey("J7q3dEg2KauPKkMamH9Q5FHhCoFYsSq9ramdutMpPTDc");
         }
 
         protected override LocationAllocator DeserialiseBytes(byte[] value)
