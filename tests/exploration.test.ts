@@ -124,5 +124,54 @@ describe("Exploration and multiplayer tests", async () => {
 
     expect(settlementAfter.treasury.wood).to.gt(settlementBefore.treasury.wood);
   });
+
+  it("Puts stuff into backpack", async () => {
+
+    const settlementBefore = await settlement.state();
+    const heroBefore = await hero.state();
+
+    await hero.changeBackpack(settlement.entityPda,
+      settlement.settlementComponent.programId, { water: 0, food: 0, wood: 1, stone: 0 });
+
+
+    const settlementAfter = await settlement.state();
+    const heroAfter = await hero.state();
+
+    expect(settlementAfter.treasury.wood).to.lt(settlementBefore.treasury.wood);
+    expect(heroAfter.backpack.wood).to.gt(heroBefore.backpack.wood);
+  });
+
+
+
+  it("Doesnt put stuff into backpack above cap", async () => {
+
+
+    try {
+
+      await hero.changeBackpack(settlement.entityPda,
+        settlement.settlementComponent.programId, { water: 0, food: 0, wood: 10, stone: 0 });
+
+      assert(false, "should've failed but didn't ")
+    } catch (_err) {
+      //why cant in just get the error from the _err type??? error types are not exposed :/
+      expect(new String(_err)).to.contain("6003")
+    }
+  });
+
+
+  it("Cant move out stuff from backpack that doesnt exist", async () => {
+
+
+    try {
+
+      await hero.changeBackpack(settlement.entityPda,
+        settlement.settlementComponent.programId, { water: 0, food: -1, wood: 0, stone: 0 });
+
+      assert(false, "should've failed but didn't ")
+    } catch (_err) {
+      //why cant in just get the error from the _err type??? error types are not exposed :/
+      expect(new String(_err)).to.contain("6001")
+    }
+  });
 });
 

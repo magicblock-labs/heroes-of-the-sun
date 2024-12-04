@@ -919,6 +919,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
+name = "change-backpack"
+version = "0.1.8"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "hero",
+ "serde",
+ "settlement",
+]
+
+[[package]]
 name = "chrono"
 version = "0.4.38"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1329,10 +1340,11 @@ dependencies = [
 
 [[package]]
 name = "hero"
-version = "0.1.8"
+version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "settlement",
 ]
 
 [[package]]

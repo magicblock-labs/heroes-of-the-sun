@@ -2,7 +2,7 @@ use bolt_lang::*;
 
 declare_id!("J7q3dEg2KauPKkMamH9Q5FHhCoFYsSq9ramdutMpPTDc");
 
-#[component]
+#[component(delegate)]
 #[derive(Default)]
 pub struct LocationAllocator {
     pub current_x: i16,

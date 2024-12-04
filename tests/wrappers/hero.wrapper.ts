@@ -12,6 +12,7 @@ import { Player } from "../../target/types/player";
 import { Hero } from "../../target/types/hero";
 import { MoveHero } from "../../target/types/move_hero";
 import { ClaimLoot } from "../../target/types/claim_loot";
+import { ChangeBackpack } from "../../target/types/change_backpack";
 
 export type MoveHeroArgs = {
   x: number,
@@ -22,6 +23,13 @@ export type ClaimLootArgs = {
   index: number
 }
 
+export type ChangeBackpackArgs = {
+
+  food: number,
+  water: number,
+  wood: number,
+  stone: number,
+}
 
 
 export class HeroWrapper {
@@ -35,6 +43,7 @@ export class HeroWrapper {
   heroComponent: Program<Hero>;
   moveHeroSystem: Program<MoveHero>;
   claimLootSystem: Program<ClaimLoot>;
+  changeBackpackSystem: Program<ChangeBackpack>;
 
   async init(worldPda: PublicKey) {
 
@@ -52,6 +61,7 @@ export class HeroWrapper {
       this.heroComponent = anchor.workspace.Hero as Program<Hero>;
       this.moveHeroSystem = anchor.workspace.MoveHero as Program<MoveHero>;
       this.claimLootSystem = anchor.workspace.ClaimLoot as Program<ClaimLoot>;
+      this.changeBackpackSystem = anchor.workspace.ChangeBackpack as Program<ChangeBackpack>;
 
       let txSign = await this.provider.sendAndConfirm(heroEntity.transaction);
       this.entityPda = heroEntity.entityPda;
@@ -91,7 +101,7 @@ export class HeroWrapper {
   }
 
   async claimLoot(settlementPDA: PublicKey, settlementProgramID: PublicKey, lootPDA: PublicKey, lootProgramID: PublicKey, args: ClaimLootArgs) {
-    // Run the build system
+    // Run the claim system
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
@@ -113,6 +123,29 @@ export class HeroWrapper {
 
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
     console.log(`claimLoot tx: ${txSign}`);
+
+    return await this.state();
+  }
+
+  async changeBackpack(settlementPDA: PublicKey, settlementProgramID: PublicKey, args: ChangeBackpackArgs) {
+    const applySystem = await ApplySystem({
+      world: this.worldPda,
+      authority: this.provider.wallet.publicKey,
+      systemId: this.changeBackpackSystem.programId,
+      entities: [
+        {
+          entity: this.entityPda,
+          components: [{ componentId: this.heroComponent.programId }],
+        },
+        {
+          entity: settlementPDA,
+          components: [{ componentId: settlementProgramID }],
+        }],
+      args,
+    });
+
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`backpack tx: ${txSign}`);
 
     return await this.state();
   }

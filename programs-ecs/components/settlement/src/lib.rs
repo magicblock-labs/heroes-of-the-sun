@@ -13,6 +13,17 @@ pub struct ResourceBalance {
     pub stone: u16,
 }
 
+impl Default for ResourceBalance {
+    fn default() -> Self {
+        ResourceBalance {
+            food: 0,
+            water: 0,
+            wood: 0,
+            stone: 0,
+        }
+    }
+}
+
 #[component_deserialize]
 pub struct EnvironmentState {
     pub food: u16,
@@ -30,7 +41,7 @@ pub struct Building {
     pub extraction: u16, //mines only
 }
 
-#[component]
+#[component(delegate)]
 pub struct Settlement {
     #[max_len(20, 6)]
     pub buildings: Vec<Building>,
