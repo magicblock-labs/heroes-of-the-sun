@@ -1,38 +1,40 @@
-using System;
 using Notifications;
 using UnityEngine;
 using Utils.Injection;
 
-public class PopupManager : InjectableBehaviour
+namespace View.UI
 {
-    [Inject] private ShowWorkerSelection _showWorkerSelection;
-    [Inject] private ShowResearch _showResearch;
-
-    [SerializeField] private GameObject workerSelectionPopup;
-    [SerializeField] private GameObject researchPopup;
-
-    private void Start()
+    public class PopupManager : InjectableBehaviour
     {
-        _showWorkerSelection.Add(WorkerSelectionRequested);
-        _showResearch.Add(ResearchRequested);
+        [Inject] private ShowWorkerSelection _showWorkerSelection;
+        [Inject] private ShowResearch _showResearch;
 
-        foreach (Transform child in transform)
-            child.gameObject.SetActive(false);
-    }
+        [SerializeField] private GameObject workerSelectionPopup;
+        [SerializeField] private GameObject researchPopup;
 
-    private void WorkerSelectionRequested()
-    {
-        workerSelectionPopup.SetActive(true);
-    }
+        private void Start()
+        {
+            _showWorkerSelection.Add(WorkerSelectionRequested);
+            _showResearch.Add(ResearchRequested);
 
-    private void ResearchRequested()
-    {
-        researchPopup.SetActive(true);
-    }
+            foreach (Transform child in transform)
+                child.gameObject.SetActive(false);
+        }
 
-    private void OnDestroy()
-    {
-        _showWorkerSelection.Remove(WorkerSelectionRequested);
-        _showResearch.Remove(ResearchRequested);
+        private void WorkerSelectionRequested()
+        {
+            workerSelectionPopup.SetActive(true);
+        }
+
+        private void ResearchRequested()
+        {
+            researchPopup.SetActive(true);
+        }
+
+        private void OnDestroy()
+        {
+            _showWorkerSelection.Remove(WorkerSelectionRequested);
+            _showResearch.Remove(ResearchRequested);
+        }
     }
 }

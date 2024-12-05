@@ -1,6 +1,5 @@
 using Connectors;
 using Model;
-using Settlement.Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
@@ -23,7 +22,7 @@ namespace View.ActionRequest
         private int _index;
         private bool _canAfford;
 
-        public void SetData(int index, Building value)
+        public void SetData(int index, Settlement.Types.Building value)
         {
             if (value == null)
                 return;

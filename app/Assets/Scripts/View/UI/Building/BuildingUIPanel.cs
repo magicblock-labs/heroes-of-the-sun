@@ -1,9 +1,8 @@
-using System;
 using UnityEngine;
 using UnityEngine.Rendering;
 using Utils.Injection;
 
-namespace View.UI
+namespace View.UI.Building
 {
     public abstract class BuildingUIPanel : InjectableBehaviour
     {

@@ -2,6 +2,7 @@ using Model;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
+using View.Building;
 
 namespace View.UI.Building
 {

@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Connectors;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,16 +10,19 @@ namespace View.Exploration
         [Inject] private HeroConnector _connector;
 
         private float _mouseDownTime;
-        private Action<Vector2Int> _callback;
+        // private Action<Vector2Int> _callback;
 
 
-        public void SetDataAddress(string value, Action<Vector2Int> callback)
+        public void SetDataAddress(string value)
         {
-            _connector.SetDataAddress(value);
-            _callback = callback;
+            //}, Action<Vector2Int> callback)
+            {
+                _connector.SetDataAddress(value);
+                // _callback = callback;
+            }
         }
 
-        void Update()
+        private void Update()
         {
             if (Input.GetMouseButtonDown(0))
                 _mouseDownTime = Time.time;
@@ -37,7 +38,7 @@ namespace View.Exploration
 
                 var tile = info.collider.GetComponent<RenderTile>();
                 _ = _connector.Move(tile.Location.x, tile.Location.y);
-                _callback?.Invoke(tile.Location);
+                // _callback?.Invoke(tile.Location);
             }
         }
     }

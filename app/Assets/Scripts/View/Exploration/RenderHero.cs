@@ -49,25 +49,29 @@ namespace View.Exploration
 
             //this should be used after the rollup
             //todo move to point_and_click and rename to player hero controller?
-            //await _connector.Subscribe((_, _, hero) => { _playerHero.Set(hero); });
+            await _connector.Subscribe((_, _, hero) =>
+            {
+                OnDataUpdate(hero);
+            });
 
             //todo remove this after subscription is enabled (this is basically client prediction code)
             if (_data.Owner.ToString() == _player.DataAddress)
             {
                 _playerHero.Set(_data);
 
-                gameObject.AddComponent<PointAndClickMovement>().SetDataAddress(value, pos =>
-                {
-                    var hero = new Hero.Accounts.Hero()
-                    {
-                        Owner = _data.Owner,
-                        X = pos.x,
-                        Y = pos.y,
-                        LastActivity = Web3Utils.GetNodeTime()
-                    };
-                    _playerHero.Set(hero);
-                    OnDataUpdate(hero);
-                });
+                gameObject.AddComponent<PointAndClickMovement>().SetDataAddress(value);
+                //     , pos =>
+                // {
+                //     // var hero = new Hero.Accounts.Hero()
+                //     // {
+                //     //     Owner = _data.Owner,
+                //     //     X = pos.x,
+                //     //     Y = pos.y,
+                //     //     LastActivity = Web3Utils.GetNodeTime()
+                //     // };
+                //     // _playerHero.Set(hero);
+                //     // OnDataUpdate(hero);
+                // });
             }
 
             MoveToNextPoint();
@@ -78,6 +82,10 @@ namespace View.Exploration
         {
             _path = _pathfinding.FindPath(_position, new Vector2Int(value.X, value.Y));
             _data = value;
+            
+            if (_data.Owner.ToString() == _player.DataAddress)
+                _playerHero.Set(_data);
+            
             ApplyPathToLine();
             MoveToNextPoint();
         }
@@ -140,13 +148,7 @@ namespace View.Exploration
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
                 if (_data.Owner == _player.DataAddress && _loot.HasLootAt(_position, out var index))
-                    /*#[system_input]
-                       pub struct Components {
-                           pub loot: LootDistribution, << this is the caller entity
-                           pub hero: Hero,
-                           pub settlement: Settlement,
-                       }
-                       */
+ 
                     _ = _lootConnector.Claim(index, new Dictionary<PublicKey, PublicKey>()
                     {
                         { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },

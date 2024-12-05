@@ -1,6 +1,6 @@
-using Model;
 using TMPro;
 using UnityEngine;
+using View.Building;
 
 namespace View.Exploration
 {
