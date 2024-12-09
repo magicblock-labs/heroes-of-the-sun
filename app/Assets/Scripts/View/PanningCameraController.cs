@@ -109,5 +109,10 @@ namespace View
             // Cache the position
             _lastPanPosition = value;
         }
+
+        private void OnDestroy()
+        {
+            _interaction.SetState(InteractionState.Idle);
+        }
     }
 }

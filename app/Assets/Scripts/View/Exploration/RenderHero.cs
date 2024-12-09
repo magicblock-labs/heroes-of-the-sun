@@ -21,6 +21,8 @@ namespace View.Exploration
         [Inject] private PathfindingModel _pathfinding;
         [Inject] private PlayerHeroModel _playerHero;
         [Inject] private LootModel _loot;
+        [Inject] private SmartObjectModel _smartObjects;
+        [Inject] private InteractionStateModel _interaction;
 
         [SerializeField] private TMP_Text keyLabel;
 
@@ -47,31 +49,12 @@ namespace View.Exploration
             _data = await _connector.LoadData();
             keyLabel.text = _data.Owner.ToString()[..4];
 
-            //this should be used after the rollup
-            //todo move to point_and_click and rename to player hero controller?
-            await _connector.Subscribe((_, _, hero) =>
-            {
-                OnDataUpdate(hero);
-            });
+            await _connector.Subscribe((_, _, hero) => { OnDataUpdate(hero); });
 
-            //todo remove this after subscription is enabled (this is basically client prediction code)
             if (_data.Owner.ToString() == _player.DataAddress)
             {
                 _playerHero.Set(_data);
-
                 gameObject.AddComponent<PointAndClickMovement>().SetDataAddress(value);
-                //     , pos =>
-                // {
-                //     // var hero = new Hero.Accounts.Hero()
-                //     // {
-                //     //     Owner = _data.Owner,
-                //     //     X = pos.x,
-                //     //     Y = pos.y,
-                //     //     LastActivity = Web3Utils.GetNodeTime()
-                //     // };
-                //     // _playerHero.Set(hero);
-                //     // OnDataUpdate(hero);
-                // });
             }
 
             MoveToNextPoint();
@@ -82,10 +65,10 @@ namespace View.Exploration
         {
             _path = _pathfinding.FindPath(_position, new Vector2Int(value.X, value.Y));
             _data = value;
-            
+
             if (_data.Owner.ToString() == _player.DataAddress)
                 _playerHero.Set(_data);
-            
+
             ApplyPathToLine();
             MoveToNextPoint();
         }
@@ -147,13 +130,23 @@ namespace View.Exploration
                 _position = new Vector2Int(_data.X, _data.Y);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
-                if (_data.Owner == _player.DataAddress && _loot.HasLootAt(_position, out var index))
- 
-                    _ = _lootConnector.Claim(index, new Dictionary<PublicKey, PublicKey>()
-                    {
-                        { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },
-                        { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
-                    });
+                if (_data.Owner == _player.DataAddress)
+                    TryInteractWithMap();
+            }
+        }
+
+        private void TryInteractWithMap()
+        {
+            if (_loot.HasLootAt(_position, out var lootIndex))
+
+                _ = _lootConnector.Claim(lootIndex, new Dictionary<PublicKey, PublicKey>()
+                {
+                    { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },
+                    { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
+                });
+            else if (_smartObjects.HasSmartObjectNextTo(_position, out _))
+            {
+                _interaction.SetState(InteractionState.Dialog);
             }
         }
     }
