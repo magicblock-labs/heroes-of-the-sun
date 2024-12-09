@@ -39,8 +39,8 @@ namespace View.Exploration
                 var tile = info.collider.GetComponent<RenderTile>();
                 var tileLocation = tile.Location;
                 
-                if (_smartObjects.HasSmartObjectAt(tileLocation, out _))
-                    tileLocation += Vector2Int.up;
+                if (_smartObjects.HasSmartObjectAt(tileLocation))
+                    tileLocation += Vector2Int.up; //should be the tile closer to the hero position
                 
                 _ = _connector.Move(tileLocation.x, tileLocation.y);
             }

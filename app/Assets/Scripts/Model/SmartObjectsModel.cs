@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Settlement.Types;
+using Solana.Unity.Wallet;
 using UnityEngine;
 using Utils.Injection;
 using Utils.Signal;
@@ -10,31 +12,29 @@ namespace Model
     [Singleton]
     public class SmartObjectModel : InjectableObject
     {
-        public readonly Signal Updated = new();
-
-        private Vector2Int[] _data = { new(-3, 0)};
-
-        public void Set(Vector2Int[] value)
-        {
-            _data = value;
-            Updated.Dispatch();
-        }
-
-        public Vector2Int[] Get()
-        {
-            return _data;
-        }
+        private readonly Dictionary<Vector2Int, PublicKey> _data = new();
         
-        public bool HasSmartObjectAt(Vector2Int position, out int index)
+        public bool HasSmartObjectAt(Vector2Int position)
         {
-            index = Array.FindIndex(_data, so => position == so);
-            return index >= 0;
+            return _data.ContainsKey(position);
         }
 
-        public bool HasSmartObjectNextTo(Vector2Int position, out int index, int threshold = 2)
+        public bool HasSmartObjectNextTo(Vector2Int position, out PublicKey entity, int threshold = 2)
         {
-            index = Array.FindIndex(_data, so => (position - so).sqrMagnitude <= threshold);
-            return index >= 0;
+            if (!_data.Keys.Any(pos => (position - pos).sqrMagnitude <= threshold))
+            {
+                entity = null;
+                return false;
+            }
+
+            var pos = _data.Keys.First(pos => (position - pos).sqrMagnitude <= threshold);
+            entity = _data[pos];
+            return true;
+        }
+
+        public void Set(Vector2Int location, PublicKey entity)
+        {
+            _data[location] = entity;
         }
     }
 }

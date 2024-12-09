@@ -1,4 +1,5 @@
 using System;
+using Model;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -6,29 +7,12 @@ using UnityEngine.UI;
 
 namespace View.UI.Dialogue
 {
-    [Serializable]
-    public class Answer
-    {
-        public string text;
-        public ChatNode nextNode;
-    }
-    
-    [Serializable]
-    public class ChatNode
-    {
-        public string prompt;
-        public Answer[] answers;
-    }
-    
-    
-    
     public class DialogueUI : MonoBehaviour
     {
-        
         public Text prompt;
         public Transform answers;
         public DisplayDialogueAnswer answerPrefab;
-        
+
         [HideInInspector] public UnityEvent<int> answerSelected;
 
         public void ShowChat(ChatNode chatNode)
@@ -45,12 +29,12 @@ namespace View.UI.Dialogue
             foreach (var answer in chatNode.answers)
             {
                 var dialogueAnswer = Instantiate(answerPrefab, answers);
-                dialogueAnswer.Setup(i++, answer.text);
+                dialogueAnswer.Setup(i++, answer);
                 dialogueAnswer.selected.AddListener(OnAnswerSelected);
             }
         }
 
-        private void OnAnswerSelected(int index)
+        private void OnAnswerSelected(int index = -1)
         {
             answerSelected.Invoke(index);
         }

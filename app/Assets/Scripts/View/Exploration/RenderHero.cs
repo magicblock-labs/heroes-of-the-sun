@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
 using Model;
+using Notifications;
 using Solana.Unity.Wallet;
 using TMPro;
 using UnityEngine;
@@ -22,7 +23,7 @@ namespace View.Exploration
         [Inject] private PlayerHeroModel _playerHero;
         [Inject] private LootModel _loot;
         [Inject] private SmartObjectModel _smartObjects;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private RequestInteractionWithSmartObject _interact;
 
         [SerializeField] private TMP_Text keyLabel;
 
@@ -144,9 +145,9 @@ namespace View.Exploration
                     { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },
                     { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
                 });
-            else if (_smartObjects.HasSmartObjectNextTo(_position, out _))
+            else if (_smartObjects.HasSmartObjectNextTo(_position, out var entity))
             {
-                _interaction.SetState(InteractionState.Dialog);
+                _interact.Dispatch(entity);
             }
         }
     }

@@ -1,6 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Connectors;
 using Model;
+using Smartobjectlocation.Accounts;
+using Solana.Unity.Rpc.Types;
+using Solana.Unity.SDK;
 using UnityEngine;
 using Utils.Injection;
 
@@ -8,56 +13,32 @@ namespace View.Exploration
 {
     public class RenderSmartObjects : InjectableBehaviour
     {
-        [Inject] private SmartObjectModel _model;
         [Inject] private PathfindingModel _pathfinding;
+        [Inject] private SmartObjectLocationConnector _connector;
 
-        [SerializeField] private GameObject prefab;
-
-        private Dictionary<Vector2Int, Transform> _objMap = new();
+        [SerializeField] private RenderSmartObject prefab;
 
         private void Start()
         {
-            _model.Updated.Add(Redraw);
-            Redraw();
-
-            StartCoroutine(UpdateYPositions());
+            _ = Redraw();
         }
 
-        private IEnumerator UpdateYPositions()
+        private async Task Redraw()
         {
-            while (true)
-            {
-                //this is because _pathfinding gets populated upon world generation. potentially could be statically calculated (currently exact values come from chunk view) 
-                foreach (var (cellPos, lootTransform) in _objMap)
-                    lootTransform.localPosition = new Vector3(lootTransform.localPosition.x,
-                        _pathfinding.GetY(cellPos) + 2f, lootTransform.localPosition.z);
-
-                yield return new WaitForSeconds(1);
-            }
-        }
-
-        private async void Redraw()
-        {
-            _objMap.Clear();
-
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
-            
-            foreach (var pos2d in _model.Get())
+
+            var list = new List<Solana.Unity.Rpc.Models.MemCmp>
+                { new() { Bytes = SmartObjectLocation.ACCOUNT_DISCRIMINATOR_B58, Offset = 0 } };
+
+            var accounts = (await Web3.Rpc.GetProgramAccountsAsync(
+                _connector.GetComponentProgramAddress(), Commitment.Confirmed, memCmpList: list)).Result;
+
+            foreach (var account in accounts)
             {
-                var pos = ConfigModel.GetWorldCellPosition(pos2d.x, pos2d.y);
-                pos.y = _pathfinding.GetY(pos2d) + 1f;
-
-                var objTransform = Instantiate(prefab, transform).transform;
-                objTransform.localPosition = pos;
-
-                _objMap[pos2d] = objTransform;
+                var renderSmartObject = Instantiate(prefab, transform);
+                await renderSmartObject.SetDataAddress(account.PublicKey);
             }
-        }
-
-        private void OnDestroy()
-        {
-            _model.Updated.Remove(Redraw);
         }
     }
 }

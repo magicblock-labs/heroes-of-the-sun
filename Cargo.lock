@@ -2222,6 +2222,43 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
 
 [[package]]
+name = "smart-object-deity"
+version = "0.1.8"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+]
+
+[[package]]
+name = "smart-object-deity-interact"
+version = "0.1.8"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "hero",
+ "serde",
+ "smart-object-deity",
+]
+
+[[package]]
+name = "smart-object-init"
+version = "0.1.8"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "serde",
+ "smart-object-location",
+]
+
+[[package]]
+name = "smart-object-location"
+version = "0.1.8"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+]
+
+[[package]]
 name = "solana-frozen-abi"
 version = "1.18.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"

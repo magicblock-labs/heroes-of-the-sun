@@ -3193,10 +3193,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a309a04b03364733bdaf4d2ddc19269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePrefab: {fileID: 1979290889500462, guid: 11995f7d008f146f3a7b9e36db166d5d, type: 3}
+  tilePrefab: {fileID: 1979290889500462, guid: 00176e119c32343a580db20b794aca77, type: 3}
   occupiedTilePrefab: {fileID: 1149535237560096, guid: 638c0a484186943949dddab0d30ab59b,
     type: 3}
-  surroundingTile: {fileID: 9087089482889845678, guid: 45b79ad5b5b554a67b3e3615a34e0492,
+  surroundingTile: {fileID: 9087089482889845678, guid: f469ea2a7544842b495aa7df51b2c8f7,
     type: 3}
   scaleFactor: 1
 --- !u!114 &939225384

@@ -8,6 +8,8 @@ namespace Connectors
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class HeroConnector : BaseComponentConnector<Hero.Accounts.Hero>
     {
+        public const string PROGRAM_ID = "GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh";
+
         protected override Hero.Accounts.Hero DeserialiseBytes(byte[] value)
         {
             return Hero.Accounts.Hero.Deserialize(value);
@@ -15,7 +17,7 @@ namespace Connectors
 
         public override PublicKey GetComponentProgramAddress()
         {
-            return new PublicKey("GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh");
+            return new PublicKey(PROGRAM_ID);
         }
 
         public async Task<bool> Move(int x, int y)
