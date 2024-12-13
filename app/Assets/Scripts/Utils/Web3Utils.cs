@@ -8,6 +8,9 @@ namespace Utils
 {
     public static class Web3Utils
     {
+        
+        public static readonly InGameWallet EphemeralWallet = new(RpcCluster.LocalNet, "http://localhost:7899", "ws://localhost:7900", true);
+        
         public static async Task EnsureBalance()
         {
             var requestResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);

@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using Hero.Program;
 using Newtonsoft.Json;
 using Solana.Unity.Programs;
 using Solana.Unity.Programs.Utilities;
+using Solana.Unity.Rpc;
+using Solana.Unity.Rpc.Builders;
 using Solana.Unity.Rpc.Core.Sockets;
 using Solana.Unity.Rpc.Messages;
 using Solana.Unity.Rpc.Models;
@@ -14,6 +17,7 @@ using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using UnityEngine;
+using Utils;
 using Utils.Injection;
 using World.Program;
 
@@ -22,11 +26,18 @@ namespace Connectors
     [Singleton]
     public abstract class BaseComponentConnector<T> : InjectableObject
     {
+        private static IRpcClient RpcClient => _delegated
+                ? Web3Utils.EphemeralWallet.ActiveRpcClient
+                : Web3.Wallet.ActiveRpcClient;
+
+        public static readonly PublicKey DelegationProgram = new("DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh");
+
+
         //this comes from program deployment
         private const string
             //WorldPda = "7U6fFqwbzCULK7y1PXUe5nqQpgKiFwoFiMR4vTSrYdkt";
             WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";
-            
+
 
         //private const int WorldIndex = 1709;
         private const int WorldIndex = 2;
@@ -38,6 +49,7 @@ namespace Connectors
         private long _timeOffset;
         private string _dataAddress;
         private string _seed;
+        private static bool _delegated;
 
         public abstract PublicKey GetComponentProgramAddress();
 
@@ -58,6 +70,30 @@ namespace Connectors
         public void SetDataAddress(string value)
         {
             _dataAddress = value;
+        }
+
+        public async Task Delegate()
+        {
+            if (_delegated)
+                return;
+
+            // Delegate the data PDA if needed
+            var dataAcc = await Web3.Rpc.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
+            if (dataAcc.Result.Value != null
+                && !dataAcc.Result.Value.Owner.Equals(DelegationProgram)
+                && !Web3.Rpc.NodeAddress.ToString()
+                    .Equals(Web3Utils.EphemeralWallet.ActiveRpcClient.NodeAddress.ToString()))
+            {
+                var txDelegate = await DelegateTransaction(new(_entityPda), new(_dataAddress));
+                var resDelegation = await Web3.Wallet.SignAndSendTransaction(txDelegate);
+                if (resDelegation.WasSuccessful)
+                {
+                    Debug.Log($"Delegate Signature: {resDelegation.Result}");
+                    await Web3.Rpc.ConfirmTransaction(resDelegation.Result, Commitment.Confirmed);
+                }
+            }
+
+            _delegated = true;
         }
 
         public async Task AcquireComponentDataAddress(bool forceCreateEntity)
@@ -261,11 +297,65 @@ namespace Connectors
                 RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Processed, useCache: false)
             };
 
-            var result = await Web3.Wallet.SignAndSendTransaction(tx, true);
+            var signedTx = await Web3.Wallet.SignTransaction(tx);
+            var result = await RpcClient.SendTransactionAsync(
+                Convert.ToBase64String(signedTx.Serialize()),
+                skipPreflight: true, preFlightCommitment: Commitment.Processed);
+
             Debug.Log($"System Application Result: {result.WasSuccessful} {result.Result}");
 
             await Web3.Rpc.ConfirmTransaction(result.Result, Commitment.Processed);
             return result.WasSuccessful;
+        }
+
+
+        public async Task<Transaction> DelegateTransaction(PublicKey entityPda, PublicKey playerDataPda)
+        {
+            var tx = new Transaction()
+            {
+                FeePayer = Web3.Account,
+                Instructions = new List<TransactionInstruction>(),
+                RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
+            };
+            // Increase compute unit limit
+            tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitLimit(75000));
+            tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitPrice(100000));
+
+            // Delegate the player data pda
+            DelegateAccounts heroProgram = new()
+            {
+                Payer = Web3.Account,
+                Entity = entityPda,
+                Account = playerDataPda,
+                DelegationProgram = DelegationProgram,
+                DelegationRecord = FindDelegationProgramPda("delegation", playerDataPda),
+                // DelegationMetadata = FindDelegationProgramPda("delegation-metadata", playerDataPda),
+                Buffer = FindBufferPda("buffer", playerDataPda, GetComponentProgramAddress()),
+                OwnerProgram = GetComponentProgramAddress(),
+                SystemProgram = SystemProgram.ProgramIdKey
+            };
+            var ixDelegate = HeroProgram.Delegate(heroProgram, 0, 3000, null);
+            tx.Add(ixDelegate);
+
+            return tx;
+        }
+
+        public static PublicKey FindDelegationProgramPda(string seed, PublicKey account)
+        {
+            PublicKey.TryFindProgramAddress(new[]
+            {
+                Encoding.UTF8.GetBytes(seed), account.KeyBytes
+            }, DelegationProgram, out var pda, out _);
+            return pda;
+        }
+
+        public static PublicKey FindBufferPda(string seed, PublicKey account, PublicKey owner)
+        {
+            PublicKey.TryFindProgramAddress(new[]
+            {
+                Encoding.UTF8.GetBytes(seed), account.KeyBytes
+            }, owner, out var pda, out _);
+            return pda;
         }
     }
 }

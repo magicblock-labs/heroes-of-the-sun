@@ -141,6 +141,7 @@ namespace Utils
             //ensure hero is created
             await _hero.SetEntityPda(_player.EntityPda);
             var hero = await _hero.LoadData();
+            await _hero.Delegate();
             if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
             {
                 await _player.AssignHero(
