@@ -255,7 +255,7 @@ namespace Hero
 
             public PublicKey DelegationRecord { get; set; }
 
-            public PublicKey DelegateAccountSeeds { get; set; }
+            public PublicKey DelegationMetadata { get; set; }
 
             public PublicKey DelegationProgram { get; set; }
 
@@ -294,9 +294,9 @@ namespace Hero
 
             public PublicKey DelegatedAccount { get; set; }
 
-            public PublicKey MagicContext { get; set; }
+            public PublicKey MagicContext { get; set; } = new("MagicContext1111111111111111111111111111111");
 
-            public PublicKey MagicProgram { get; set; }
+            public PublicKey MagicProgram { get; set; } = new("Magic11111111111111111111111111111111111111");
         }
 
         public class UpdateAccounts
@@ -310,18 +310,19 @@ namespace Hero
 
         public static class HeroProgram
         {
-            public const string ID = "11111111111111111111111111111111";
-            public static Solana.Unity.Rpc.Models.TransactionInstruction Delegate(DelegateAccounts accounts, long valid_until, uint commit_frequency_ms, PublicKey programId)
+            public const string ID = "GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh";
+            public static Solana.Unity.Rpc.Models.TransactionInstruction Delegate(DelegateAccounts accounts, long validUntil, uint commitFrequencyMs, PublicKey programId = null)
             {
+                programId ??= new PublicKey(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Entity, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Account, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.OwnerProgram, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Buffer, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegationRecord, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegateAccountSeeds, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.DelegationProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Entity, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Account, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.OwnerProgram, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Buffer, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegationRecord, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegationMetadata, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.DelegationProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(9873113408189731674UL, offset);
                 offset += 8;
-                _data.WriteS64(valid_until, offset);
+                _data.WriteS64(validUntil, offset);
                 offset += 8;
-                _data.WriteU32(commit_frequency_ms, offset);
+                _data.WriteU32(commitFrequencyMs, offset);
                 offset += 4;
                 byte[] resultData = new byte[offset];
                 Array.Copy(_data, resultData, offset);

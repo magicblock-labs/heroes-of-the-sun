@@ -30,7 +30,7 @@ namespace Connectors
                 ? Web3Utils.EphemeralWallet.ActiveRpcClient
                 : Web3.Wallet.ActiveRpcClient;
 
-        public static readonly PublicKey DelegationProgram = new("DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh");
+        private static readonly PublicKey DelegationProgram = new("DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh");
 
 
         //this comes from program deployment
@@ -329,7 +329,7 @@ namespace Connectors
                 Account = playerDataPda,
                 DelegationProgram = DelegationProgram,
                 DelegationRecord = FindDelegationProgramPda("delegation", playerDataPda),
-                // DelegationMetadata = FindDelegationProgramPda("delegation-metadata", playerDataPda),
+                DelegationMetadata = FindDelegationProgramPda("delegation-metadata", playerDataPda),
                 Buffer = FindBufferPda("buffer", playerDataPda, GetComponentProgramAddress()),
                 OwnerProgram = GetComponentProgramAddress(),
                 SystemProgram = SystemProgram.ProgramIdKey
