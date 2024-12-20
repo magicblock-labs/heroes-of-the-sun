@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Connectors;
+using Hero.Program;
 using Model;
 using Notifications;
 using Smartobjectdeity.Accounts;
@@ -33,7 +34,7 @@ namespace View.Exploration.SmartObjectTypes
             if (_dialogInteractionState.GetCurrentInvoker() == new PublicKey(_connector.EntityPda))
                 _ = _connector.Interact(value, _data.System, new Dictionary<PublicKey, PublicKey>
                 {
-                    { new PublicKey(_playerConnector.EntityPda), new PublicKey(HeroConnector.PROGRAM_ID) },
+                    { new PublicKey(_playerConnector.EntityPda), new PublicKey(HeroProgram.ID) },
                 });
         }
 

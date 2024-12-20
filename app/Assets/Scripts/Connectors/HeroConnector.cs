@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using Hero.Program;
 using Solana.Unity.Wallet;
 
 namespace Connectors
@@ -8,8 +9,6 @@ namespace Connectors
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class HeroConnector : BaseComponentConnector<Hero.Accounts.Hero>
     {
-        public const string PROGRAM_ID = "GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh";
-
         protected override Hero.Accounts.Hero DeserialiseBytes(byte[] value)
         {
             return Hero.Accounts.Hero.Deserialize(value);
@@ -17,7 +16,7 @@ namespace Connectors
 
         public override PublicKey GetComponentProgramAddress()
         {
-            return new PublicKey(PROGRAM_ID);
+            return new PublicKey(HeroProgram.ID);
         }
 
         public async Task<bool> Move(int x, int y)

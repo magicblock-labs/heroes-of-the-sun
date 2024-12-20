@@ -1,7 +1,14 @@
 fileFormatVersion: 2
 guid: 6af879b6bb6464fefade050fd58e369f
+AssetOrigin:
+  serializedVersion: 1
+  productId: 144159
+  packageName: Cube World - Proto Series
+  packageVersion: 4.3
+  assetPath: Assets/Cube World Set URP - Proto Series/Assets/Bitgem/Cube_World/Farming/Source/crop_ground_lines.fbx
+  uploadId: 585532
 ModelImporter:
-  serializedVersion: 21100
+  serializedVersion: 22200
   internalIDToNameTable: []
   externalObjects:
   - first:
@@ -19,9 +26,8 @@ ModelImporter:
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
     motionNodeName: 
-    rigImportErrors: 
-    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
@@ -36,7 +42,7 @@ ModelImporter:
     extraExposedTransformPaths: []
     extraUserProperties: []
     clipAnimations: []
-    isReadable: 0
+    isReadable: 1
   meshes:
     lODScreenPercentages:
     - 0.25
@@ -47,10 +53,12 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
+    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 1
     importLights: 1
+    nodeNameCollisionStrategy: 0
     fileIdsGeneration: 2
     swapUVChannels: 0
     generateSecondaryUV: 0
@@ -62,6 +70,7 @@ ModelImporter:
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
+    optimizeBones: 1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -72,6 +81,7 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
+    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -104,14 +114,9 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 0
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
+  importBlendShapeDeformPercent: 0
+  remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 144159
-  packageName: Cube World - Proto Series
-  packageVersion: 4.3
-  assetPath: Assets/Cube World Set URP - Proto Series/Assets/Bitgem/Cube_World/Farming/Source/crop_ground_lines.fbx
-  uploadId: 585532

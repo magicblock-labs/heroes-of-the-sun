@@ -117,11 +117,11 @@ namespace Smartobjectdeity
 
     public partial class SmartobjectdeityClient : TransactionalBaseClient<SmartobjectdeityErrorKind>
     {
-        public SmartobjectdeityClient(IRpcClient rpcClient, IStreamingRpcClient streamingRpcClient, PublicKey programId) : base(rpcClient, streamingRpcClient, programId)
+        public SmartobjectdeityClient(IRpcClient rpcClient, IStreamingRpcClient streamingRpcClient, PublicKey programId = null) : base(rpcClient, streamingRpcClient, programId ?? new PublicKey(SmartobjectdeityProgram.ID))
         {
         }
 
-        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Entity>>> GetEntitysAsync(string programAddress, Commitment commitment = Commitment.Confirmed)
+        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Entity>>> GetEntitysAsync(string programAddress = SmartobjectdeityProgram.ID, Commitment commitment = Commitment.Confirmed)
         {
             var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = Entity.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
             var res = await RpcClient.GetProgramAccountsAsync(programAddress, commitment, memCmpList: list);
@@ -132,7 +132,7 @@ namespace Smartobjectdeity
             return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Entity>>(res, resultingAccounts);
         }
 
-        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SmartObjectDeity>>> GetSmartObjectDeitysAsync(string programAddress, Commitment commitment = Commitment.Confirmed)
+        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SmartObjectDeity>>> GetSmartObjectDeitysAsync(string programAddress = SmartobjectdeityProgram.ID, Commitment commitment = Commitment.Confirmed)
         {
             var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = SmartObjectDeity.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
             var res = await RpcClient.GetProgramAccountsAsync(programAddress, commitment, memCmpList: list);
@@ -203,9 +203,8 @@ namespace Smartobjectdeity
 
             public PublicKey Authority { get; set; }
 
-            public PublicKey InstructionSysvarAccount { get; set; }
-
-            public PublicKey SystemProgram { get; set; }
+            public PublicKey InstructionSysvarAccount { get; set; } = new PublicKey("Sysvar1nstructions1111111111111111111111111");
+            public PublicKey SystemProgram { get; set; } = new PublicKey("11111111111111111111111111111111");
         }
 
         public class UpdateAccounts
@@ -214,14 +213,15 @@ namespace Smartobjectdeity
 
             public PublicKey Authority { get; set; }
 
-            public PublicKey InstructionSysvarAccount { get; set; }
+            public PublicKey InstructionSysvarAccount { get; set; } = new PublicKey("Sysvar1nstructions1111111111111111111111111");
         }
 
         public static class SmartobjectdeityProgram
         {
-            public const string ID = "11111111111111111111111111111111";
-            public static Solana.Unity.Rpc.Models.TransactionInstruction Initialize(InitializeAccounts accounts, PublicKey programId)
+            public const string ID = "9RfzWgEBYQAM64a46V3dGRPKYsVY8a7YvZszWPMxvBfk";
+            public static Solana.Unity.Rpc.Models.TransactionInstruction Initialize(InitializeAccounts accounts, PublicKey programId = null)
             {
+                programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
                 {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Data, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Entity, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
                 byte[] _data = new byte[1200];
@@ -233,8 +233,9 @@ namespace Smartobjectdeity
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
             }
 
-            public static Solana.Unity.Rpc.Models.TransactionInstruction Update(UpdateAccounts accounts, byte[] data, PublicKey programId)
+            public static Solana.Unity.Rpc.Models.TransactionInstruction Update(UpdateAccounts accounts, byte[] data, PublicKey programId = null)
             {
+                programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
                 {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BoltComponent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false)};
                 byte[] _data = new byte[1200];

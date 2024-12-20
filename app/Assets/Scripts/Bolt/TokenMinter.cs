@@ -27,7 +27,7 @@ namespace TokenMinter
 
     public partial class TokenMinterClient : TransactionalBaseClient<TokenMinterErrorKind>
     {
-        public TokenMinterClient(IRpcClient rpcClient, IStreamingRpcClient streamingRpcClient, PublicKey programId) : base(rpcClient, streamingRpcClient, programId)
+        public TokenMinterClient(IRpcClient rpcClient, IStreamingRpcClient streamingRpcClient, PublicKey programId = null) : base(rpcClient, streamingRpcClient, programId ?? new PublicKey(TokenMinterProgram.ID))
         {
         }
 
@@ -47,9 +47,8 @@ namespace TokenMinter
 
             public PublicKey MintAccount { get; set; }
 
-            public PublicKey TokenProgram { get; set; }
-
-            public PublicKey AssociatedTokenProgram { get; set; }
+            public PublicKey TokenProgram { get; set; } = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+            public PublicKey AssociatedTokenProgram { get; set; } = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
         }
 
         public class CreateTokenAccounts
@@ -60,13 +59,10 @@ namespace TokenMinter
 
             public PublicKey MetadataAccount { get; set; }
 
-            public PublicKey TokenProgram { get; set; }
-
-            public PublicKey TokenMetadataProgram { get; set; }
-
-            public PublicKey SystemProgram { get; set; }
-
-            public PublicKey Rent { get; set; }
+            public PublicKey TokenProgram { get; set; } = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+            public PublicKey TokenMetadataProgram { get; set; } = new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s");
+            public PublicKey SystemProgram { get; set; } = new PublicKey("11111111111111111111111111111111");
+            public PublicKey Rent { get; set; } = new PublicKey("SysvarRent111111111111111111111111111111111");
         }
 
         public class MintTokenAccounts
@@ -77,18 +73,17 @@ namespace TokenMinter
 
             public PublicKey AssociatedTokenAccount { get; set; }
 
-            public PublicKey TokenProgram { get; set; }
-
-            public PublicKey AssociatedTokenProgram { get; set; }
-
-            public PublicKey SystemProgram { get; set; }
+            public PublicKey TokenProgram { get; set; } = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+            public PublicKey AssociatedTokenProgram { get; set; } = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+            public PublicKey SystemProgram { get; set; } = new PublicKey("11111111111111111111111111111111");
         }
 
         public static class TokenMinterProgram
         {
-            public const string ID = "11111111111111111111111111111111";
-            public static Solana.Unity.Rpc.Models.TransactionInstruction BurnToken(BurnTokenAccounts accounts, ulong amount, PublicKey programId)
+            public const string ID = "4ZxRnucEWC62kVktmx27cz9d1PzWWNgiZLT5VWFLbfB2";
+            public static Solana.Unity.Rpc.Models.TransactionInstruction BurnToken(BurnTokenAccounts accounts, ulong amount, PublicKey programId = null)
             {
+                programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
                 {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.AssociatedTokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MintAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.AssociatedTokenProgram, false)};
                 byte[] _data = new byte[1200];
@@ -102,8 +97,9 @@ namespace TokenMinter
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
             }
 
-            public static Solana.Unity.Rpc.Models.TransactionInstruction CreateToken(CreateTokenAccounts accounts, string token_name, string token_symbol, string token_uri, PublicKey programId)
+            public static Solana.Unity.Rpc.Models.TransactionInstruction CreateToken(CreateTokenAccounts accounts, string token_name, string token_symbol, string token_uri, PublicKey programId = null)
             {
+                programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
                 {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MintAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MetadataAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenMetadataProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Rent, false)};
                 byte[] _data = new byte[1200];
@@ -118,8 +114,9 @@ namespace TokenMinter
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
             }
 
-            public static Solana.Unity.Rpc.Models.TransactionInstruction MintToken(MintTokenAccounts accounts, ulong amount, PublicKey programId)
+            public static Solana.Unity.Rpc.Models.TransactionInstruction MintToken(MintTokenAccounts accounts, ulong amount, PublicKey programId = null)
             {
+                programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
                 {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MintAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.AssociatedTokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.AssociatedTokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
                 byte[] _data = new byte[1200];

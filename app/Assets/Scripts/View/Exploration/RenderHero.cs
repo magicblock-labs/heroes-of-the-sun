@@ -138,6 +138,7 @@ namespace View.Exploration
 
         private void TryInteractWithMap()
         {
+            return;
             if (_loot.HasLootAt(_position, out var lootIndex))
 
                 _ = _lootConnector.Claim(lootIndex, new Dictionary<PublicKey, PublicKey>()

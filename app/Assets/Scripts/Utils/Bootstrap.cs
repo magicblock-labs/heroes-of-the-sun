@@ -1,4 +1,4 @@
-// #define FTUE_TESTING
+//  #define FTUE_TESTING
 
 using System.Collections;
 using System.Collections.Generic;
@@ -95,22 +95,24 @@ namespace Utils
 
             await Web3Utils.EnsureBalance();
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
-
             await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
-
             _playerModel.Set(await _player.LoadData());
-            label.text = $"[{Web3.Account.PublicKey}] Loaded ";
+
 
             //check if settlement exists
             var settlements = _playerModel.Get().Settlements;
             if (settlements.Length == 0)
             {
+                label.text = $"Fetching new location for Settlements.. ";
                 //otherwise - get state of allocator
                 await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
                 var allocator = await _allocator.LoadData();
 
+                label.text = $"Creating Settlement...";
                 await _settlement.SetSeed($"{allocator.CurrentX}x{allocator.CurrentY}");
 
+
+                label.text = $"Assigning Settlement to the Player...";
                 //assign settlement in player
                 await _player.AssignSettlement(
                     new Dictionary<PublicKey, PublicKey>
@@ -124,26 +126,36 @@ namespace Utils
             else
                 await _settlement.SetSeed($"{settlements[0].X}x{settlements[0].Y}");
 
+
+            label.text = $"Loading Settlement Data...";
             //todo make connectors subscribe and dont keep bootstrap alive
             _settlementModel.Set(await _settlement.LoadData());
 
+            if (await _settlement.Delegate())
+                await _settlement.ClaimTime();
 
             //load loot
+            label.text = $"Loading Loot Data...";
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
             _lootModel.Set(await _loot.LoadData());
             await _loot.Subscribe((_, _, loot) => { _lootModel.Set(loot); });
 
             await _settlement.Subscribe((sub, _, settlement) => { _settlementModel.Set(settlement); });
 
+            label.text = $"Init Gold Token...";
             await _token.LoadData();
             await _token.Subscribe(null);
 
             //ensure hero is created
+            label.text = $"Creating Hero Data...";
             await _hero.SetEntityPda(_player.EntityPda);
             var hero = await _hero.LoadData();
-            await _hero.Delegate();
+            if (await _hero.Delegate())
+                await _hero.Move(0, 0);
+            
             if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
             {
+                label.text = $"Assigning New Hero to Player...";
                 await _player.AssignHero(
                     new Dictionary<PublicKey, PublicKey>
                     {
@@ -152,7 +164,9 @@ namespace Utils
             }
 
             //sync time
+            label.text = $"SyncTime...";
             await Web3Utils.SyncTime();
+            label.text = $"Load World...";
             SceneManager.LoadScene("World");
         }
     }

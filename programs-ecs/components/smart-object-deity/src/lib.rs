@@ -6,7 +6,7 @@ declare_id!("9RfzWgEBYQAM64a46V3dGRPKYsVY8a7YvZszWPMxvBfk");
 
 pub const COOLDOWN: i64 = 60;
 
-#[component]
+#[component(delegate)]
 pub struct SmartObjectDeity {
     pub next_interaction_time: i64,
     pub state: u8,

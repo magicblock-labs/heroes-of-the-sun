@@ -29,7 +29,7 @@ namespace View.Building
                 var buildingDimensions = new Vector3(conf.width, 0, conf.height);
 
                 var centerPos = (new Vector3(building.X, 0, building.Y) + buildingDimensions / 2) *
-                                ConfigModel.CellSize;
+                    ConfigModel.CellSize + Vector3.up;
 
                 var obj = Instantiate(prefab, transform);
 
