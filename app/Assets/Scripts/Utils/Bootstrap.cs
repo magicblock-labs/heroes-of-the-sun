@@ -151,7 +151,7 @@ namespace Utils
             await _hero.SetEntityPda(_player.EntityPda);
             var hero = await _hero.LoadData();
             if (await _hero.Delegate())
-                await _hero.Move(0, 0);
+                await _hero.Move(0, 0); //todo use settlement location
             
             if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
             {

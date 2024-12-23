@@ -1,5 +1,5 @@
 use bolt_lang::*;
-use token_minter::cpi::accounts::BurnToken;
+// use token_minter::cpi::accounts::BurnToken;
 mod errors;
 
 declare_id!("3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP");
@@ -15,35 +15,35 @@ pub mod research {
     pub fn execute(ctx: Context<Components>, args: ResearchArgs) -> Result<Components> {
         msg!("execute research!: ");
 
-        let minter_program = ctx
-            .minter_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?
-            .clone();
-        let mint_account = ctx
-            .mint_account()
-            .map_err(|_| ProgramError::InvalidAccountData)?
-            .clone();
-        msg!("mint_account: {}", mint_account.key);
-        let associated_token_account = ctx
-            .associated_token_account()
-            .map_err(|_| ProgramError::InvalidAccountData)?
-            .clone();
-        msg!("associated_token_account: {}", associated_token_account.key);
-        let token_program = ctx
-            .token_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?
-            .clone();
-        msg!("token_program: {}", token_program.key);
-        let associated_token_program = ctx
-            .associated_token_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?
-            .clone();
-        msg!("associated_token_program: {}", associated_token_program.key);
-        let payer = ctx
-            .signer()
-            .map_err(|_| ProgramError::InvalidAccountData)?
-            .clone();
-        msg!("payer: {}", payer.key);
+        // let minter_program = ctx
+        //     .minter_program()
+        //     .map_err(|_| ProgramError::InvalidAccountData)?
+        //     .clone();
+        // let mint_account = ctx
+        //     .mint_account()
+        //     .map_err(|_| ProgramError::InvalidAccountData)?
+        //     .clone();
+        // msg!("mint_account: {}", mint_account.key);
+        // let associated_token_account = ctx
+        //     .associated_token_account()
+        //     .map_err(|_| ProgramError::InvalidAccountData)?
+        //     .clone();
+        // msg!("associated_token_account: {}", associated_token_account.key);
+        // let token_program = ctx
+        //     .token_program()
+        //     .map_err(|_| ProgramError::InvalidAccountData)?
+        //     .clone();
+        // msg!("token_program: {}", token_program.key);
+        // let associated_token_program = ctx
+        //     .associated_token_program()
+        //     .map_err(|_| ProgramError::InvalidAccountData)?
+        //     .clone();
+        // msg!("associated_token_program: {}", associated_token_program.key);
+        // let payer = ctx
+        //     .signer()
+        //     .map_err(|_| ProgramError::InvalidAccountData)?
+        //     .clone();
+        // msg!("payer: {}", payer.key);
 
         let settlement = &mut ctx.accounts.settlement;
 
@@ -56,28 +56,33 @@ pub mod research {
 
         let research_cost = config::get_research_cost(args.research_type, research_level);
 
-        let res = token_minter::cpi::burn_token(
-            CpiContext::new(
-                minter_program,
-                BurnToken {
-                    payer,
-                    mint_account,
-                    associated_token_account,
-                    token_program,
-                    associated_token_program,
-                },
-            ),
-            research_cost as u64,
-        );
-        if !res.is_ok() {
+        // let res = token_minter::cpi::burn_token(
+        //     CpiContext::new(
+        //         minter_program,
+        //         BurnToken {
+        //             payer,
+        //             mint_account,
+        //             associated_token_account,
+        //             token_program,
+        //             associated_token_program,
+        //         },
+        //     ),
+        //     research_cost as u64,
+        // );
+        // if !res.is_ok() {
+        //     return err!(errors::ResearchError::NotEnoughResources);
+        // }
+        // msg!("burn done!: ");
+
+        if settlement.treasury.stone < research_cost {
             return err!(errors::ResearchError::NotEnoughResources);
         }
-        msg!("burn done!: ");
 
         if research_level >= RESEARCH_MASK {
             return err!(errors::ResearchError::AlreadyMaxedOut);
         }
 
+        settlement.treasury.stone -= research_cost;
         research_level += 1;
 
         let mut research_value = settlement.research;
@@ -108,27 +113,27 @@ pub mod research {
         pub research_type: u8,
     }
 
-    #[extra_accounts]
-    pub struct ExtraAccounts {
-        #[account(mut)]
-        signer: Signer<'info>,
+    // #[extra_accounts]
+    // pub struct ExtraAccounts {
+    //     #[account(mut)]
+    //     signer: Signer<'info>,
 
-        #[account()]
-        associated_token_account: Account<'info, TokenAccount>,
+    //     #[account()]
+    //     associated_token_account: Account<'info, TokenAccount>,
 
-        #[account()]
-        mint_account: Account<'info, Mint>,
+    //     #[account()]
+    //     mint_account: Account<'info, Mint>,
 
-        #[account()]
-        minter_program: AccountInfo,
+    //     #[account()]
+    //     minter_program: AccountInfo,
 
-        #[account()]
-        token_program: Program<'info, Token>,
+    //     #[account()]
+    //     token_program: Program<'info, Token>,
 
-        #[account()]
-        associated_token_program: Program<'info, AssociatedToken>,
+    //     #[account()]
+    //     associated_token_program: Program<'info, AssociatedToken>,
 
-        #[account()]
-        system_program: Program<'info, System>,
-    }
+    //     #[account()]
+    //     system_program: Program<'info, System>,
+    // }
 }

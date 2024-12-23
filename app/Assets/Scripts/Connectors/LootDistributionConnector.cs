@@ -12,6 +12,7 @@ namespace Connectors
     public class LootDistributionConnector : BaseComponentConnector<LootDistribution>
     {
         public const string DefaultSeed = "hots_loot_distribution";
+        [Inject] private TokenConnector _token;
 
         public override PublicKey GetComponentProgramAddress()
         {
@@ -26,7 +27,7 @@ namespace Connectors
         public async Task<bool> Claim(int index, Dictionary<PublicKey, PublicKey> extraEntities)
         {
             return await ApplySystem(new PublicKey("4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf"),
-                new { index }, extraEntities);
+                new { index }, null, false, _token.GetMintExtraAccounts());
         }
     }
 }

@@ -952,12 +952,13 @@ name = "claim-loot"
 version = "0.1.8"
 dependencies = [
  "anchor-lang",
+ "anchor-spl",
  "bolt-lang",
  "hero",
  "loot-distribution",
  "player",
  "serde",
- "settlement",
+ "token-minter",
 ]
 
 [[package]]
@@ -2897,7 +2898,6 @@ dependencies = [
  "bolt-lang",
  "serde",
  "settlement",
- "token-minter",
 ]
 
 [[package]]

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Model;
 using Solana.Unity.Wallet;
 using Utils.Injection;
+// ReSharper disable InconsistentNaming
 
 namespace Connectors
 {
@@ -20,7 +21,7 @@ namespace Connectors
         public async Task<bool> Wait(int time)
         {
             return await ApplySystem(new PublicKey("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4"),
-                new { time }, null, false, _token.GetMintExtraAccounts());
+                new { time });
         }
 
         public async Task<bool> AssignWorker(int worker_index, int building_index)
@@ -49,7 +50,7 @@ namespace Connectors
         public async Task<bool> Research(int research_type)
         {
             return await ApplySystem(new PublicKey("3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP"),
-                new { research_type }, null, false, _token.GetBurnExtraAccounts());
+                new { research_type });//, null, false, _token.GetBurnExtraAccounts());
         }
 
         public async Task<bool> Sacrifice(int index)

@@ -138,18 +138,18 @@ namespace View.Exploration
 
         private void TryInteractWithMap()
         {
-            return;
             if (_loot.HasLootAt(_position, out var lootIndex))
 
                 _ = _lootConnector.Claim(lootIndex, new Dictionary<PublicKey, PublicKey>()
                 {
                     { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },
-                    { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
                 });
-            else if (_smartObjects.HasSmartObjectNextTo(_position, out var entity))
-            {
-                _interact.Dispatch(entity);
-            }
+            
+            
+            // else if (_smartObjects.HasSmartObjectNextTo(_position, out var entity))
+            // {
+            //     _interact.Dispatch(entity);
+            // }
         }
     }
 }

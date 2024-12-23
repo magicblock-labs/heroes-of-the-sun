@@ -9,7 +9,6 @@ use settlement::{
     },
     Settlement,
 };
-use token_minter::cpi::accounts::MintToken;
 
 declare_id!("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4");
 
@@ -17,34 +16,6 @@ declare_id!("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4");
 pub mod wait {
 
     pub fn execute(ctx: Context<Components>, args: WaitArgs) -> Result<Components> {
-        // Extract and clone all necessary accounts upfront
-        let minter_program = ctx
-            .minter_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?;
-        let mint_account = ctx
-            .mint_account()
-            .map_err(|_| ProgramError::InvalidAccountData)?;
-        let associated_token_account = ctx
-            .associated_token_account()
-            .map_err(|_| ProgramError::InvalidAccountData)?;
-        let token_program = ctx
-            .token_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?;
-        let associated_token_program = ctx
-            .associated_token_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?;
-        let system_program = ctx
-            .system_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?;
-        let payer = ctx.signer().map_err(|_| ProgramError::InvalidAccountData)?;
-
-        msg!("payer: {}", payer.key);
-        msg!("mint_account: {}", mint_account.key);
-        msg!("associated_token_account: {}", associated_token_account.key);
-        msg!("token_program: {}", token_program.key);
-        msg!("associated_token_program: {}", associated_token_program.key);
-        msg!("system_program: {}", system_program.key);
-
         let settlement = &mut ctx.accounts.settlement;
 
         let time_to_wait = u16::min(args.time, settlement.time_units as u16);
@@ -234,37 +205,7 @@ pub mod wait {
                         settlement.treasury.stone += collected;
                     }
                 }
-                BuildingType::GoldCollector => {
-                    let collected = u16::min(
-                        time_to_wait * get_collection_level_multiplier(building.level)
-                            + get_research_level(
-                                settlement.research,
-                                ResearchType::ResourceCollectionSpeed,
-                            ) as u16,
-                        building.extraction,
-                    );
 
-                    if collected > 0 {
-                        let res = token_minter::cpi::mint_token(
-                            CpiContext::new(
-                                minter_program.clone(),
-                                MintToken {
-                                    payer: payer.clone(),
-                                    mint_account: mint_account.clone(),
-                                    associated_token_account: associated_token_account.clone(),
-                                    token_program: token_program.clone(),
-                                    associated_token_program: associated_token_program.clone(),
-                                    system_program: system_program.clone(),
-                                },
-                            ),
-                            collected as u64,
-                        );
-
-                        if res.is_ok() {
-                            settlement.buildings[building_index_usize].extraction -= collected;
-                        }
-                    }
-                }
                 _ => {}
             }
         }
@@ -357,29 +298,5 @@ pub mod wait {
     #[arguments]
     struct WaitArgs {
         time: u16,
-    }
-
-    #[extra_accounts]
-    pub struct ExtraAccounts {
-        #[account(mut)]
-        signer: Signer<'info>,
-
-        #[account()]
-        associated_token_account: Account<'info, TokenAccount>,
-
-        #[account()]
-        mint_account: Account<'info, Mint>,
-
-        #[account()]
-        minter_program: AccountInfo,
-
-        #[account()]
-        token_program: Program<'info, Token>,
-
-        #[account()]
-        associated_token_program: Program<'info, AssociatedToken>,
-
-        #[account()]
-        system_program: Program<'info, System>,
     }
 }

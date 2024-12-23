@@ -52,12 +52,12 @@ namespace View.ActionRequest
             _canAfford &= cost.Wood <= treasury.Wood;
         }
 
-        public async Task Upgrade()
+        public void Upgrade()
         {
             _interaction.LockInteraction();
 
             if (_canAfford)
-                await _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex());
+                _ = _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex());
         }
     }
 }
