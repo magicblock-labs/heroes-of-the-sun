@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -150,6 +151,11 @@ namespace View.Exploration
             // {
             //     _interact.Dispatch(entity);
             // }
+        }
+
+        private void OnDestroy()
+        {
+            _connector.Unsubscribe();
         }
     }
 }

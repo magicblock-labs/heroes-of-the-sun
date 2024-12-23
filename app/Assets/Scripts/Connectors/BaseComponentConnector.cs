@@ -209,6 +209,11 @@ namespace Connectors
             }, Commitment.Processed);
         }
 
+        public void Unsubscribe()
+        {
+            _sub.Unsubscribe();
+        }
+
         protected abstract T DeserialiseBytes(byte[] value);
 
         protected async Task<bool> ApplySystem(PublicKey systemAddress, object args,
