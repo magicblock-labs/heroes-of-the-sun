@@ -16,7 +16,7 @@ pub enum BuildingType {
     WaterStorage = 8,
     StoneCollector = 9,
     StoneStorage = 10,
-    GoldCollector = 11
+    GoldCollector = 11,
 }
 
 pub struct BuildingConfig {
@@ -38,7 +38,14 @@ pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
     water: 40,
     food: 80,
     wood: 200,
-    stone: 10
+    stone: 10,
+};
+
+pub const EXCHANGE_RATES: ResourceBalance = ResourceBalance {
+    water: 10,
+    food: 10,
+    wood: 6,
+    stone: 3,
 };
 
 pub const INITIAL_ENVIRONMENT: EnvironmentState = EnvironmentState {
@@ -135,7 +142,7 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 12] = [
         height: 3,
         cost_tier: 1,
         build_time_tier: 2,
-    }
+    },
 ];
 
 pub const BASE_ENERGY_CAP: u8 = 30;

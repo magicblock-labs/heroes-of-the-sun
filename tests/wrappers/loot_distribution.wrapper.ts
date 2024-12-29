@@ -1,13 +1,19 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { PublicKey } from "@solana/web3.js";
+import { AccountMeta, PublicKey } from "@solana/web3.js";
 import {
   AddEntity,
+  ApplySystem,
   InitializeComponent,
 } from "@magicblock-labs/bolt-sdk"
 import { Lootdistribution } from "../../target/types/lootdistribution";
+import { ClaimLoot } from "../../target/types/claim_loot";
 
 
+
+export type ClaimLootArgs = {
+  index: number
+}
 
 export class LootDistributionWrapper {
 
@@ -18,10 +24,12 @@ export class LootDistributionWrapper {
   componentPda: PublicKey;
 
   lootDistributionComponent: Program<Lootdistribution>;
+  claimLootSystem: Program<ClaimLoot>;
 
   async init(worldPda: PublicKey) {
 
     this.worldPda = worldPda;
+    this.claimLootSystem = anchor.workspace.ClaimLoot as Program<ClaimLoot>;
     if (!this.componentPda) {
       this.provider = anchor.AnchorProvider.env();
       anchor.setProvider(this.provider);
@@ -52,6 +60,33 @@ export class LootDistributionWrapper {
 
   async state() {
     return await this.lootDistributionComponent.account.lootDistribution.fetch(this.componentPda);
+  }
+
+
+  async claimLoot(args: ClaimLootArgs, extraAccounts: AccountMeta[]) {
+    // Run the claim system
+    const applySystem = await ApplySystem({
+      world: this.worldPda,
+      authority: this.provider.wallet.publicKey,
+      systemId: this.claimLootSystem.programId,
+      entities: [{
+        entity: this.entityPda,
+        components: [{ componentId: this.lootDistributionComponent.programId }],
+      }],
+      extraAccounts: [
+        {
+          pubkey: this.provider.wallet.publicKey,
+          isWritable: true,
+          isSigner: true,
+        },
+      ].concat(extraAccounts),
+      args,
+    });
+
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`claimLoot tx: ${txSign}`);
+
+    return await this.state();
   }
 
 };

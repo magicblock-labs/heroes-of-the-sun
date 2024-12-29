@@ -15,6 +15,7 @@ import { Reset } from "../../target/types/reset";
 import { Settlement } from "../../target/types/settlement";
 import { Upgrade } from "../../target/types/upgrade";
 import { Wait } from "../../target/types/wait";
+import { Exchange } from "../../target/types/exchange";
 
 
 export enum BuildingType {
@@ -59,6 +60,13 @@ export type WaitArgs = {
   time: number
 }
 
+export type ExchangeArgs = {
+  tokens_for_food: number
+  tokens_for_water: number
+  tokens_for_wood: number
+  tokens_for_stone: number
+}
+
 export class SettlementWrapper {
 
   provider: anchor.AnchorProvider;
@@ -75,6 +83,7 @@ export class SettlementWrapper {
   repairSystem: Program<Repair>;
   researchSystem: Program<Research>;
   resetSystem: Program<Reset>;
+  exchangeSystem: Program<Exchange>;
 
   async init(worldPda: PublicKey, x: number, y: number) {
 
@@ -91,6 +100,7 @@ export class SettlementWrapper {
       this.repairSystem = anchor.workspace.Repair as Program<Repair>;
       this.researchSystem = anchor.workspace.Research as Program<Research>;
       this.resetSystem = anchor.workspace.Reset as Program<Reset>;
+      this.exchangeSystem = anchor.workspace.Exchange as Program<Exchange>;
 
       const addEntity = await AddEntity({
         payer: this.provider.wallet.publicKey,
@@ -211,6 +221,33 @@ export class SettlementWrapper {
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction, null, { skipPreflight: false });
     console.log(`build tx: ${txSign}`);
+
+    return await this.state();
+  }
+
+
+  async exchange(args: ExchangeArgs, extraAccounts: AccountMeta[]) {
+    // Run the claim system
+    const applySystem = await ApplySystem({
+      world: this.worldPda,
+      authority: this.provider.wallet.publicKey,
+      systemId: this.exchangeSystem.programId,
+      entities: [{
+        entity: this.entityPda,
+        components: [{ componentId: this.settlementComponent.programId }],
+      }],
+      extraAccounts: [
+        {
+          pubkey: this.provider.wallet.publicKey,
+          isWritable: true,
+          isSigner: true,
+        },
+      ].concat(extraAccounts),
+      args,
+    });
+
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    console.log(`exchange tx: ${txSign}`);
 
     return await this.state();
   }

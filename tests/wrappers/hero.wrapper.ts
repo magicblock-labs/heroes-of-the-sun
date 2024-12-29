@@ -2,25 +2,17 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
-  InitializeNewWorld,
   AddEntity,
   InitializeComponent,
   ApplySystem,
 } from "@magicblock-labs/bolt-sdk"
-import { AssignSettlement } from "../../target/types/assign_settlement";
-import { Player } from "../../target/types/player";
 import { Hero } from "../../target/types/hero";
 import { MoveHero } from "../../target/types/move_hero";
-import { ClaimLoot } from "../../target/types/claim_loot";
 import { ChangeBackpack } from "../../target/types/change_backpack";
 
 export type MoveHeroArgs = {
   x: number,
   y: number
-}
-
-export type ClaimLootArgs = {
-  index: number
 }
 
 export type ChangeBackpackArgs = {
@@ -42,7 +34,6 @@ export class HeroWrapper {
 
   heroComponent: Program<Hero>;
   moveHeroSystem: Program<MoveHero>;
-  claimLootSystem: Program<ClaimLoot>;
   changeBackpackSystem: Program<ChangeBackpack>;
 
   async init(worldPda: PublicKey) {
@@ -60,7 +51,6 @@ export class HeroWrapper {
 
       this.heroComponent = anchor.workspace.Hero as Program<Hero>;
       this.moveHeroSystem = anchor.workspace.MoveHero as Program<MoveHero>;
-      this.claimLootSystem = anchor.workspace.ClaimLoot as Program<ClaimLoot>;
       this.changeBackpackSystem = anchor.workspace.ChangeBackpack as Program<ChangeBackpack>;
 
       let txSign = await this.provider.sendAndConfirm(heroEntity.transaction);
@@ -100,32 +90,6 @@ export class HeroWrapper {
     return await this.state();
   }
 
-  async claimLoot(settlementPDA: PublicKey, settlementProgramID: PublicKey, lootPDA: PublicKey, lootProgramID: PublicKey, args: ClaimLootArgs) {
-    // Run the claim system
-    const applySystem = await ApplySystem({
-      world: this.worldPda,
-      authority: this.provider.wallet.publicKey,
-      systemId: this.claimLootSystem.programId,
-      entities: [{
-        entity: lootPDA,
-        components: [{ componentId: lootProgramID }],
-      },
-      {
-        entity: this.entityPda,
-        components: [{ componentId: this.heroComponent.programId }],
-      },
-      {
-        entity: settlementPDA,
-        components: [{ componentId: settlementProgramID }],
-      }],
-      args,
-    });
-
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`claimLoot tx: ${txSign}`);
-
-    return await this.state();
-  }
 
   async changeBackpack(settlementPDA: PublicKey, settlementProgramID: PublicKey, args: ChangeBackpackArgs) {
     const applySystem = await ApplySystem({

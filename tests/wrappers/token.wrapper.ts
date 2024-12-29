@@ -68,7 +68,6 @@ export class TokenWrapper {
   }
 
 
-
   getMintExtraAccounts(): AccountMeta[] {
     return [
       {
