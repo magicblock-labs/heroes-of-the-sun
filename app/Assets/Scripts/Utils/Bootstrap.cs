@@ -63,6 +63,10 @@ namespace Utils
                         PlayerPrefs.DeleteAll();
                         Login();
                     }
+                    else
+                    {
+                        await Web3Utils.EphemeralWallet.Login(password);
+                    }
                 }
 
                 else
@@ -71,8 +75,8 @@ namespace Utils
                     password = RandomString(10);
 
                     PlayerPrefs.SetString(PwdPrefKey, password);
-
                     await Web3.Instance.CreateAccount(mnemonic, password);
+                    await Web3Utils.EphemeralWallet.CreateAccount(mnemonic, password);
                 }
             }
         }

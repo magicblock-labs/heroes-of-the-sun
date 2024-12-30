@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Hero.Program;
 using Newtonsoft.Json;
+using Settlement.Program;
 using Solana.Unity.Programs;
 using Solana.Unity.Programs.Utilities;
 using Solana.Unity.Rpc;
@@ -19,6 +20,8 @@ using UnityEngine;
 using Utils;
 using Utils.Injection;
 using World.Program;
+using DelegateAccounts = Hero.Program.DelegateAccounts;
+using UndelegateAccounts = Settlement.Program.UndelegateAccounts;
 
 namespace Connectors
 {
@@ -131,7 +134,7 @@ namespace Connectors
             var txUndelegate = await UndelegateTransaction(new PublicKey(_dataAddress));
             try
             {
-                var resUndelegation = await  Web3.Wallet.SignAndSendTransaction(txUndelegate, true);
+                var resUndelegation = await Wallet.SignAndSendTransaction(txUndelegate, true);
                 
                 Debug.Log($"Undelegate Signature: {resUndelegation.Result}");
                 if (resUndelegation.WasSuccessful)
@@ -408,9 +411,9 @@ namespace Connectors
         {
             var tx = new Transaction()
             {
-                FeePayer = Web3.Account,
+                FeePayer = Web3Utils.EphemeralWallet.Account,
                 Instructions = new List<TransactionInstruction>(),
-                RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
+                RecentBlockHash = await Web3Utils.EphemeralWallet.GetBlockHash(commitment: Commitment.Confirmed, useCache: false)
             };
             // Increase compute unit limit
             tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitLimit(75000));
@@ -422,7 +425,7 @@ namespace Connectors
                 Payer = Web3.Account,
                 DelegatedAccount = playerDataPda
             };
-            tx.Add(HeroProgram.Undelegate(undelegateAccounts));
+            tx.Add(SettlementProgram.Undelegate(undelegateAccounts));
 
             return tx;
         }
