@@ -9,7 +9,7 @@ namespace Utils
     public static class Web3Utils
     {
         
-        public static readonly InGameWallet EphemeralWallet = new(RpcCluster.LocalNet, "https://devnet.magicblock.app", "wss://devnet.magicblock.app", true);
+        public static readonly InGameWallet EphemeralWallet = new(RpcCluster.DevNet, "https://devnet.magicblock.app", "wss://devnet.magicblock.app", true);
         
         public static async Task EnsureBalance()
         {

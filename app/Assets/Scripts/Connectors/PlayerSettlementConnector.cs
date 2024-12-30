@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Model;
 using Solana.Unity.Wallet;
 using Utils.Injection;
+
 // ReSharper disable InconsistentNaming
 
 namespace Connectors
@@ -50,7 +52,7 @@ namespace Connectors
         public async Task<bool> Research(int research_type)
         {
             return await ApplySystem(new PublicKey("3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP"),
-                new { research_type });//, null, false, _token.GetBurnExtraAccounts());
+                new { research_type }); //, null, false, _token.GetBurnExtraAccounts());
         }
 
         public async Task<bool> Sacrifice(int index)
@@ -63,6 +65,26 @@ namespace Connectors
         {
             return await ApplySystem(new PublicKey("3VEXJoAZkYxDXigSWso8FnJY8z6C6inpPxU798vqc9um"),
                 new { });
+        }
+
+        public async Task<bool> Exchange(int tokens_for_food, int tokens_for_water, int tokens_for_wood,
+            int tokens_for_stone)
+        {
+            //undelegate
+            await Undelegate();
+            
+            //2. apply
+            var result =  await ApplySystem(new PublicKey("Csna3V2jUMdQEQKUCxLsQEnYThAGPSWcPCxW9vea1S8d"),
+                new { tokens_for_food, tokens_for_water, tokens_for_wood, tokens_for_stone }, null, false,
+                _token.GetBurnExtraAccounts());
+
+            //re-delegate
+            await Delegate();
+            
+            //claim time (to copy latest state to ER)
+            await ClaimTime();
+            
+            return result;
         }
     }
 }

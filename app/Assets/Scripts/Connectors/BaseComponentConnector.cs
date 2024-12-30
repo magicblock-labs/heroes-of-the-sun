@@ -28,9 +28,11 @@ namespace Connectors
         private WalletBase Wallet => _delegated
             ? Web3Utils.EphemeralWallet
             : Web3.Wallet;
+
         private IRpcClient RpcClient => _delegated
             ? Web3Utils.EphemeralWallet.ActiveRpcClient
             : Web3.Wallet.ActiveRpcClient;
+
         private IStreamingRpcClient StreamingClient => _delegated
             ? Web3Utils.EphemeralWallet.ActiveStreamingRpcClient
             : Web3.Wallet.ActiveStreamingRpcClient;
@@ -40,7 +42,7 @@ namespace Connectors
         //this comes from program deployment
         private const string
             WorldPda = "kZU7j64zN2nqeuBAtGtAFBticxXL3qkVbsxx1ujqvzK";
-            //WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";
+        //WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";
 
 
         private const int WorldIndex = 1736;
@@ -77,6 +79,7 @@ namespace Connectors
             _dataAddress = value;
         }
 
+
         public async Task<bool> Delegate()
         {
             if (_delegated)
@@ -85,24 +88,64 @@ namespace Connectors
             if (_sub != null)
                 await StreamingClient.UnsubscribeAsync(_sub);
 
-            // Delegate the data PDA if needed
-            var dataAcc = await RpcClient.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
-            if (dataAcc.Result.Value != null
-                && !dataAcc.Result.Value.Owner.Equals(DelegationProgram)
-                && !RpcClient.NodeAddress.ToString()
-                    .Equals(Web3Utils.EphemeralWallet.ActiveRpcClient.NodeAddress.ToString()))
+            // load account from mainnet to know the real owner
+            var dataAcc = await Web3.Wallet.ActiveRpcClient.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
+
+            if (dataAcc.Result.Value?.Owner?.Equals(DelegationProgram) ?? false)
             {
-                var txDelegate = await DelegateTransaction(new(_entityPda), new(_dataAddress));
-                var resDelegation = await Web3.Wallet.SignAndSendTransaction(txDelegate);
-                if (resDelegation.WasSuccessful)
-                {
-                    Debug.Log($"Delegate Signature: {resDelegation.Result}");
-                    await RpcClient.ConfirmTransaction(resDelegation.Result, Commitment.Confirmed);
-                }
+                _delegated = true;
+                return false;
             }
 
-            _delegated = true;
-            return true;
+            var txDelegate = await DelegateTransaction(new(_entityPda), new(_dataAddress));
+            var resDelegation = await Wallet.SignAndSendTransaction(txDelegate);
+            if (resDelegation.WasSuccessful)
+            {
+                Debug.Log($"Delegate Signature: {resDelegation.Result}");
+                await RpcClient.ConfirmTransaction(resDelegation.Result, Commitment.Confirmed);
+                _delegated = true;
+                return true;
+            }
+
+            return false;
+        }
+        
+        
+        public async Task<bool> Undelegate()
+        {
+            if (!_delegated)
+                return false;
+
+            if (_sub != null)
+                await StreamingClient.UnsubscribeAsync(_sub);
+
+            // load ac form mainnet to know the real owner
+            var dataAcc = await Web3.Wallet.ActiveRpcClient.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
+            if (!dataAcc.Result.Value?.Owner?.Equals(DelegationProgram)?? false)
+            {
+                _delegated = false;
+                return false;
+            }
+
+            
+            var txUndelegate = await UndelegateTransaction(new PublicKey(_dataAddress));
+            try
+            {
+                var resUndelegation = await  Web3.Wallet.SignAndSendTransaction(txUndelegate, true);
+                
+                Debug.Log($"Undelegate Signature: {resUndelegation.Result}");
+                if (resUndelegation.WasSuccessful)
+                {
+                    await RpcClient.ConfirmTransaction(resUndelegation.Result, Commitment.Confirmed);
+                    _delegated = false;
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+            return false;
         }
 
         public async Task AcquireComponentDataAddress(bool forceCreateEntity)
@@ -185,7 +228,7 @@ namespace Connectors
             _delegated = _delegated || res.Result.Value.Owner == DelegationProgram;
             if (loadedFromMainnet && _delegated)
                 return await LoadData(); //reload data from rollup
-            
+
             Debug.Log($"Data:\n {JsonConvert.SerializeObject(resultingAccount)}");
             return resultingAccount;
         }
@@ -357,6 +400,29 @@ namespace Connectors
             };
             var ixDelegate = HeroProgram.Delegate(delegateAccounts, 0, 3000, GetComponentProgramAddress());
             tx.Add(ixDelegate);
+
+            return tx;
+        }
+
+        public async Task<Transaction> UndelegateTransaction(PublicKey playerDataPda)
+        {
+            var tx = new Transaction()
+            {
+                FeePayer = Web3.Account,
+                Instructions = new List<TransactionInstruction>(),
+                RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
+            };
+            // Increase compute unit limit
+            tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitLimit(75000));
+            tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitPrice(100000));
+
+            // Delegate the player data pda
+            UndelegateAccounts undelegateAccounts = new()
+            {
+                Payer = Web3.Account,
+                DelegatedAccount = playerDataPda
+            };
+            tx.Add(HeroProgram.Undelegate(undelegateAccounts));
 
             return tx;
         }
