@@ -1,4 +1,4 @@
-//  #define FTUE_TESTING
+//#define FTUE_TESTING
 
 using System.Collections;
 using System.Collections.Generic;
@@ -129,22 +129,21 @@ namespace Utils
             }
             else
                 await _settlement.SetSeed($"{settlements[0].X}x{settlements[0].Y}");
-
-
+            
             label.text = $"Loading Settlement Data...";
             //todo make connectors subscribe and dont keep bootstrap alive
             _settlementModel.Set(await _settlement.LoadData());
 
             if (await _settlement.Delegate())
-                await _settlement.ClaimTime();
+                await _settlement.CloneToRollup();
 
             //load loot
             label.text = $"Loading Loot Data...";
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
             _lootModel.Set(await _loot.LoadData());
-            await _loot.Subscribe((_, _, loot) => { _lootModel.Set(loot); });
-
-            await _settlement.Subscribe((sub, _, settlement) => { _settlementModel.Set(settlement); });
+            
+            await _loot.Subscribe(_lootModel.Set);
+            await _settlement.Subscribe(_settlementModel.Set);
 
             label.text = $"Init Gold Token...";
             await _token.LoadData();
@@ -154,8 +153,6 @@ namespace Utils
             label.text = $"Creating Hero Data...";
             await _hero.SetEntityPda(_player.EntityPda);
             var hero = await _hero.LoadData();
-            if (await _hero.Delegate())
-                await _hero.Move(0, 0); //todo use settlement location
             
             if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
             {
@@ -166,6 +163,11 @@ namespace Utils
                         { new PublicKey(_hero.EntityPda), _hero.GetComponentProgramAddress() },
                     });
             }
+            
+            
+            label.text = $"Delegating Hero...";
+            if (await _hero.Delegate())
+                await _hero.CloneToRollup(); 
 
             //sync time
             label.text = $"SyncTime...";

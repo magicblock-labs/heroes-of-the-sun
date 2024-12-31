@@ -51,7 +51,7 @@ namespace View.Exploration
             _data = await _connector.LoadData();
             keyLabel.text = _data.Owner.ToString()[..4];
 
-            await _connector.Subscribe((_, _, hero) => { OnDataUpdate(hero); });
+            await _connector.Subscribe(OnDataUpdate);
 
             if (_data.Owner.ToString() == _player.DataAddress)
             {

@@ -27,7 +27,7 @@ namespace View.Exploration
             
             OnDataUpdate(data);
 
-            await _connector.Subscribe((_, _, loc) => { OnDataUpdate(loc); });
+            await _connector.Subscribe(OnDataUpdate);
         }
 
         private void OnDataUpdate(SmartObjectLocation value)

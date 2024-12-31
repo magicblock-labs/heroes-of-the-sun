@@ -38,6 +38,8 @@ namespace View.UI
             multiplierWood.text = $"x{rates.Wood}";
             multiplierWater.text = $"x{rates.Water}";
             multiplierStone.text = $"x{rates.Stone}";
+            
+            UpdateCost();
         }
 
         public void UpdateCost()

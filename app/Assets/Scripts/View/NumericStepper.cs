@@ -19,6 +19,7 @@ namespace View
             if (val < maxValue)
             {
                 label.text = $"{++val}";
+                OnChanged?.Invoke();
             }
         }
 

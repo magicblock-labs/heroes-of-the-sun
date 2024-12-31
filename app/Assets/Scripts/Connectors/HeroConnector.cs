@@ -34,5 +34,10 @@ namespace Connectors
             return await ApplySystem(new PublicKey("97qK4zBtZbSGT1mSw5mn12hfHgz4jV4C7cLmwSzH2eua"),
                 new {food, wood, water, stone }, extraEntities);
         }
+
+        public override Task<bool> CloneToRollup()
+        {
+            return Move(0, 0);//todo use settlement location
+        }
     }
 }

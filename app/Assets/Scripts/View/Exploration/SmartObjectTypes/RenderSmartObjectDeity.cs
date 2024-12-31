@@ -59,7 +59,7 @@ namespace View.Exploration.SmartObjectTypes
             }
 
             OnDataUpdate(smartObjectDeity);
-            await _connector.Subscribe((_, _, loc) => { OnDataUpdate(loc); });
+            await _connector.Subscribe(OnDataUpdate);
         }
 
         private void OnDataUpdate(SmartObjectDeity value)
@@ -80,6 +80,7 @@ namespace View.Exploration.SmartObjectTypes
 
         private void OnDestroy()
         {
+            _connector.Unsubscribe();
             _interact.Remove(OnInteractionRequest);
             _dialogInteractionState.AnswerSubmitted.Remove(OnAnswerSubmitted);
         }

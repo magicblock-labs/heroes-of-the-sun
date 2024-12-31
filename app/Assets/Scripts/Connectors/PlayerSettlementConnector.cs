@@ -86,5 +86,11 @@ namespace Connectors
             
             return result;
         }
+        
+        
+        public override Task<bool> CloneToRollup()
+        {
+            return ClaimTime();
+        }
     }
 }

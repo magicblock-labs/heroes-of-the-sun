@@ -60,6 +60,7 @@ namespace Connectors
         private string _seed;
         private SubscriptionState _sub;
         private bool _delegated;
+        private Action<T> _callback;
 
         public abstract PublicKey GetComponentProgramAddress();
 
@@ -88,8 +89,12 @@ namespace Connectors
             if (_delegated)
                 return false;
 
+            var resubscribe = false;
             if (_sub != null)
+            {
                 await StreamingClient.UnsubscribeAsync(_sub);
+                resubscribe = true;
+            }
 
             // load account from mainnet to know the real owner
             var dataAcc = await Web3.Wallet.ActiveRpcClient.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
@@ -97,6 +102,11 @@ namespace Connectors
             if (dataAcc.Result.Value?.Owner?.Equals(DelegationProgram) ?? false)
             {
                 _delegated = true;
+
+                if (resubscribe)
+                    _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                        Commitment.Processed);
+
                 return false;
             }
 
@@ -107,40 +117,57 @@ namespace Connectors
                 Debug.Log($"Delegate Signature: {resDelegation.Result}");
                 await RpcClient.ConfirmTransaction(resDelegation.Result, Commitment.Confirmed);
                 _delegated = true;
+
+                if (resubscribe)
+                    _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                        Commitment.Processed);
                 return true;
             }
 
             return false;
         }
-        
-        
+
+
         public async Task<bool> Undelegate()
         {
             if (!_delegated)
                 return false;
 
+
+            var resubscribe = false;
             if (_sub != null)
+            {
                 await StreamingClient.UnsubscribeAsync(_sub);
+                resubscribe = true;
+            }
 
             // load ac form mainnet to know the real owner
             var dataAcc = await Web3.Wallet.ActiveRpcClient.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
-            if (!dataAcc.Result.Value?.Owner?.Equals(DelegationProgram)?? false)
+            if (!dataAcc.Result.Value?.Owner?.Equals(DelegationProgram) ?? false)
             {
                 _delegated = false;
+
+                if (resubscribe)
+                    _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                        Commitment.Processed);
                 return false;
             }
 
-            
+
             var txUndelegate = await UndelegateTransaction(new PublicKey(_dataAddress));
             try
             {
                 var resUndelegation = await Wallet.SignAndSendTransaction(txUndelegate, true);
-                
+
                 Debug.Log($"Undelegate Signature: {resUndelegation.Result}");
                 if (resUndelegation.WasSuccessful)
                 {
                     await RpcClient.ConfirmTransaction(resUndelegation.Result, Commitment.Confirmed);
                     _delegated = false;
+
+                    if (resubscribe)
+                        _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                            Commitment.Processed);
                     return true;
                 }
             }
@@ -148,10 +175,11 @@ namespace Connectors
             {
                 Debug.LogException(e);
             }
+
             return false;
         }
 
-        public async Task AcquireComponentDataAddress(bool forceCreateEntity)
+        private async Task AcquireComponentDataAddress(bool forceCreateEntity)
         {
             if (Web3.Account == null) throw new NullReferenceException("No Web3 Account");
             var walletBase = Web3.Wallet;
@@ -230,19 +258,43 @@ namespace Connectors
             var loadedFromMainnet = !_delegated;
             _delegated = _delegated || res.Result.Value.Owner == DelegationProgram;
             if (loadedFromMainnet && _delegated)
-                return await LoadData(); //reload data from rollup
+            {
+                var rollupData = await LoadData();
+
+                if (rollupData == null)
+                {
+                    await CloneToRollup();
+                    rollupData = await LoadData();
+                }
+
+                return rollupData; //reload data from rollup
+            }
 
             Debug.Log($"Data:\n {JsonConvert.SerializeObject(resultingAccount)}");
             return resultingAccount;
         }
 
-        public async Task Subscribe(Action<SubscriptionState, ResponseValue<AccountInfo>, T> callback)
+        public virtual async Task<bool> CloneToRollup()
+        {
+            //throw new NotImplementedException();
+            return true;
+        }
+
+        public async Task Subscribe(Action<T> callback)
         {
             Debug.Log("Subscribing to data address: " + _dataAddress);
             if (string.IsNullOrEmpty(_dataAddress))
                 return;
 
-            _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, async (s, e) =>
+            _callback = callback;
+
+            _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                Commitment.Processed);
+        }
+
+        private async void InternalCallback(SubscriptionState s, ResponseValue<AccountInfo> e)
+        {
+            try
             {
                 Debug.Log("Data account updated: " + _dataAddress);
                 // TODO: This is a hack to make sure we are on the main thread when the callback is called.
@@ -251,13 +303,18 @@ namespace Connectors
                 var parsingResult = default(T);
                 if (e.Value?.Data?.Count > 0)
                     parsingResult = DeserialiseBytes(Convert.FromBase64String(e.Value.Data[0]));
-                callback(s, e, parsingResult);
-            }, Commitment.Processed);
+                _callback?.Invoke(parsingResult);
+            }
+            catch (Exception exception)
+            {
+                Debug.LogException(exception);
+            }
         }
 
         public void Unsubscribe()
         {
-            _sub.Unsubscribe();
+            _callback = null;
+            _sub?.Unsubscribe();
         }
 
         protected abstract T DeserialiseBytes(byte[] value);
@@ -413,7 +470,8 @@ namespace Connectors
             {
                 FeePayer = Web3Utils.EphemeralWallet.Account,
                 Instructions = new List<TransactionInstruction>(),
-                RecentBlockHash = await Web3Utils.EphemeralWallet.GetBlockHash(commitment: Commitment.Confirmed, useCache: false)
+                RecentBlockHash =
+                    await Web3Utils.EphemeralWallet.GetBlockHash(commitment: Commitment.Confirmed, useCache: false)
             };
             // Increase compute unit limit
             tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitLimit(75000));
