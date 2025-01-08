@@ -85,7 +85,7 @@ namespace View.Exploration
             var diff = _currentTarget.Value - transform.position;
             transform.forward = diff;
 
-            if (diff.magnitude < .1f)
+            if (diff.magnitude < .5f)
             {
                 _position = _path[0];
                 _path.RemoveAt(0);

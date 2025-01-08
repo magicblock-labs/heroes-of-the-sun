@@ -1,3 +1,4 @@
+using System;
 using Connectors;
 using Model;
 using UnityEngine;
@@ -13,6 +14,12 @@ namespace View.Exploration
         [Inject] private InteractionStateModel _interaction;
 
         private float _mouseDownTime;
+        private EventSystem _eventSystem;
+
+        private void Start()
+        {
+            _eventSystem = EventSystem.current;
+        }
 
         public void SetDataAddress(string value)
         {
@@ -22,6 +29,9 @@ namespace View.Exploration
         private void Update()
         {
             if (_interaction.State != InteractionState.Idle)
+                return;
+
+            if (_eventSystem.IsPointerOverGameObject())
                 return;
             
             if (Input.GetMouseButtonDown(0))

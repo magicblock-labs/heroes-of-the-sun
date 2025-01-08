@@ -28,7 +28,7 @@ namespace View.Exploration
             transform.localPosition = ConfigModel.GetWorldCellPosition(position.x, position.y) +
                                       Vector3.up * yPos;
 
-            if (tileIndex == tiles.Length - 1 && position.x % 2 == 0 && position.y % 2 == 0)
+            if (tree != null && tileIndex == tiles.Length - 1 && position.x % 2 == 0 && position.y % 2 == 0)
                 Instantiate(tree, transform);
 
             if (edge)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Connectors;
 using Model;
 using Solana.Unity.Wallet;
@@ -23,9 +24,15 @@ namespace View.UI
 
         private void Start()
         {
-            _ = _connector.SetEntityPda(_player.EntityPda);
-             
             _hero.Updated.Add(UpdateValues);
+            _ = InitConnector();
+        }
+
+        async Task InitConnector()
+        {
+            await _connector.SetEntityPda(_player.EntityPda);
+            //this is needed for connector to know its data account is delegated
+            await _connector.LoadData();
         }
 
         private void OnEnable()
