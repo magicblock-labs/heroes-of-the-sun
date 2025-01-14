@@ -73,8 +73,7 @@ pub mod claim_loot {
 
     #[system_input]
     pub struct Components {
-        pub loot: LootDistribution,
-        // pub hero: Hero,
+        pub loot: LootDistribution
     }
 
     #[arguments]

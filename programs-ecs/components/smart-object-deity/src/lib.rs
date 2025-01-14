@@ -9,7 +9,6 @@ pub const COOLDOWN: i64 = 60;
 #[component(delegate)]
 pub struct SmartObjectDeity {
     pub next_interaction_time: i64,
-    pub state: u8,
     pub system: Pubkey,
 }
 
@@ -26,7 +25,6 @@ impl Default for SmartObjectDeity {
 
         Self::new(SmartObjectDeityInit {
             next_interaction_time: now,
-            state: 0,
             system: system_program_id,
         })
     }
