@@ -1,8 +1,12 @@
 use anchor_lang::prelude::*;
+use anchor_lang::Discriminator;
 use solana_gpt_oracle::Identity;
 use token_minter::cpi::accounts::MintToken;
 
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{Mint, Token, TokenAccount},
+};
 
 use super::accounts::Agent;
 
@@ -40,9 +44,6 @@ pub fn callback_from_agent(ctx: Context<CallbackFromAgent>, response: String) ->
     if amount == 0 {
         return Ok(());
     }
-
-    // Mint the agent token to the payer
-    let signer_seeds: &[&[&[u8]]] = &[&[b"mint", &[ctx.bumps.mint_account]]];
 
     // Invoke the mint_to instruction on the token program
     token_minter::cpi::mint_token(
@@ -83,5 +84,6 @@ pub struct CallbackFromAgent<'info> {
     )]
     pub associated_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
 }

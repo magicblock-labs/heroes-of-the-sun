@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_lang::Discriminator;
 use solana_gpt_oracle::ContextAccount;
 
 use anchor_spl::{
@@ -6,7 +7,7 @@ use anchor_spl::{
     token::{Mint, Token, TokenAccount},
 };
 
-use super::{accounts::Agent, CallbackFromAgent};
+use super::accounts::Agent;
 
 pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
     let cpi_program = ctx.accounts.oracle_program.to_account_info();
@@ -27,7 +28,7 @@ pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
         cpi_ctx,
         text,
         crate::ID,
-        CallbackFromAgent::discriminator(),
+        crate::CallbackFromAgent::discriminator(),
         Some(vec![
             solana_gpt_oracle::AccountMeta {
                 pubkey: ctx.accounts.payer.to_account_info().key(),
@@ -55,6 +56,15 @@ pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
             },
             solana_gpt_oracle::AccountMeta {
                 pubkey: ctx.accounts.token_program.to_account_info().key(),
+                is_signer: false,
+                is_writable: false,
+            },
+            solana_gpt_oracle::AccountMeta {
+                pubkey: ctx
+                    .accounts
+                    .associated_token_program
+                    .to_account_info()
+                    .key(),
                 is_signer: false,
                 is_writable: false,
             },

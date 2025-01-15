@@ -1,6 +1,7 @@
 use anchor_lang::prelude::*;
 use instructions::*;
 pub mod instructions;
+use anchor_lang::Discriminator;
 
 declare_id!("62f9zAUjCN5VFqWF43qSUrW6CvivqhsEjDvCHwQ1SjgR");
 
@@ -14,5 +15,9 @@ pub mod deity_bot {
 
     pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
         interact_agent::interact_agent(ctx, option)
+    }
+
+    pub fn callback_agent(ctx: Context<CallbackFromAgent>, response: String) -> Result<()> {
+        callback_agent::callback_from_agent(ctx, response)
     }
 }
