@@ -6,7 +6,6 @@ use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token, TokenAccount},
 };
-
 use super::accounts::Agent;
 
 pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
@@ -28,7 +27,7 @@ pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
         cpi_ctx,
         text,
         crate::ID,
-        crate::CallbackFromAgent::discriminator(),
+        crate::instruction::CallbackAgent::discriminator(),
         Some(vec![
             solana_gpt_oracle::AccountMeta {
                 pubkey: ctx.accounts.payer.to_account_info().key(),

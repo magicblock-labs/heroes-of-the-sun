@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_lang::Discriminator;
 use solana_gpt_oracle::Counter;
 
 use super::accounts::{Agent, AgentCounter};

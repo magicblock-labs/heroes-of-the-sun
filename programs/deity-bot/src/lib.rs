@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
 use instructions::*;
 pub mod instructions;
-use anchor_lang::Discriminator;
 
 declare_id!("62f9zAUjCN5VFqWF43qSUrW6CvivqhsEjDvCHwQ1SjgR");
 
