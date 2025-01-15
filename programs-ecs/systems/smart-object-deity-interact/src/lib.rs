@@ -10,24 +10,9 @@ pub mod smart_object_deity_interact {
     use smart_object_deity::{SmartObjectDeity, COOLDOWN};
 
     pub fn execute(ctx: Context<Components>, args: InteractionArgs) -> Result<Components> {
-        let deity = &mut ctx.accounts.deity;
-
-        let clock = Clock::get();
-        let mut now = 0;
-
-        if clock.is_ok() {
-            now = clock.unwrap().unix_timestamp
-        }
-
-        if now < deity.next_interaction_time {
-            return err!(errors::SmartObjectDeityInteractionError::OnCooldown);
-        }
-
-        //CPI TO DEITY LLM
-
         // Extract and clone all necessary accounts upfront
-        let minter_program = ctx
-            .minter_program()
+        let deity_bot_program = ctx
+            .deity_bot_program()
             .map_err(|_| ProgramError::InvalidAccountData)?;
         let mint_account = ctx
             .mint_account()
@@ -69,6 +54,21 @@ pub mod smart_object_deity_interact {
         msg!("interaction: {}", interaction.key);
         msg!("agent: {}", agent.key);
         msg!("oracle_program: {}", oracle_program.key);
+
+        let deity = &mut ctx.accounts.deity;
+
+        let clock = Clock::get();
+        let mut now = 0;
+
+        if clock.is_ok() {
+            now = clock.unwrap().unix_timestamp
+        }
+
+        if now < deity.next_interaction_time {
+            return err!(errors::SmartObjectDeityInteractionError::OnCooldown);
+        }
+
+        //CPI TO DEITY LLM
 
         let res = deity_bot::cpi::interact_agent(
             CpiContext::new(
