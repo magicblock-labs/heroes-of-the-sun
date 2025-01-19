@@ -28,6 +28,7 @@ token_minter = "4ZxRnucEWC62kVktmx27cz9d1PzWWNgiZLT5VWFLbfB2"
 upgrade = "76wsz7SjNtvoFK8aUvojEyfjep5pMSaHQihGVxcjc1EA"
 wait = "9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4"
 worker = "BExuAEwcKxKeqHSN8C1WetUAd6Tm71cZEiP8EBSrH55T"
+deity-bot = "62f9zAUjCN5VFqWF43qSUrW6CvivqhsEjDvCHwQ1SjgR"
 
 [programs.localnet]
 assign_hero = "7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"

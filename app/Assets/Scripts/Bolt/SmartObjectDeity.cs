@@ -53,8 +53,6 @@ namespace Smartobjectdeity
             public static string ACCOUNT_DISCRIMINATOR_B58 => "4foNybxC6hW";
             public long NextInteractionTime { get; set; }
 
-            public byte State { get; set; }
-
             public PublicKey System { get; set; }
 
             public BoltMetadata BoltMetadata { get; set; }
@@ -72,8 +70,6 @@ namespace Smartobjectdeity
                 SmartObjectDeity result = new SmartObjectDeity();
                 result.NextInteractionTime = _data.GetS64(offset);
                 offset += 8;
-                result.State = _data.GetU8(offset);
-                offset += 1;
                 result.System = _data.GetPubKey(offset);
                 offset += 32;
                 offset += BoltMetadata.Deserialize(_data, offset, out var resultBoltMetadata);
@@ -193,6 +189,27 @@ namespace Smartobjectdeity
 
     namespace Program
     {
+        public class DelegateAccounts
+        {
+            public PublicKey Payer { get; set; }
+
+            public PublicKey Entity { get; set; }
+
+            public PublicKey Account { get; set; }
+
+            public PublicKey OwnerProgram { get; set; }
+
+            public PublicKey Buffer { get; set; }
+
+            public PublicKey DelegationRecord { get; set; }
+
+            public PublicKey DelegationMetadata { get; set; }
+
+            public PublicKey DelegationProgram { get; set; }
+
+            public PublicKey SystemProgram { get; set; }
+        }
+
         public class InitializeAccounts
         {
             public PublicKey Payer { get; set; }
@@ -207,6 +224,27 @@ namespace Smartobjectdeity
             public PublicKey SystemProgram { get; set; } = new PublicKey("11111111111111111111111111111111");
         }
 
+        public class ProcessUndelegationAccounts
+        {
+            public PublicKey DelegatedAccount { get; set; }
+
+            public PublicKey Buffer { get; set; }
+
+            public PublicKey Payer { get; set; }
+
+            public PublicKey SystemProgram { get; set; }
+        }
+
+        public class UndelegateAccounts
+        {
+            public PublicKey Payer { get; set; }
+
+            public PublicKey DelegatedAccount { get; set; }
+
+            public PublicKey MagicContext { get; set; } = new PublicKey("MagicContext1111111111111111111111111111111");
+            public PublicKey MagicProgram { get; set; } = new PublicKey("Magic11111111111111111111111111111111111111");
+        }
+
         public class UpdateAccounts
         {
             public PublicKey BoltComponent { get; set; }
@@ -219,6 +257,35 @@ namespace Smartobjectdeity
         public static class SmartobjectdeityProgram
         {
             public const string ID = "9RfzWgEBYQAM64a46V3dGRPKYsVY8a7YvZszWPMxvBfk";
+            public static Solana.Unity.Rpc.Models.TransactionInstruction Delegate(DelegateAccounts accounts, uint commit_frequency_ms, PublicKey validator, PublicKey programId = null)
+            {
+                programId ??= new(ID);
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Entity, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Account, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.OwnerProgram, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Buffer, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegationRecord, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegationMetadata, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.DelegationProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(9873113408189731674UL, offset);
+                offset += 8;
+                _data.WriteU32(commit_frequency_ms, offset);
+                offset += 4;
+                if (validator != null)
+                {
+                    _data.WriteU8(1, offset);
+                    offset += 1;
+                    _data.WritePubKey(validator, offset);
+                    offset += 32;
+                }
+                else
+                {
+                    _data.WriteU8(0, offset);
+                    offset += 1;
+                }
+
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
             public static Solana.Unity.Rpc.Models.TransactionInstruction Initialize(InitializeAccounts accounts, PublicKey programId = null)
             {
                 programId ??= new(ID);
@@ -227,6 +294,44 @@ namespace Smartobjectdeity
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(17121445590508351407UL, offset);
+                offset += 8;
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
+            public static Solana.Unity.Rpc.Models.TransactionInstruction ProcessUndelegation(ProcessUndelegationAccounts accounts, byte[][] account_seeds, PublicKey programId = null)
+            {
+                programId ??= new(ID);
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegatedAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Buffer, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(12048014319693667524UL, offset);
+                offset += 8;
+                _data.WriteS32(account_seeds.Length, offset);
+                offset += 4;
+                foreach (var account_seedsElement in account_seeds)
+                {
+                    _data.WriteS32(account_seedsElement.Length, offset);
+                    offset += 4;
+                    _data.WriteSpan(account_seedsElement, offset);
+                    offset += account_seedsElement.Length;
+                }
+
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
+            public static Solana.Unity.Rpc.Models.TransactionInstruction Undelegate(UndelegateAccounts accounts, PublicKey programId = null)
+            {
+                programId ??= new(ID);
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.DelegatedAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.MagicContext, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MagicProgram, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(17161644073433732227UL, offset);
                 offset += 8;
                 byte[] resultData = new byte[offset];
                 Array.Copy(_data, resultData, offset);

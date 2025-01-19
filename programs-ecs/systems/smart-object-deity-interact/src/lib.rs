@@ -29,9 +29,6 @@ pub mod smart_object_deity_interact {
         let system_program = ctx
             .system_program()
             .map_err(|_| ProgramError::InvalidAccountData)?;
-        let system_program = ctx
-            .system_program()
-            .map_err(|_| ProgramError::InvalidAccountData)?;
         let interaction = ctx
             .interaction()
             .map_err(|_| ProgramError::InvalidAccountData)?;
@@ -39,12 +36,16 @@ pub mod smart_object_deity_interact {
         let oracle_program = ctx
             .oracle_program()
             .map_err(|_| ProgramError::InvalidAccountData)?;
+        let minter_program = ctx
+            .minter_program()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
         let context_account = ctx
             .context_account()
             .map_err(|_| ProgramError::InvalidAccountData)?;
         let payer = ctx.signer().map_err(|_| ProgramError::InvalidAccountData)?;
 
         msg!("payer: {}", payer.key);
+        msg!("deity_bot_program: {}", deity_bot_program.key);
         msg!("mint_account: {}", mint_account.key);
         msg!("associated_token_account: {}", associated_token_account.key);
         msg!("token_program: {}", token_program.key);
@@ -54,6 +55,7 @@ pub mod smart_object_deity_interact {
         msg!("interaction: {}", interaction.key);
         msg!("agent: {}", agent.key);
         msg!("oracle_program: {}", oracle_program.key);
+        msg!("minter_program: {}", minter_program.key);
 
         let deity = &mut ctx.accounts.deity;
 
@@ -84,13 +86,14 @@ pub mod smart_object_deity_interact {
                     agent: agent.clone(),
                     context_account: context_account.clone(),
                     oracle_program: oracle_program.clone(),
+                    minter_program: minter_program.clone(),
                 },
             ),
             args.index,
         );
 
         //todo add non binary result to signify token mint
-        deity.next_interaction_time = now + COOLDOWN;
+        // deity.next_interaction_time = now + COOLDOWN;
 
         Ok(ctx.accounts)
     }
@@ -117,7 +120,7 @@ pub mod smart_object_deity_interact {
         mint_account: Account<'info, Mint>,
 
         #[account()]
-        deity_bot_program: AccountInfo,
+        minter_program: AccountInfo,
 
         #[account()]
         token_program: Program<'info, Token>,
@@ -129,6 +132,9 @@ pub mod smart_object_deity_interact {
         system_program: Program<'info, System>,
 
         #[account()]
+        deity_bot_program: AccountInfo,
+
+        #[account(mut)]
         interaction: AccountInfo,
 
         #[account()]

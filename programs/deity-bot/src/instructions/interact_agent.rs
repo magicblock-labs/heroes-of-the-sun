@@ -2,11 +2,11 @@ use anchor_lang::prelude::*;
 use anchor_lang::Discriminator;
 use solana_gpt_oracle::ContextAccount;
 
+use super::accounts::Agent;
 use anchor_spl::{
     associated_token::AssociatedToken,
     token::{Mint, Token, TokenAccount},
 };
-use super::accounts::Agent;
 
 pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
     let cpi_program = ctx.accounts.oracle_program.to_account_info();
@@ -72,6 +72,11 @@ pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
                 is_signer: false,
                 is_writable: false,
             },
+            solana_gpt_oracle::AccountMeta {
+                pubkey: ctx.accounts.minter_program.to_account_info().key(),
+                is_signer: false,
+                is_writable: false,
+            },
         ]),
     )?;
 
@@ -79,14 +84,14 @@ pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(text: String)]
+#[instruction(option: u8)]
 pub struct InteractAgent<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
     /// CHECK: Checked in oracle program
     #[account(mut)]
     pub interaction: AccountInfo<'info>,
-    #[account(seeds = [Agent::seed(), payer.key().as_ref()], bump)]
+    #[account(seeds = [Agent::seed()], bump)]
     pub agent: Account<'info, Agent>,
     #[account(address = agent.context)]
     pub context_account: Account<'info, ContextAccount>,
@@ -97,11 +102,7 @@ pub struct InteractAgent<'info> {
         associated_token::authority = payer,
     )]
     pub associated_token_account: Account<'info, TokenAccount>,
-    #[account(
-        mut,
-        seeds = [b"mint"],
-        bump
-    )]
+    #[account()]
     pub mint_account: Account<'info, Mint>,
     /// CHECK: Checked oracle id
     #[account(address = solana_gpt_oracle::ID)]
@@ -109,4 +110,7 @@ pub struct InteractAgent<'info> {
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
+
+    /// CHECK: todo
+    pub minter_program: AccountInfo<'info>,
 }

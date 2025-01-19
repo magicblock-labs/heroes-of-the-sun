@@ -32,11 +32,11 @@ namespace Connectors
             ? Web3Utils.EphemeralWallet
             : Web3.Wallet;
 
-        private IRpcClient RpcClient => _delegated
+        protected IRpcClient RpcClient => _delegated
             ? Web3Utils.EphemeralWallet.ActiveRpcClient
             : Web3.Wallet.ActiveRpcClient;
 
-        private IStreamingRpcClient StreamingClient => _delegated
+        protected IStreamingRpcClient StreamingClient => _delegated
             ? Web3Utils.EphemeralWallet.ActiveStreamingRpcClient
             : Web3.Wallet.ActiveStreamingRpcClient;
 
@@ -416,7 +416,8 @@ namespace Connectors
                 FeePayer = Web3.Account,
                 Instructions = new List<TransactionInstruction>
                 {
-                    systemApplicationInstruction
+                    systemApplicationInstruction,
+                    ComputeBudgetProgram.SetComputeUnitLimit(500000)
                 },
                 RecentBlockHash = latestBlockHash.Result.Value.Blockhash
             };
@@ -427,6 +428,9 @@ namespace Connectors
                 skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
 
             Debug.Log($"System Application Result: {result.WasSuccessful} {result.Result}");
+            
+            if (!result.WasSuccessful)
+                Debug.LogError($"System Application ErrorReason: {result.Reason}");
 
             await RpcClient.ConfirmTransaction(result.Result, Commitment.Processed);
             return result.WasSuccessful;
@@ -453,12 +457,12 @@ namespace Connectors
                 Account = playerDataPda,
                 DelegationProgram = DelegationProgram,
                 DelegationRecord = FindDelegationProgramPda("delegation", playerDataPda),
-                DelegateAccountSeeds = FindDelegationProgramPda("delegation-metadata", playerDataPda),
+                DelegationMetadata = FindDelegationProgramPda("delegation-metadata", playerDataPda),
                 Buffer = FindBufferPda("buffer", playerDataPda, GetComponentProgramAddress()),
                 OwnerProgram = GetComponentProgramAddress(),
                 SystemProgram = SystemProgram.ProgramIdKey
             };
-            var ixDelegate = HeroProgram.Delegate(delegateAccounts, 0, 3000, GetComponentProgramAddress());
+            var ixDelegate = HeroProgram.Delegate(delegateAccounts,  3000, GetComponentProgramAddress());
             tx.Add(ixDelegate);
 
             return tx;

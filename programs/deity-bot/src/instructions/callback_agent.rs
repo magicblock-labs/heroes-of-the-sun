@@ -47,7 +47,7 @@ pub fn callback_from_agent(ctx: Context<CallbackFromAgent>, response: String) ->
     // Invoke the mint_to instruction on the token program
     token_minter::cpi::mint_token(
         CpiContext::new(
-            ctx.accounts.token_program.to_account_info(),
+            ctx.accounts.minter_program.to_account_info(),
             MintToken {
                 payer: ctx.accounts.user.to_account_info(),
                 mint_account: ctx.accounts.mint_account.to_account_info(),
@@ -68,13 +68,9 @@ pub struct CallbackFromAgent<'info> {
     pub identity: Account<'info, Identity>,
     /// CHECK: The user wo did the interaction
     pub user: AccountInfo<'info>,
-    #[account(mut, seeds = [Agent::seed(), user.key().as_ref()], bump)]
+    #[account(mut, seeds = [Agent::seed()], bump)]
     pub agent: Account<'info, Agent>,
-    #[account(
-        mut,
-        seeds = [b"mint"],
-        bump
-    )]
+    #[account()]
     pub mint_account: Account<'info, Mint>,
     #[account(
         mut,
@@ -85,4 +81,8 @@ pub struct CallbackFromAgent<'info> {
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
+
+    ///CHECK: todo add type?
+    #[account()]
+    minter_program: AccountInfo<'info>,
 }

@@ -147,10 +147,10 @@ namespace View.Exploration
                 });
             
             
-            // else if (_smartObjects.HasSmartObjectNextTo(_position, out var entity))
-            // {
-            //     _interact.Dispatch(entity);
-            // }
+            else if (_smartObjects.HasSmartObjectNextTo(_position, out var entity))
+            {
+                _interact.Dispatch(entity);
+            }
         }
 
         private void OnDestroy()

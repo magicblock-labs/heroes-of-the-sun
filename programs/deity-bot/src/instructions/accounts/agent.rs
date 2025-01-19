@@ -27,7 +27,7 @@ impl Agent {
     }
 }
 
-#[account]
-pub struct AgentCounter {
-    pub count: u32,
-}
+// #[account]
+// pub struct AgentCounter {
+//     pub count: u32,
+// }

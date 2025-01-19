@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
 using Hero.Program;
@@ -7,7 +7,6 @@ using Model;
 using Notifications;
 using Smartobjectdeity.Accounts;
 using Solana.Unity.Wallet;
-using UnityEngine;
 using Utils;
 using Utils.Injection;
 
@@ -20,6 +19,7 @@ namespace View.Exploration.SmartObjectTypes
         [Inject] private RequestInteractionWithSmartObject _interact;
         [Inject] private DialogInteractionStateModel _dialogInteractionState;
         [Inject] private InteractionStateModel _interactionState;
+        [Inject] private TokenConnector _token;
 
         private SmartObjectDeity _data;
 
@@ -27,15 +27,14 @@ namespace View.Exploration.SmartObjectTypes
         {
             _interact.Add(OnInteractionRequest);
             _dialogInteractionState.AnswerSubmitted.Add(OnAnswerSubmitted);
+
+            _=_connector.Initialize();
         }
 
         private void OnAnswerSubmitted(int value)
         {
             if (_dialogInteractionState.GetCurrentInvoker() == new PublicKey(_connector.EntityPda))
-                _ = _connector.Interact(value, _data.System, new Dictionary<PublicKey, PublicKey>
-                {
-                    { new PublicKey(_playerConnector.EntityPda), new PublicKey(HeroProgram.ID) },
-                });
+                _ = _connector.Interact(value, new("2QPK685TLL7jUG4RYuWXZjv3gw88kUPYw7Aye63cTTjB"), _token.GetMintExtraAccounts());
         }
 
         private void OnInteractionRequest(PublicKey value)
@@ -43,7 +42,7 @@ namespace View.Exploration.SmartObjectTypes
             if (_connector.EntityPda != value) return;
             if (_data.NextInteractionTime > Web3Utils.GetNodeTime()) return;
 
-            _dialogInteractionState.SetConversationIndex(_data.State, value);
+            _dialogInteractionState.SetConversationIndex(0, value);
             _interactionState.SetState(InteractionState.Dialog);
         }
 
@@ -66,15 +65,11 @@ namespace View.Exploration.SmartObjectTypes
         {
             _data = value;
             
-            Debug.Log($"DEITY STATE: {_data.State} {_data.NextInteractionTime}");
-
             if (_dialogInteractionState.GetCurrentInvoker() == new PublicKey(_connector.EntityPda))
             {
-                
-                Debug.Log($"TIME: {_data.NextInteractionTime} {Web3Utils.GetNodeTime()}");
                 _dialogInteractionState.SetConversationIndex(_data.NextInteractionTime > Web3Utils.GetNodeTime()
                     ? -1
-                    : _data.State);
+                    : 0);
             }
         }
 
