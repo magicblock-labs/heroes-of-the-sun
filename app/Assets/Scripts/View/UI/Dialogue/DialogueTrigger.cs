@@ -2,6 +2,7 @@ using System;
 using Model;
 using UnityEngine;
 using Utils.Injection;
+using Utils.Signal;
 
 namespace View.UI.Dialogue
 {
@@ -11,12 +12,11 @@ namespace View.UI.Dialogue
         [Inject] private DialogInteractionStateModel _dialogInteraction;
 
         [SerializeField] private DialogueUI ui;
-        private ChatNode _currentNode;
 
         private void Start()
         {
             _interactionState.Updated.Add(OnInteractionStateUpdated);
-            _dialogInteraction.CurrentChatIndexUpdated.Add(OnChatNodeUpdated);
+            _dialogInteraction.ChatUpdated.Add(OnChatNodeUpdated);
             OnInteractionStateUpdated();
         }
 
@@ -27,24 +27,30 @@ namespace View.UI.Dialogue
 
             ui.answerSelected.RemoveAllListeners();
             ui.answerSelected.AddListener(OnAnswerSelected);
-
-            OnChatNodeUpdated();
+            
+            ui.gameObject.SetActive(false);
         }
 
         private void OnChatNodeUpdated()
         {
             if (_interactionState.State != InteractionState.Dialog) return;
             
-            var currentChatNode = _dialogInteraction.GetCurrentChatNode();
+            var currentChatNode = _dialogInteraction.GetCurrentChat();
             if (currentChatNode == null)
                 ExitDialogue();
             else
+            {
+                ui.gameObject.SetActive(true);
                 ui.ShowChat(currentChatNode);
+            }
         }
 
         private void OnAnswerSelected(int index)
         {
-            _dialogInteraction.SubmitAnswer(index);
+            if (_dialogInteraction.GetCurrentChat().options?.Length > 1)
+                _dialogInteraction.SubmitAnswer(index);
+            else 
+                ExitDialogue();
         }
 
         private void ExitDialogue()
@@ -59,7 +65,7 @@ namespace View.UI.Dialogue
         private void OnDestroy()
         {
             _interactionState.Updated.Remove(OnInteractionStateUpdated);
-            _dialogInteraction.CurrentChatIndexUpdated.Remove(OnChatNodeUpdated);
+            _dialogInteraction.ChatUpdated.Remove(OnChatNodeUpdated);
         }
     }
 }

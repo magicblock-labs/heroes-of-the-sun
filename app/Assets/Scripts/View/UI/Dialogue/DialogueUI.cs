@@ -1,8 +1,6 @@
-using System;
-using Model;
+using Connectors;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace View.UI.Dialogue
@@ -17,7 +15,7 @@ namespace View.UI.Dialogue
 
         public void ShowChat(ChatNode chatNode)
         {
-            prompt.text = chatNode.prompt;
+            prompt.text = chatNode?.reply;
 
             foreach (Transform child in answers)
             {
@@ -25,16 +23,27 @@ namespace View.UI.Dialogue
                 Destroy(child.gameObject);
             }
 
-            var i = 0;
-            foreach (var answer in chatNode.answers)
+            if (chatNode == null) return;
+
+            if (chatNode.options?.Length > 0)
+            {
+                var i = 0;
+                foreach (var answer in chatNode.options)
+                {
+                    var dialogueAnswer = Instantiate(answerPrefab, answers);
+                    dialogueAnswer.Setup(++i, answer);
+                    dialogueAnswer.selected.AddListener(OnAnswerSelected);
+                }
+            }
+            else
             {
                 var dialogueAnswer = Instantiate(answerPrefab, answers);
-                dialogueAnswer.Setup(i++, answer);
+                dialogueAnswer.Setup(1, "Leave..");
                 dialogueAnswer.selected.AddListener(OnAnswerSelected);
             }
         }
 
-        private void OnAnswerSelected(int index = -1)
+        private void OnAnswerSelected(int index)
         {
             answerSelected.Invoke(index);
         }

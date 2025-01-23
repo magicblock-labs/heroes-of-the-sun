@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using Notifications;
 using Solana.Unity.Wallet;
 using TMPro;
 using UnityEngine;
-using Utils;
 using Utils.Injection;
 
 namespace View.Exploration
@@ -59,8 +57,12 @@ namespace View.Exploration
                 gameObject.AddComponent<PointAndClickMovement>().SetDataAddress(value);
             }
 
-            MoveToNextPoint();
-            _initialised = true;
+
+            transform.position =
+                ConfigModel.GetWorldCellPosition(_data.X,
+                    _data.Y); //this would be adjusted in `MoveToNextPoint` after heightmap is populated by chunk renderers
+
+            Invoke(nameof(MoveToNextPoint), .1f);
         }
 
         private void OnDataUpdate(Hero.Accounts.Hero value)
@@ -83,9 +85,8 @@ namespace View.Exploration
             if (!_currentTarget.HasValue) return;
 
             var diff = _currentTarget.Value - transform.position;
-            transform.forward = diff;
 
-            if (diff.magnitude < .5f)
+            if (Vector3.Angle(diff, transform.forward) > 90)// || diff.magnitude < .1f)
             {
                 _position = _path[0];
                 _path.RemoveAt(0);
@@ -99,6 +100,7 @@ namespace View.Exploration
                 return;
             }
 
+            transform.forward = diff;
             transform.position += diff.normalized * (Time.deltaTime * 5f);
             if (_line.positionCount > 0)
                 _line.SetPosition(0, transform.position);
@@ -121,6 +123,9 @@ namespace View.Exploration
             {
                 _currentTarget = ConfigModel.GetWorldCellPosition(_path[0].x, _path[0].y) +
                                  Vector3.up * (_pathfinding.GetY(_path[0]) + 1f);
+
+                var diff = _currentTarget.Value - transform.position;
+                transform.forward = diff;
             }
             else
             {
@@ -132,9 +137,11 @@ namespace View.Exploration
                 _position = new Vector2Int(_data.X, _data.Y);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
-                if (_data.Owner == _player.DataAddress)
+                if (_initialised && _data.Owner == _player.DataAddress)
                     TryInteractWithMap();
             }
+
+            _initialised = true;
         }
 
         private void TryInteractWithMap()
@@ -145,8 +152,8 @@ namespace View.Exploration
                 {
                     { new PublicKey(_player.EntityPda), _connector.GetComponentProgramAddress() },
                 });
-            
-            
+
+
             else if (_smartObjects.HasSmartObjectNextTo(_position, out var entity))
             {
                 _interact.Dispatch(entity);

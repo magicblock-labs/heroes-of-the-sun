@@ -13,7 +13,7 @@ namespace View.UI.Dialogue
         public void Setup(int index, string value)
         {
             _index = index;
-            GetComponentInChildren<Text>().text = $"{index + 1}. {value}";
+            GetComponentInChildren<Text>().text = $"{value}";
             GetComponent<Button>().onClick.AddListener(OnSelected);
         }
 

@@ -6,6 +6,7 @@ using Smartobjectlocation.Accounts;
 using UnityEngine;
 using Utils.Injection;
 using View.Exploration.SmartObjectTypes;
+using World.Program;
 
 namespace View.Exploration
 {
@@ -23,10 +24,15 @@ namespace View.Exploration
             _connector.SetDataAddress(value);
             var data = await _connector.LoadData();
 
+            if (data.Entity != "9SUS7n9moZHmTZE4zx1e3bjoJH9ZzzwV9cPCTySDDFLu")
+            {
+                Destroy(gameObject);
+                return;
+            }
+            
             await gameObject.AddComponent<RenderSmartObjectDeity>().SetEntity(data.Entity);
             
             OnDataUpdate(data);
-
             await _connector.Subscribe(OnDataUpdate);
         }
 

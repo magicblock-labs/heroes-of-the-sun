@@ -19,7 +19,7 @@ export class ChatbotWrapper {
 
 
     const agent = web3.PublicKey.findProgramAddressSync(
-      [Buffer.from("agent")],
+      [Buffer.from("hots_agent")],
       this.program.programId
     )[0];
 

@@ -7,7 +7,7 @@ declare_id!("2QPK685TLL7jUG4RYuWXZjv3gw88kUPYw7Aye63cTTjB");
 pub mod smart_object_deity_interact {
 
     use deity_bot::cpi::accounts::InteractAgent;
-    use smart_object_deity::{SmartObjectDeity, COOLDOWN};
+    use smart_object_deity::SmartObjectDeity;
 
     pub fn execute(ctx: Context<Components>, args: InteractionArgs) -> Result<Components> {
         // Extract and clone all necessary accounts upfront
@@ -57,22 +57,9 @@ pub mod smart_object_deity_interact {
         msg!("oracle_program: {}", oracle_program.key);
         msg!("minter_program: {}", minter_program.key);
 
-        let deity = &mut ctx.accounts.deity;
-
-        let clock = Clock::get();
-        let mut now = 0;
-
-        if clock.is_ok() {
-            now = clock.unwrap().unix_timestamp
-        }
-
-        if now < deity.next_interaction_time {
-            return err!(errors::SmartObjectDeityInteractionError::OnCooldown);
-        }
-
         //CPI TO DEITY LLM
 
-        let res = deity_bot::cpi::interact_agent(
+        deity_bot::cpi::interact_agent(
             CpiContext::new(
                 deity_bot_program.clone(),
                 InteractAgent {
@@ -90,10 +77,7 @@ pub mod smart_object_deity_interact {
                 },
             ),
             args.index,
-        );
-
-        //todo add non binary result to signify token mint
-        // deity.next_interaction_time = now + COOLDOWN;
+        )?;
 
         Ok(ctx.accounts)
     }

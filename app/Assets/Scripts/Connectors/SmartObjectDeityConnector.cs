@@ -6,21 +6,35 @@ using System.Text;
 using System.Threading.Tasks;
 using DeityBot;
 using DeityBot.Accounts;
+using Model;
+using Newtonsoft.Json;
 using Smartobjectdeity.Accounts;
 using Smartobjectlocation.Accounts;
 using Solana.Unity.Rpc.Models;
+using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using TMPro;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using Utils.Injection;
+using View;
 using World;
 
 namespace Connectors
 {
+    public class ChatNode
+    {
+        public string reply;
+        public string[] options;
+    }
+    
+    
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class SmartObjectDeityConnector : BaseComponentConnector<SmartObjectDeity>
     {
+        [Inject] private DialogInteractionStateModel _dialogInteractionState;
+        
         private bool _initialised;
 
         public PublicKey InteractionAccount;
@@ -42,14 +56,13 @@ namespace Connectors
 
         public async Task Initialize()
         {
-            // PublicKey.TryFindProgramAddress(new[]
-            // {
-            //     Encoding.UTF8.GetBytes("agent"),
-            //     Web3.Account.PublicKey.KeyBytes,
-            //     
-            // }, AgentProgramId, out var agentAddress, out _);
+            PublicKey.TryFindProgramAddress(new[]
+            {
+                Encoding.UTF8.GetBytes("hots_agent")
+                
+            }, AgentProgramId, out var agentAddress, out _);
 
-            var agentAddress = "CjgncsnDm7YLtVtKxRMrhPzkmFshucvb61QXDzSMjsQJ";
+            // var agentAddress = "CjgncsnDm7YLtVtKxRMrhPzkmFshucvb61QXDzSMjsQJ";
             var agent = await RpcClient.GetAccountInfoAsync(agentAddress);
 
             if (agent.WasSuccessful)
@@ -59,7 +72,7 @@ namespace Connectors
 
                 PublicKey.TryFindProgramAddress(new[]
                 {
-                    Encoding.UTF8.GetBytes("interaction"), 
+                    Encoding.UTF8.GetBytes("interaction"),
                     Web3.Account.PublicKey.KeyBytes,
                     agentAccount.Context.KeyBytes
                 }, OracleProgramId, out InteractionAccount, out _);
@@ -69,19 +82,26 @@ namespace Connectors
             {
                 AccountMeta.ReadOnly(AgentProgramId, false),
                 AccountMeta.Writable(InteractionAccount, false),
-                AccountMeta.ReadOnly(new PublicKey(agentAddress), false),
+                AccountMeta.ReadOnly(agentAddress, false),
                 AccountMeta.ReadOnly(ContextAccount, false),
                 AccountMeta.ReadOnly(OracleProgramId, false),
             };
+
+            if (_sub != null)
+                await StreamingClient.UnsubscribeAsync(_sub);
+
+            _sub = await StreamingClient.SubscribeLogInfoAsync(InteractionAccount,
+                (_, value) => { ProcessLogs(value.Value.Logs); }, Commitment.Processed);
         }
 
         public async Task<bool> Interact(int index, PublicKey systemAddress,
             AccountMeta[] extraAccounts)
         {
+            Dimmer.Visible = true;
+            
             if (_interactionAccounts == null)
                 await Initialize();
-
-
+            
             if (_interactionAccounts == null)
             {
                 Debug.LogError($"Could not find any interaction accounts.");
@@ -90,6 +110,32 @@ namespace Connectors
 
             return await ApplySystem(systemAddress, new { index }, null, false,
                 extraAccounts.Concat(_interactionAccounts).ToArray());
+        }
+
+        private void ProcessLogs(string[] value)
+        {
+            foreach (var log in value)
+            {
+                if (log.Contains("Agent Reply: "))
+                {
+                    Debug.Log(log);
+                    var startIndex = log.IndexOf("{");
+                    var lastIndexOf = log.LastIndexOf("}");
+                    var parsed  = log.Substring(startIndex, lastIndexOf - startIndex + 1);
+                    
+                    parsed = parsed.Replace("\\n", "");
+                    parsed = parsed.Replace("\\", "");
+                    
+                    var data = JsonConvert.DeserializeObject<ChatNode>(parsed);
+                    
+                    Debug.Log(parsed);
+
+                    Dimmer.Visible = false;
+                    _dialogInteractionState.SetCurrentChat(data);
+                    
+                    break;
+                }
+            }
         }
     }
 }

@@ -23,11 +23,6 @@ impl Default for Agent {
 
 impl Agent {
     pub fn seed() -> &'static [u8] {
-        b"agent"
+        b"hots_agent"
     }
 }
-
-// #[account]
-// pub struct AgentCounter {
-//     pub count: u32,
-// }

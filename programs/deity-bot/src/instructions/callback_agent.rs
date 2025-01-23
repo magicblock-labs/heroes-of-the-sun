@@ -24,16 +24,11 @@ pub fn callback_from_agent(ctx: Context<CallbackFromAgent>, response: String) ->
     let parsed: serde_json::Value =
         serde_json::from_str(&response).unwrap_or_else(|_| serde_json::json!({}));
 
-    // Extract the reply and amount
-    let reply = parsed["reply"]
-        .as_str()
-        .unwrap_or("I'm sorry, I'm busy now!");
-
     let amount = parsed["amount"].as_u64().unwrap_or(0);
     let happiness = parsed["happiness"].as_u64().unwrap_or(0);
     let trust = parsed["trust"].as_u64().unwrap_or(0);
 
-    msg!("Agent Reply: {:?}", reply);
+    msg!("Agent Reply: {:?}", response);
     msg!("Happiness: {:?}", happiness);
     msg!("Trust: {:?}", trust);
 

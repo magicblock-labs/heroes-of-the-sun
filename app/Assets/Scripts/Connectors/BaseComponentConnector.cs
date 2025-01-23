@@ -44,11 +44,11 @@ namespace Connectors
 
         //this comes from program deployment
         private const string
-            WorldPda = "kZU7j64zN2nqeuBAtGtAFBticxXL3qkVbsxx1ujqvzK";
+            WorldPda = "H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL";
         //WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";
 
 
-        private const int WorldIndex = 1736;
+        private const int WorldIndex = 1777;
         //private const int WorldIndex = 2;
 
         public string EntityPda => _entityPda;
@@ -58,7 +58,7 @@ namespace Connectors
         private long _timeOffset;
         private string _dataAddress;
         private string _seed;
-        private SubscriptionState _sub;
+        protected SubscriptionState _sub;
         private bool _delegated;
         private Action<T> _callback;
 

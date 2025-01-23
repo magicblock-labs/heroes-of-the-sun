@@ -9,6 +9,7 @@ using Smartobjectdeity.Accounts;
 using Solana.Unity.Wallet;
 using Utils;
 using Utils.Injection;
+using World.Program;
 
 namespace View.Exploration.SmartObjectTypes
 {
@@ -34,7 +35,7 @@ namespace View.Exploration.SmartObjectTypes
         private void OnAnswerSubmitted(int value)
         {
             if (_dialogInteractionState.GetCurrentInvoker() == new PublicKey(_connector.EntityPda))
-                _ = _connector.Interact(value, new("2QPK685TLL7jUG4RYuWXZjv3gw88kUPYw7Aye63cTTjB"), _token.GetMintExtraAccounts());
+                _ = _connector.Interact(value, _data.System, _token.GetMintExtraAccounts());
         }
 
         private void OnInteractionRequest(PublicKey value)
@@ -42,7 +43,7 @@ namespace View.Exploration.SmartObjectTypes
             if (_connector.EntityPda != value) return;
             if (_data.NextInteractionTime > Web3Utils.GetNodeTime()) return;
 
-            _dialogInteractionState.SetConversationIndex(0, value);
+            _dialogInteractionState.SubmitAnswer(0, value);
             _interactionState.SetState(InteractionState.Dialog);
         }
 
@@ -51,9 +52,9 @@ namespace View.Exploration.SmartObjectTypes
             await _connector.SetEntityPda(value, false);
             var smartObjectDeity = await _connector.LoadData();
 
-            if (smartObjectDeity == null)
+            if (smartObjectDeity == null || smartObjectDeity.BoltMetadata.Authority != WorldProgram.ID)
             {
-                Destroy(this);
+                Destroy(gameObject);
                 return;
             }
 
@@ -64,13 +65,6 @@ namespace View.Exploration.SmartObjectTypes
         private void OnDataUpdate(SmartObjectDeity value)
         {
             _data = value;
-            
-            if (_dialogInteractionState.GetCurrentInvoker() == new PublicKey(_connector.EntityPda))
-            {
-                _dialogInteractionState.SetConversationIndex(_data.NextInteractionTime > Web3Utils.GetNodeTime()
-                    ? -1
-                    : 0);
-            }
         }
 
         private void OnDestroy()
