@@ -1,11 +1,11 @@
-// import { assert, expect } from "chai";
-// import { WorldWrapper } from "./wrappers/world.wrapper";
-// import { PlayerWrapper } from "./wrappers/player.wrapper";
-// import { SettlementWrapper } from "./wrappers/settlement.wrapper";
-// import { LocationAllocatorWrapper } from "./wrappers/location_allocator.wrapper";
-// import { TokenWrapper } from "./wrappers/token.wrapper";
-// import { HeroWrapper } from "./wrappers/hero.wrapper";
-// import { LootDistributionWrapper } from "./wrappers/loot_distribution.wrapper";
+import { assert, expect } from "chai";
+import { WorldWrapper } from "./wrappers/world.wrapper";
+import { PlayerWrapper } from "./wrappers/player.wrapper";
+import { SettlementWrapper } from "./wrappers/settlement.wrapper";
+import { LocationAllocatorWrapper } from "./wrappers/location_allocator.wrapper";
+import { TokenWrapper } from "./wrappers/token.wrapper";
+import { HeroWrapper } from "./wrappers/hero.wrapper";
+import { LootDistributionWrapper } from "./wrappers/loot_distribution.wrapper";
 
 
 
@@ -13,19 +13,19 @@
 
 //   const player = new PlayerWrapper();
 //   const hero = new HeroWrapper();
-//   const world = new WorldWrapper();
+  const world = new WorldWrapper();
 //   const settlement = new SettlementWrapper();
-//   const locationAllocator = new LocationAllocatorWrapper();
+const locationAllocator = new LocationAllocatorWrapper();
 //   const lootDistribution = new LootDistributionWrapper();
 
 
-//   it("Initializes a player", async () => {
-//     await player.init(await world.getWorldPda());
-//     await locationAllocator.init(await world.getWorldPda())
+it("Initializes a player", async () => {
+    // await player.init(await world.getWorldPda());
+    await locationAllocator.init(await world.getWorldPda())
 
-//     const state = await player.state();
-//     expect(state.settlements.length).to.eq(0);
-//   });
+    const state = await locationAllocator.state();
+    expect(state.currentX).to.eq(0);
+});
 
 //   it("Assigns settlement to a player", async () => {
 //     const allocatorState = (await locationAllocator.state());

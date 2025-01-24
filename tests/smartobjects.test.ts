@@ -11,7 +11,7 @@ describe("Smart objects tests", async () => {
 
     const player = new PlayerWrapper();
     const hero = new HeroWrapper();
-    // const world = new WorldWrapper();
+    const world = new WorldWrapper();
     const smartObject = new SmartObjectWrapper();
 
 
@@ -34,7 +34,7 @@ describe("Smart objects tests", async () => {
 
 
     it("Creates a smart obejct", async () => {
-        await smartObject.init(new PublicKey("kZU7j64zN2nqeuBAtGtAFBticxXL3qkVbsxx1ujqvzK"))
+        await smartObject.init(await world.getWorldPda())
 
         var bytesArray = [];
         for (var byte of smartObject.entityPda.toBytes())
