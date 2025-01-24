@@ -69,7 +69,7 @@ namespace View.UI
 
                 coinsLabel.text = _token.Get().ToString();
                 coinsBar.fillAmount = 0;
-                coinsDiff.text = FormatDiff(CalculateGoldDiff());
+                coinsDiff.text = "";
             }
         }
 
@@ -131,15 +131,6 @@ namespace View.UI
             return new ResourceDiff
             {
                 inc = _model.GetCollectionRate(BuildingType.StoneCollector),
-                dec = 0
-            };
-        }
-
-        private ResourceDiff CalculateGoldDiff()
-        {
-            return new ResourceDiff
-            {
-                inc = _model.GetCollectionRate(BuildingType.GoldCollector),
                 dec = 0
             };
         }

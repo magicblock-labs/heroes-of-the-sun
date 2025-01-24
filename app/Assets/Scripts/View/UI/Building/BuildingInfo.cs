@@ -65,13 +65,13 @@ namespace View.UI.Building
 
             var needsWorkers = value.TurnsToBuild > 0 ||
                                value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector
-                                   or BuildingType.StoneCollector or BuildingType.GoldCollector;
+                                   or BuildingType.StoneCollector ;
             workerStatus.gameObject.SetActive(needsWorkers);
             if (needsWorkers)
                 workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
 
             extractionStatus.gameObject.SetActive(
-                value.Id is BuildingType.GoldCollector or BuildingType.StoneCollector
+                value.Id is BuildingType.StoneCollector
                 && value.TurnsToBuild == 0);
             extractionStatus.SetCount(value.Extraction);
         }

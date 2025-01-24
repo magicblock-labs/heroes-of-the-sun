@@ -52,7 +52,6 @@ namespace View.UI.Building
                     BuildingType.FoodCollector,
                     BuildingType.WoodCollector,
                     BuildingType.StoneCollector,
-                    BuildingType.GoldCollector,
                 },
                 BuildingFilter.Storage => new[]
                 {

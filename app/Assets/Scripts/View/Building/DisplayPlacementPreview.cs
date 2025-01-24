@@ -92,6 +92,9 @@ namespace View.Building
             {
                 var mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
+                if (_selectedBuildingConfig == null)
+                    _selectedBuildingConfig = _config.Buildings[_interaction.SelectedBuildingType.Value];
+
                 var buildingDimensions =
                     new Vector3(_selectedBuildingConfig.width, 0, _selectedBuildingConfig.height);
 

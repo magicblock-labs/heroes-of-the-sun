@@ -212,7 +212,7 @@ namespace Settlement
 
         public enum BuildingType : byte
         {
-            TownHall,
+            TownHall = 0,
             Altar,
             Research,
             FoodCollector,
@@ -222,8 +222,7 @@ namespace Settlement
             WaterCollector,
             WaterStorage,
             StoneCollector,
-            StoneStorage,
-            GoldCollector
+            StoneStorage
         }
 
         public partial class EnvironmentState

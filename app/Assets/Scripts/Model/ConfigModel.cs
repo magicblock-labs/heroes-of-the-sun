@@ -152,16 +152,6 @@ namespace Model
                         buildTimeTier = 4,
                         prefab = BuildingType.StoneStorage.ToString()
                     }
-                },
-                {
-                    BuildingType.GoldCollector, new BuildingConfig
-                    {
-                        width = 3,
-                        height = 3,
-                        costTier = 1,
-                        buildTimeTier = 2,
-                        prefab = BuildingType.GoldCollector.ToString()
-                    }
                 }
             }
         };
