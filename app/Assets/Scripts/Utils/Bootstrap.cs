@@ -9,6 +9,9 @@ using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using Solana.Unity.Wallet.Bip39;
 using TMPro;
+using Unity.Services.Analytics;
+using Unity.Services.Core;
+using Unity.Services.Core.Environments;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils.Injection;
@@ -36,6 +39,14 @@ namespace Utils
         private IEnumerator Start()
         {
             yield return null;
+            
+            
+            var options = new InitializationOptions();
+            options.SetEnvironmentName(Web3.Instance.rpcCluster.ToString().ToLower());
+            
+            UnityServices.InitializeAsync(options);
+            AnalyticsService.Instance.StartDataCollection();
+            
             label.text = "Sign In..";
 
             DontDestroyOnLoad(gameObject);
@@ -91,6 +102,11 @@ namespace Utils
 
         private async void HandleSignIn(Account account)
         {
+            AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
+            {
+                { "PublicKey", account.PublicKey.ToString() },
+            });
+            
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
 
@@ -172,8 +188,8 @@ namespace Utils
             //sync time
             label.text = $"SyncTime...";
             await Web3Utils.SyncTime();
-            label.text = $"Load World...";
-            SceneManager.LoadScene("World");
+            label.text = $"Load Settlement...";
+            SceneManager.LoadScene("Settlement");
         }
     }
 }

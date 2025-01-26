@@ -432,7 +432,7 @@ namespace Connectors
             if (!result.WasSuccessful)
                 Debug.LogError($"System Application ErrorReason: {result.Reason}");
 
-            await RpcClient.ConfirmTransaction(result.Result, Commitment.Processed);
+            // await RpcClient.ConfirmTransaction(result.Result, Commitment.Processed);
             return result.WasSuccessful;
         }
 
