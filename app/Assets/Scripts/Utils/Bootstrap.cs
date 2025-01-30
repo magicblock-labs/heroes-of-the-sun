@@ -3,6 +3,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Connectors;
 using Model;
 using Solana.Unity.SDK;
@@ -40,22 +41,17 @@ namespace Utils
         {
             yield return null;
             
-            
-            var options = new InitializationOptions();
-            options.SetEnvironmentName(Web3.Instance.rpcCluster.ToString().ToLower());
-            
-            UnityServices.InitializeAsync(options);
-            AnalyticsService.Instance.StartDataCollection();
-            
             label.text = "Sign In..";
 
             DontDestroyOnLoad(gameObject);
 
-            Login();
+            _=Login();
         }
 
-        async void Login()
+        async Task Login()
         {
+            await InitialiseAnalytics();
+            
             if (Web3.Account == null)
             {
                 Web3.OnLogin += HandleSignIn;
@@ -90,6 +86,16 @@ namespace Utils
                     await Web3Utils.EphemeralWallet.CreateAccount(mnemonic, password);
                 }
             }
+        }
+
+        private async Task InitialiseAnalytics()
+        {
+            
+            var options = new InitializationOptions();
+            options.SetEnvironmentName(Web3.Instance.rpcCluster.ToString().ToLower());
+            
+            await UnityServices.InitializeAsync(options);
+            AnalyticsService.Instance.StartDataCollection();
         }
 
         private static string RandomString(int length)
