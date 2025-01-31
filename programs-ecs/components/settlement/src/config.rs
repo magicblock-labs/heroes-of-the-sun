@@ -57,7 +57,7 @@ pub const ENVIRONMENT_MAX: EnvironmentState = EnvironmentState {
     wood: 1000,
 };
 
-pub const BUILDINGS_CONFIG: [BuildingConfig; 12] = [
+pub const BUILDINGS_CONFIG: [BuildingConfig; 11] = [
     BuildingConfig {
         id: BuildingType::TownHall,
         width: 4,
@@ -134,13 +134,6 @@ pub const BUILDINGS_CONFIG: [BuildingConfig; 12] = [
         height: 3,
         cost_tier: 2,
         build_time_tier: 4,
-    },
-    BuildingConfig {
-        id: BuildingType::GoldCollector,
-        width: 3,
-        height: 3,
-        cost_tier: 1,
-        build_time_tier: 2,
     },
 ];
 
