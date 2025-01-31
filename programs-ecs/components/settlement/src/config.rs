@@ -16,7 +16,6 @@ pub enum BuildingType {
     WaterStorage = 8,
     StoneCollector = 9,
     StoneStorage = 10,
-    GoldCollector = 11,
 }
 
 pub struct BuildingConfig {

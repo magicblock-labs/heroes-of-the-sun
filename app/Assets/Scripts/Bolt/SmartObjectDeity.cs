@@ -51,8 +51,6 @@ namespace Smartobjectdeity
             public static ulong ACCOUNT_DISCRIMINATOR => 14531031083487522581UL;
             public static ReadOnlySpan<byte> ACCOUNT_DISCRIMINATOR_BYTES => new byte[]{21, 239, 110, 31, 200, 151, 168, 201};
             public static string ACCOUNT_DISCRIMINATOR_B58 => "4foNybxC6hW";
-            public long NextInteractionTime { get; set; }
-
             public PublicKey System { get; set; }
 
             public BoltMetadata BoltMetadata { get; set; }
@@ -68,8 +66,6 @@ namespace Smartobjectdeity
                 }
 
                 SmartObjectDeity result = new SmartObjectDeity();
-                result.NextInteractionTime = _data.GetS64(offset);
-                offset += 8;
                 result.System = _data.GetPubKey(offset);
                 offset += 32;
                 offset += BoltMetadata.Deserialize(_data, offset, out var resultBoltMetadata);

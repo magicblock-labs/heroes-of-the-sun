@@ -111,7 +111,7 @@ namespace Connectors
             }
 
             var txDelegate = await DelegateTransaction(new(_entityPda), new(_dataAddress));
-            var resDelegation = await Wallet.SignAndSendTransaction(txDelegate);
+            var resDelegation = await Wallet.SignAndSendTransaction(txDelegate, true);
             if (resDelegation.WasSuccessful)
             {
                 Debug.Log($"Delegate Signature: {resDelegation.Result}");

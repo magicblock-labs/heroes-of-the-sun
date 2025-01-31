@@ -41,7 +41,6 @@ namespace View.Exploration.SmartObjectTypes
         private void OnInteractionRequest(PublicKey value)
         {
             if (_connector.EntityPda != value) return;
-            if (_data.NextInteractionTime > Web3Utils.GetNodeTime()) return;
 
             _dialogInteractionState.SubmitAnswer(0, value);
             _interactionState.SetState(InteractionState.Dialog);
