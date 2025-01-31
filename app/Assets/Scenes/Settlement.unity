@@ -2052,8 +2052,8 @@ MonoBehaviour:
   zoomSpeedTouch: 0.03
   zoomSpeedMouse: 10
   zoomBounds:
-  - 4
-  - 10
+  - 8
+  - 20
 --- !u!1 &613202066
 GameObject:
   m_ObjectHideFlags: 0
