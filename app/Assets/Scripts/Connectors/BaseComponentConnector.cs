@@ -280,7 +280,7 @@ namespace Connectors
             return true;
         }
 
-        public async Task Subscribe(Action<T> callback)
+        public async UniTask Subscribe(Action<T> callback)
         {
             Debug.Log("Subscribing to data address: " + _dataAddress);
             if (string.IsNullOrEmpty(_dataAddress))
@@ -288,8 +288,11 @@ namespace Connectors
 
             _callback = callback;
 
+            Debug.Log("StreamingClient: " + StreamingClient.NodeAddress);
             _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
                 Commitment.Processed);
+            
+            Debug.Log("Subscribed!");
         }
 
         private async void InternalCallback(SubscriptionState s, ResponseValue<AccountInfo> e)
