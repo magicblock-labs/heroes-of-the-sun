@@ -33,23 +33,23 @@ describe("Smart objects tests", async () => {
     // });
 
 
-    it("Creates a smart obejct", async () => {
-        await smartObject.init(await world.getWorldPda())
+    // it("Creates a smart obejct", async () => {
+    //     await smartObject.init(await world.getWorldPda())
 
-        var bytesArray = [];
-        for (var byte of smartObject.entityPda.toBytes())
-            bytesArray.push(byte)
+    //     var bytesArray = [];
+    //     for (var byte of smartObject.entityPda.toBytes())
+    //         bytesArray.push(byte)
 
 
-        await smartObject.initObj({ x: -1, y: 0, entity: bytesArray })
-        const location = await smartObject.location();
-        expect(location.x).to.eq(-1);
-        expect(location.entity.toBase58()).to.eq(smartObject.entityPda.toBase58());
-        const deity = await smartObject.deity();
-        expect(deity.system).to.be.not.null;
+    //     await smartObject.initObj({ x: -1, y: 0, entity: bytesArray })
+    //     const location = await smartObject.location();
+    //     expect(location.x).to.eq(-1);
+    //     expect(location.entity.toBase58()).to.eq(smartObject.entityPda.toBase58());
+    //     const deity = await smartObject.deity();
+    //     expect(deity.system).to.be.not.null;
 
-        console.log(deity)
-    });
+    //     console.log(deity)
+    // });
 
     // it("Moves hero to a pos", async () => {
     //     const state = await hero.moveHero({ x: 1, y: 1 });

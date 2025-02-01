@@ -6,6 +6,8 @@ import {
   AddEntity,
   InitializeComponent,
   ApplySystem,
+  FindComponentPda,
+  createDelegateInstruction,
 } from "@magicblock-labs/bolt-sdk"
 import { AssignWorker } from "../../target/types/assign_worker";
 import { Build } from "../../target/types/build";
@@ -16,6 +18,11 @@ import { Settlement } from "../../target/types/settlement";
 import { Upgrade } from "../../target/types/upgrade";
 import { Wait } from "../../target/types/wait";
 import { Exchange } from "../../target/types/exchange";
+
+import {
+  DELEGATION_PROGRAM_ID,
+  GetCommitmentSignature,
+} from "@magicblock-labs/ephemeral-rollups-sdk";
 
 
 export enum BuildingType {
@@ -301,6 +308,31 @@ export class SettlementWrapper {
   async upgradeAndWait(index: number, worker_index: number, extraAccounts: AccountMeta[]) {
     let state = await this.upgrade({ index, worker_index });
     return await this.wait({ time: this.getTurnsToCompleteAll(state) }, extraAccounts);
+  }
+
+  async delegate() {
+
+
+    const counterPda = FindComponentPda({
+      componentId: this.settlementComponent.programId,
+      entity: this.entityPda,
+    });
+    const delegateIx = createDelegateInstruction({
+      entity: this.entityPda,
+      account: this.componentPda,
+      ownerProgram: this.settlementComponent.programId,
+      payer: this.provider.wallet.publicKey,
+    });
+    const tx = new anchor.web3.Transaction().add(delegateIx);
+    tx.feePayer = this.provider.wallet.publicKey;
+    tx.recentBlockhash = (await this.provider.connection.getLatestBlockhash()).blockhash;
+    const txSign = await this.provider.sendAndConfirm(tx, [], { commitment: "confirmed" });
+    console.log(
+      `Delegation signature: ${txSign}`
+    );
+
+
+    return await this.state();
   }
 
   getTurnsToCompleteAll(state: { buildings: { turnsToBuild: number; }[]; }): number {

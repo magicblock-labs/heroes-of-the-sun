@@ -5,6 +5,8 @@ import {
   AddEntity,
   InitializeComponent,
   ApplySystem,
+  FindComponentPda,
+  createDelegateInstruction,
 } from "@magicblock-labs/bolt-sdk"
 import { Hero } from "../../target/types/hero";
 import { MoveHero } from "../../target/types/move_hero";
@@ -86,6 +88,32 @@ export class HeroWrapper {
     });
     const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
     console.log(`build tx: ${txSign}`);
+
+    return await this.state();
+  }
+
+
+  async delegate() {
+
+
+    const counterPda = FindComponentPda({
+      componentId: this.heroComponent.programId,
+      entity: this.entityPda,
+    });
+    const delegateIx = createDelegateInstruction({
+      entity: this.entityPda,
+      account: this.componentPda,
+      ownerProgram: this.heroComponent.programId,
+      payer: this.provider.wallet.publicKey,
+    });
+    const tx = new anchor.web3.Transaction().add(delegateIx);
+    tx.feePayer = this.provider.wallet.publicKey;
+    tx.recentBlockhash = (await this.provider.connection.getLatestBlockhash()).blockhash;
+    const txSign = await this.provider.sendAndConfirm(tx, [], { commitment: "confirmed" });
+    console.log(
+      `Delegation signature: ${txSign}`
+    );
+
 
     return await this.state();
   }

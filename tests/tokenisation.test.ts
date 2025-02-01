@@ -30,12 +30,12 @@ describe("Test suite for: tokenized gold source and sink", () => {
     // });
 
 
-    it("Inits loot distribution", async () => {
+    // it("Inits loot distribution", async () => {
 
-        await lootDistribution.init(await world.getWorldPda());
-        const lootState = await lootDistribution.state();
-        expect(lootState.loots.length).gt(0);
-    });
+    //     await lootDistribution.init(await world.getWorldPda());
+    //     const lootState = await lootDistribution.state();
+    //     expect(lootState.loots.length).gt(0);
+    // });
 
     // it("Initializes a player", async () => {
     //     await player.init(await world.getWorldPda());

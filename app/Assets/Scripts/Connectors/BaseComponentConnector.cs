@@ -462,7 +462,7 @@ namespace Connectors
                 OwnerProgram = GetComponentProgramAddress(),
                 SystemProgram = SystemProgram.ProgramIdKey
             };
-            var ixDelegate = HeroProgram.Delegate(delegateAccounts,  3000, GetComponentProgramAddress());
+            var ixDelegate = HeroProgram.Delegate(delegateAccounts,  3000, null, GetComponentProgramAddress());
             tx.Add(ixDelegate);
 
             return tx;
