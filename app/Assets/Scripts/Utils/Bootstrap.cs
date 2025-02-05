@@ -23,6 +23,7 @@ namespace Utils
     {
         private const string PwdPrefKey = "pwd";
         [SerializeField] private TMP_Text label;
+        [SerializeField] private GameObject loginSelector;
 
         [Inject] private PlayerConnector _player;
         [Inject] private TokenConnector _token;
@@ -40,18 +41,30 @@ namespace Utils
         private IEnumerator Start()
         {
             yield return null;
-            
+
             label.text = "Sign In..";
 
             DontDestroyOnLoad(gameObject);
 
-            _=Login();
+            _ = InitialiseAnalytics();
+        }
+        
+        public void LoginWalletAdapter()
+        {
+            _ = Web3.Instance.LoginWalletAdapter();
+        }
+        
+        public void LoginWeb3Auth()
+        {
+            _ = Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
         }
 
-        async Task Login()
+        public void LoginInGameWallet()
         {
-            await InitialiseAnalytics();
-            
+            _=LoginInGameWalletAsync();
+        }
+        public async Task LoginInGameWalletAsync()
+        {
             if (Web3.Account == null)
             {
                 Web3.OnLogin += HandleSignIn;
@@ -68,7 +81,7 @@ namespace Utils
                     if (account == null) //password corrupt - recreate
                     {
                         PlayerPrefs.DeleteAll();
-                        Login();
+                        _ = LoginInGameWalletAsync();
                     }
                     else
                     {
@@ -90,10 +103,9 @@ namespace Utils
 
         private async Task InitialiseAnalytics()
         {
-            
             var options = new InitializationOptions();
             options.SetEnvironmentName(Web3.Instance.rpcCluster.ToString().ToLower());
-            
+
             await UnityServices.InitializeAsync(options);
             AnalyticsService.Instance.StartDataCollection();
         }
@@ -108,11 +120,13 @@ namespace Utils
 
         private async void HandleSignIn(Account account)
         {
+            Destroy(loginSelector);
+            
             AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
             {
                 { "PublicKey", account.PublicKey.ToString() },
             });
-            
+
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
 
@@ -151,7 +165,7 @@ namespace Utils
             }
             else
                 await _settlement.SetSeed($"{settlements[0].X}x{settlements[0].Y}");
-            
+
             label.text = $"Loading Settlement Data...";
             //todo make connectors subscribe and dont keep bootstrap alive
             _settlementModel.Set(await _settlement.LoadData());
@@ -163,7 +177,7 @@ namespace Utils
             label.text = $"Loading Loot Data...";
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
             _lootModel.Set(await _loot.LoadData());
-            
+
             await _loot.Subscribe(_lootModel.Set);
             await _settlement.Subscribe(_settlementModel.Set);
 
@@ -175,7 +189,7 @@ namespace Utils
             label.text = $"Creating Hero Data...";
             await _hero.SetEntityPda(_player.EntityPda);
             var hero = await _hero.LoadData();
-            
+
             if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
             {
                 label.text = $"Assigning New Hero to Player...";
@@ -185,11 +199,11 @@ namespace Utils
                         { new PublicKey(_hero.EntityPda), _hero.GetComponentProgramAddress() },
                     });
             }
-            
-            
+
+
             label.text = $"Delegating Hero...";
             if (await _hero.Delegate())
-                await _hero.CloneToRollup(); 
+                await _hero.CloneToRollup();
 
             //sync time
             label.text = $"SyncTime...";
