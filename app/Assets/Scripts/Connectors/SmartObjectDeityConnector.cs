@@ -56,6 +56,7 @@ namespace Connectors
 
         public async Task Initialize()
         {
+            var streamingClient = await GetStreamingClient();
             PublicKey.TryFindProgramAddress(new[]
             {
                 Encoding.UTF8.GetBytes("hots_agent")
@@ -88,9 +89,9 @@ namespace Connectors
             };
 
             if (_sub != null)
-                await StreamingClient.UnsubscribeAsync(_sub);
+                await streamingClient.UnsubscribeAsync(_sub);
 
-            _sub = await StreamingClient.SubscribeLogInfoAsync(InteractionAccount,
+            _sub = await streamingClient.SubscribeLogInfoAsync(InteractionAccount,
                 (_, value) => { ProcessLogs(value.Value.Logs); }, Commitment.Processed);
         }
 

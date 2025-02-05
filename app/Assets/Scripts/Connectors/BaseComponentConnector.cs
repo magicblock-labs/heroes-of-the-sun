@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
-using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Hero.Program;
 using Newtonsoft.Json;
@@ -31,14 +31,10 @@ namespace Connectors
         private WalletBase Wallet => _delegated
             ? Web3Utils.EphemeralWallet
             : Web3.Wallet;
-
+        
         protected IRpcClient RpcClient => _delegated
             ? Web3Utils.EphemeralWallet.ActiveRpcClient
             : Web3.Wallet.ActiveRpcClient;
-
-        protected IStreamingRpcClient StreamingClient => _delegated
-            ? Web3Utils.EphemeralWallet.ActiveStreamingRpcClient
-            : Web3.Wallet.ActiveStreamingRpcClient;
 
         private static readonly PublicKey DelegationProgram = new("DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh");
 
@@ -64,14 +60,14 @@ namespace Connectors
 
         public abstract PublicKey GetComponentProgramAddress();
 
-        public async Task SetSeed(string value, bool forceCreateEntity = true)
+        public async UniTask SetSeed(string value, bool forceCreateEntity = true)
         {
             _seed = value;
             _entityPda = Pda.FindEntityPda(WorldIndex, 0, value);
             await AcquireComponentDataAddress(forceCreateEntity);
         }
 
-        public async Task SetEntityPda(string value, bool forceCreateEntity = true)
+        public async UniTask SetEntityPda(string value, bool forceCreateEntity = true)
         {
             _entityPda = value;
             await AcquireComponentDataAddress(forceCreateEntity);
@@ -84,15 +80,16 @@ namespace Connectors
         }
 
 
-        public async Task<bool> Delegate()
+        public async UniTask<bool> Delegate()
         {
+            var streamingClient = await GetStreamingClient();
             if (_delegated)
                 return false;
 
             var resubscribe = false;
             if (_sub != null)
             {
-                await StreamingClient.UnsubscribeAsync(_sub);
+                await streamingClient.UnsubscribeAsync(_sub);
                 resubscribe = true;
             }
 
@@ -104,7 +101,7 @@ namespace Connectors
                 _delegated = true;
 
                 if (resubscribe)
-                    _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                    _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
                         Commitment.Processed);
 
                 return false;
@@ -119,7 +116,7 @@ namespace Connectors
                 _delegated = true;
 
                 if (resubscribe)
-                    _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                    _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
                         Commitment.Processed);
                 return true;
             }
@@ -128,8 +125,9 @@ namespace Connectors
         }
 
 
-        public async Task<bool> Undelegate()
+        public async UniTask<bool> Undelegate()
         {
+            var streamingClient = await GetStreamingClient();
             if (!_delegated)
                 return false;
 
@@ -137,7 +135,7 @@ namespace Connectors
             var resubscribe = false;
             if (_sub != null)
             {
-                await StreamingClient.UnsubscribeAsync(_sub);
+                await streamingClient.UnsubscribeAsync(_sub);
                 resubscribe = true;
             }
 
@@ -148,7 +146,7 @@ namespace Connectors
                 _delegated = false;
 
                 if (resubscribe)
-                    _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                    _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
                         Commitment.Processed);
                 return false;
             }
@@ -166,7 +164,7 @@ namespace Connectors
                     _delegated = false;
 
                     if (resubscribe)
-                        _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                        _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
                             Commitment.Processed);
                     return true;
                 }
@@ -179,7 +177,7 @@ namespace Connectors
             return false;
         }
 
-        private async Task AcquireComponentDataAddress(bool forceCreateEntity)
+        private async UniTask AcquireComponentDataAddress(bool forceCreateEntity)
         {
             if (Web3.Account == null) throw new NullReferenceException("No Web3 Account");
             var walletBase = Web3.Wallet;
@@ -243,7 +241,7 @@ namespace Connectors
         }
 
 
-        public async Task<T> LoadData()
+        public async UniTask<T> LoadData()
         {
             if (string.IsNullOrEmpty(_dataAddress))
                 return default;
@@ -274,25 +272,26 @@ namespace Connectors
             return resultingAccount;
         }
 
-        public virtual async Task<bool> CloneToRollup()
+        public virtual UniTask CloneToRollup()
         {
             //throw new NotImplementedException();
-            return true;
+            return UniTask.FromResult(true);
         }
 
         public async UniTask Subscribe(Action<T> callback)
         {
             Debug.Log("Subscribing to data address: " + _dataAddress);
+            var streamingClient = await GetStreamingClient();
             if (string.IsNullOrEmpty(_dataAddress))
                 return;
-
             _callback = callback;
-
-            Debug.Log("StreamingClient: " + StreamingClient.NodeAddress);
-            _sub = await StreamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
-                Commitment.Processed);
-            
-            Debug.Log("Subscribed!");
+            if (streamingClient.State != WebSocketState.Open)
+            {
+                Debug.LogError($"Unable to subscribe to data address: {streamingClient.NodeAddress} On: ({streamingClient.NodeAddress})");           
+                return;
+            }
+            _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback, Commitment.Processed);
+            Debug.Log($"Subscribed to data address: {_dataAddress}, on {streamingClient.NodeAddress}");
         }
 
         private async void InternalCallback(SubscriptionState s, ResponseValue<AccountInfo> e)
@@ -314,15 +313,16 @@ namespace Connectors
             }
         }
 
-        public void Unsubscribe()
+        public async UniTask Unsubscribe()
         {
             _callback = null;
-            _sub?.Unsubscribe();
+            if (_sub != null)
+                await _sub.UnsubscribeAsync();
         }
 
         protected abstract T DeserialiseBytes(byte[] value);
 
-        protected async Task<bool> ApplySystem(PublicKey systemAddress, object args,
+        protected async UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
             Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
             AccountMeta[] accounts = null)
         {
@@ -410,7 +410,7 @@ namespace Connectors
         }
 
 
-        private async Task<bool> ExecuteSystemApplicationInstruction(
+        private async UniTask<bool> ExecuteSystemApplicationInstruction(
             TransactionInstruction systemApplicationInstruction)
         {
             var latestBlockHash = await RpcClient.GetLatestBlockHashAsync(commitment: Commitment.Processed);
@@ -440,7 +440,7 @@ namespace Connectors
         }
 
 
-        public async Task<Transaction> DelegateTransaction(PublicKey entityPda, PublicKey playerDataPda)
+        public async UniTask<Transaction> DelegateTransaction(PublicKey entityPda, PublicKey playerDataPda)
         {
             var tx = new Transaction()
             {
@@ -471,7 +471,7 @@ namespace Connectors
             return tx;
         }
 
-        public async Task<Transaction> UndelegateTransaction(PublicKey playerDataPda)
+        public async UniTask<Transaction> UndelegateTransaction(PublicKey playerDataPda)
         {
             var tx = new Transaction()
             {
@@ -511,6 +511,16 @@ namespace Connectors
                 Encoding.UTF8.GetBytes(seed), account.KeyBytes
             }, owner, out var pda, out _);
             return pda;
+        }
+        
+        protected async UniTask<IStreamingRpcClient> GetStreamingClient()
+        {
+            var wallet = _delegated ? Web3.Wallet : Web3Utils.EphemeralWallet;
+            if (wallet.ActiveStreamingRpcClient.State != WebSocketState.Open)
+            {
+                await wallet.AwaitWsRpcConnection();
+            }
+            return wallet.ActiveStreamingRpcClient;
         }
     }
 }
