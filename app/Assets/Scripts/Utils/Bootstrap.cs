@@ -91,12 +91,12 @@ namespace Utils
 
                 else
                 {
-                    // var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
-                    // password = RandomString(10);
+                    var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
+                    password = RandomString(10);
                     
-                    // TODO: Remove this as it's for testing only
-                    var mnemonic = "wet mistake floor suffer melody talk tackle fame uncle inherit thing dumb jazz wolf smart lawsuit carbon denial found alert huge liar cost wealth";
-                    password = "12312738912739123";
+                    // // TODO: Remove this as it's for testing only
+                    // var mnemonic = "wet mistake floor suffer melody talk tackle fame uncle inherit thing dumb jazz wolf smart lawsuit carbon denial found alert huge liar cost wealth";
+                    // password = "12312738912739123";
 
                     PlayerPrefs.SetString(PwdPrefKey, password);
                     await Web3.Instance.CreateAccount(mnemonic, password);
