@@ -1,11 +1,15 @@
-//#define FTUE_TESTING
+// #define FTUE_TESTING
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
 using Model;
+using Newtonsoft.Json;
+using Solana.Unity.Rpc.Models;
+using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using Solana.Unity.Wallet.Bip39;
@@ -16,12 +20,15 @@ using Unity.Services.Core.Environments;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils.Injection;
+using World.Program;
+using Random = UnityEngine.Random;
 
 namespace Utils
 {
     public class Bootstrap : InjectableBehaviour
     {
         private const string PwdPrefKey = "pwd";
+        private const string SessionPwdPrefKey = nameof(SessionPwdPrefKey);
         [SerializeField] private TMP_Text label;
         [SerializeField] private GameObject loginSelector;
 
@@ -48,12 +55,12 @@ namespace Utils
 
             _ = InitialiseAnalytics();
         }
-        
+
         public void LoginWalletAdapter()
         {
             _ = Web3.Instance.LoginWalletAdapter();
         }
-        
+
         public void LoginWeb3Auth()
         {
             _ = Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
@@ -61,8 +68,9 @@ namespace Utils
 
         public void LoginInGameWallet()
         {
-            _=LoginInGameWalletAsync();
+            _ = LoginInGameWalletAsync();
         }
+
         public async Task LoginInGameWalletAsync()
         {
             if (Web3.Account == null)
@@ -93,7 +101,7 @@ namespace Utils
                 {
                     var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
                     password = RandomString(10);
-                    
+
                     // // TODO: Remove this as it's for testing only
                     // var mnemonic = "wet mistake floor suffer melody talk tackle fame uncle inherit thing dumb jazz wolf smart lawsuit carbon denial found alert huge liar cost wealth";
                     // password = "12312738912739123";
@@ -124,8 +132,10 @@ namespace Utils
 
         private async void HandleSignIn(Account account)
         {
+            Web3.OnLogin -= HandleSignIn;
+
             Destroy(loginSelector);
-            
+
             AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
             {
                 { "PublicKey", account.PublicKey.ToString() },
@@ -134,10 +144,17 @@ namespace Utils
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
 
-            Web3.OnLogin -= HandleSignIn;
-            label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
+            if (Web3.Wallet is not InGameWallet)
+            {
+                Debug.Log("Initialize Session..");
+                await InitializeSession();
+            }
+            else
+            {
+                label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
+                await Web3Utils.EnsureBalance();
+            }
 
-            await Web3Utils.EnsureBalance();
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
             await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
             _playerModel.Set(await _player.LoadData());
@@ -153,8 +170,11 @@ namespace Utils
                 var allocator = await _allocator.LoadData();
 
                 label.text = $"Creating Settlement...";
-                await _settlement.SetSeed($"{allocator.CurrentX}x{allocator.CurrentY}");
+                await _settlement.SetSeed($"{allocator.CurrentX+1}x{allocator.CurrentY}");
 
+                Debug.Log(JsonConvert.SerializeObject(await _settlement.LoadData()));
+
+                // await _settlement.Undelegate();
 
                 label.text = $"Assigning Settlement to the Player...";
                 //assign settlement in player
@@ -214,6 +234,38 @@ namespace Utils
             await Web3Utils.SyncTime();
             label.text = $"Load Settlement...";
             SceneManager.LoadScene("Settlement");
+        }
+
+        private async Task InitializeSession()
+        {
+            var sessionPassword = PlayerPrefs.GetString(SessionPwdPrefKey, null);
+
+            if (sessionPassword == null)
+            {
+                sessionPassword = RandomString(10);
+                PlayerPrefs.SetString(SessionPwdPrefKey, sessionPassword);
+            }
+
+            Web3Utils.SessionWallet =
+                await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID), sessionPassword);
+
+            if (!await Web3Utils.SessionWallet.IsSessionTokenInitialized())
+            {
+                var tx = new Transaction
+                {
+                    FeePayer = Web3.Account,
+                    Instructions = new List<TransactionInstruction>(),
+                    RecentBlockHash = await Web3.BlockHash()
+                };
+
+                // Set to 1 day in unix time
+                var validity = DateTimeOffset.UtcNow.AddHours(23).ToUnixTimeSeconds();
+                tx.Instructions.Add(Web3Utils.SessionWallet.CreateSessionIX(true, validity));
+                tx.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
+                
+                await Web3.Wallet.ActiveRpcClient.SendTransactionAsync(Convert.ToBase64String(tx.Serialize()),
+                    skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
+            }
         }
     }
 }

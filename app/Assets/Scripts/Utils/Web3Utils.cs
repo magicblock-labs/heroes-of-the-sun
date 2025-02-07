@@ -10,7 +10,8 @@ namespace Utils
     {
         
         public static readonly InGameWallet EphemeralWallet = new(RpcCluster.DevNet, "https://devnet.magicblock.app", "wss://devnet.magicblock.app", true);
-        
+        public static SessionWallet SessionWallet { get; set; }
+
         public static async Task EnsureBalance()
         {
             var requestResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
@@ -30,8 +31,7 @@ namespace Utils
             Debug.Log(
                 $"{Web3.Account.PublicKey} \nairdropResult.Result: {airdropResult.Result}, \ntxResult{txResult} \n balanceResult:{balanceResult} ");
         }
-
-
+        
         private static long _timeOffset;
 
         public static async Task SyncTime()

@@ -31,7 +31,7 @@ namespace Connectors
         private WalletBase Wallet => _delegated
             ? Web3Utils.EphemeralWallet
             : Web3.Wallet;
-        
+
         protected IRpcClient RpcClient => _delegated
             ? Web3Utils.EphemeralWallet.ActiveRpcClient
             : Web3.Wallet.ActiveRpcClient;
@@ -89,7 +89,7 @@ namespace Connectors
             var resubscribe = false;
             if (_sub != null)
             {
-                await streamingClient.UnsubscribeAsync(_sub);
+                await (await GetStreamingClient()).UnsubscribeAsync(_sub);
                 resubscribe = true;
             }
 
@@ -101,7 +101,7 @@ namespace Connectors
                 _delegated = true;
 
                 if (resubscribe)
-                    _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                    _sub = await (await GetStreamingClient()).SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
                         Commitment.Processed);
 
                 return false;
@@ -127,26 +127,26 @@ namespace Connectors
 
         public async UniTask<bool> Undelegate()
         {
-            var streamingClient = await GetStreamingClient();
-            if (!_delegated)
+            var dataAcc = await Web3.Wallet.ActiveRpcClient.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
+
+            if (dataAcc.Result.Value?.Owner == null || dataAcc.Result.Value?.Owner != DelegationProgram)
                 return false;
 
-
+            var streamingClient = await GetStreamingClient();
             var resubscribe = false;
             if (_sub != null)
             {
-                await streamingClient.UnsubscribeAsync(_sub);
+                await (await GetStreamingClient()).UnsubscribeAsync(_sub);
                 resubscribe = true;
             }
 
             // load ac form mainnet to know the real owner
-            var dataAcc = await Web3.Wallet.ActiveRpcClient.GetAccountInfoAsync(_dataAddress, Commitment.Processed);
             if (!dataAcc.Result.Value?.Owner?.Equals(DelegationProgram) ?? false)
             {
                 _delegated = false;
 
                 if (resubscribe)
-                    _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                    _sub = await (await GetStreamingClient()).SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
                         Commitment.Processed);
                 return false;
             }
@@ -287,10 +287,13 @@ namespace Connectors
             _callback = callback;
             if (streamingClient.State != WebSocketState.Open)
             {
-                Debug.LogError($"Unable to subscribe to data address: {streamingClient.NodeAddress} On: ({streamingClient.NodeAddress})");           
+                Debug.LogError(
+                    $"Unable to subscribe to data address: {streamingClient.NodeAddress} On: ({streamingClient.NodeAddress})");
                 return;
             }
-            _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback, Commitment.Processed);
+
+            _sub = await streamingClient.SubscribeAccountInfoAsync(_dataAddress, InternalCallback,
+                Commitment.Processed);
             Debug.Log($"Subscribed to data address: {_dataAddress}, on {streamingClient.NodeAddress}");
         }
 
@@ -431,7 +434,7 @@ namespace Connectors
                 skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
 
             Debug.Log($"System Application Result: {result.WasSuccessful} {result.Result}");
-            
+
             if (!result.WasSuccessful)
                 Debug.LogError($"System Application ErrorReason: {result.Reason}");
 
@@ -465,7 +468,7 @@ namespace Connectors
                 OwnerProgram = GetComponentProgramAddress(),
                 SystemProgram = SystemProgram.ProgramIdKey
             };
-            var ixDelegate = HeroProgram.Delegate(delegateAccounts,  3000, null, GetComponentProgramAddress());
+            var ixDelegate = HeroProgram.Delegate(delegateAccounts, 3000, null, GetComponentProgramAddress());
             tx.Add(ixDelegate);
 
             return tx;
@@ -512,14 +515,13 @@ namespace Connectors
             }, owner, out var pda, out _);
             return pda;
         }
-        
+
         protected async UniTask<IStreamingRpcClient> GetStreamingClient()
         {
-            var wallet = _delegated ? Web3.Wallet : Web3Utils.EphemeralWallet;
+            var wallet = _delegated ? Web3Utils.EphemeralWallet : Web3.Wallet;
             if (wallet.ActiveStreamingRpcClient.State != WebSocketState.Open)
-            {
                 await wallet.AwaitWsRpcConnection();
-            }
+
             return wallet.ActiveStreamingRpcClient;
         }
     }
