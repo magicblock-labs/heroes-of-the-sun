@@ -2050,7 +2050,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventSystem: {fileID: 1349779262}
   zoomSpeedTouch: 0.03
-  zoomSpeedMouse: 10
+  zoomSpeedMouse: 20
   zoomBounds:
   - 8
   - 20

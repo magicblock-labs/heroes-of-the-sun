@@ -1692,10 +1692,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   eventSystem: {fileID: 1764238908}
   zoomSpeedTouch: 0.03
-  zoomSpeedMouse: 10
+  zoomSpeedMouse: 20
   zoomBounds:
   - 4
-  - 10
+  - 20
 --- !u!1 &639328833
 GameObject:
   m_ObjectHideFlags: 0
