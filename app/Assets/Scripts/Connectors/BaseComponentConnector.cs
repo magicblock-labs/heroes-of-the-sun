@@ -355,7 +355,7 @@ namespace Connectors
                 foreach (var account in accounts)
                     systemApplicationInstruction.Keys.Add(account);
 
-            Debug.Log($"Applying System with args.. :  {JsonConvert.SerializeObject(args)}");
+            Debug.Log($"Applying System {systemAddress} with args.. :  {JsonConvert.SerializeObject(args)}");
             return await ExecuteSystemApplicationInstruction(systemApplicationInstruction);
         }
 
@@ -438,7 +438,7 @@ namespace Connectors
             if (!result.WasSuccessful)
                 Debug.LogError($"System Application ErrorReason: {result.Reason}");
 
-            // await RpcClient.ConfirmTransaction(result.Result, Commitment.Processed);
+            await RpcClient.ConfirmTransaction(result.Result, Commitment.Processed);
             return result.WasSuccessful;
         }
 

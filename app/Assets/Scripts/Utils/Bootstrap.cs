@@ -1,4 +1,4 @@
-// #define FTUE_TESTING
+#define FTUE_TESTING
 
 using System;
 using System.Collections;
@@ -169,13 +169,14 @@ namespace Utils
                 await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
                 var allocator = await _allocator.LoadData();
 
-                label.text = $"Creating Settlement...";
-                await _settlement.SetSeed($"{allocator.CurrentX+1}x{allocator.CurrentY}");
+                label.text = $"Creating Settlementn at {allocator.CurrentX}_{allocator.CurrentY}...";
+                await _settlement.SetSeed($"{allocator.CurrentX}_{allocator.CurrentY}");
 
                 Debug.Log(JsonConvert.SerializeObject(await _settlement.LoadData()));
 
                 // await _settlement.Undelegate();
 
+                label.text = $"Assigning Settlement to the Player...";
                 label.text = $"Assigning Settlement to the Player...";
                 //assign settlement in player
                 await _player.AssignSettlement(
@@ -188,7 +189,7 @@ namespace Utils
                 _playerModel.Set(await _player.LoadData());
             }
             else
-                await _settlement.SetSeed($"{settlements[0].X}x{settlements[0].Y}");
+                await _settlement.SetSeed($"{settlements[0].X}_{settlements[0].Y}");
 
             label.text = $"Loading Settlement Data...";
             //todo make connectors subscribe and dont keep bootstrap alive

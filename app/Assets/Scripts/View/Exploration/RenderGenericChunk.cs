@@ -23,7 +23,7 @@ namespace View.Exploration
             if (location.x % chunksPerSettlement == 0 && location.y % chunksPerSettlement == 0)
             {
                 var settlementLocation = location / chunksPerSettlement;
-                await _settlement.SetSeed($"{settlementLocation.x}x{settlementLocation.y}", false);
+                await _settlement.SetSeed($"{settlementLocation.x}_{settlementLocation.y}", false);
                 var data = await _settlement.LoadData();
                 if (data != null)
                 {
