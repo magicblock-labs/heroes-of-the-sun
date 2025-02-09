@@ -25,10 +25,19 @@ using Random = UnityEngine.Random;
 
 namespace Utils
 {
+    public enum WalletType
+    {
+        None,
+        Adapter,
+        Web3Auth,
+        InGame
+    }
+
     public class Bootstrap : InjectableBehaviour
     {
         private const string PwdPrefKey = "pwd";
         private const string SessionPwdPrefKey = nameof(SessionPwdPrefKey);
+        public const string SelectedWalletTypeKey = nameof(SelectedWalletTypeKey);
         [SerializeField] private TMP_Text label;
         [SerializeField] private GameObject loginSelector;
 
@@ -47,27 +56,54 @@ namespace Utils
 
         private IEnumerator Start()
         {
+            loginSelector.SetActive(false);
             yield return null;
 
             label.text = "Sign In..";
 
-            DontDestroyOnLoad(gameObject);
+            _ = InitAsync();
+        }
 
-            _ = InitialiseAnalytics();
+        async Task InitAsync()
+        {
+            await InitialiseAnalytics();
+
+            var type = (WalletType)PlayerPrefs.GetInt(SelectedWalletTypeKey, (int)WalletType.None);
+
+            switch (type)
+            {
+                case WalletType.Adapter:
+                    LoginWalletAdapter();
+                    break;
+                case WalletType.Web3Auth:
+                    LoginWeb3Auth();
+                    break;
+                case WalletType.InGame:
+                    await LoginInGameWalletAsync();
+                    break;
+
+                case WalletType.None:
+                default:
+                    loginSelector.SetActive(true);
+                    break;
+            }
         }
 
         public void LoginWalletAdapter()
         {
+            PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Adapter);
             _ = Web3.Instance.LoginWalletAdapter();
         }
 
         public void LoginWeb3Auth()
         {
+            PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Web3Auth);
             _ = Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
         }
 
         public void LoginInGameWallet()
         {
+            PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.InGame);
             _ = LoginInGameWalletAsync();
         }
 
@@ -228,7 +264,10 @@ namespace Utils
 
             label.text = $"Delegating Hero...";
             if (await _hero.Delegate())
-                await _hero.CloneToRollup();
+            {
+                var settlement = _playerModel.Get().Settlements[0];
+                await _hero.Move(settlement.X * 48 - 1, settlement.Y * 48 - 1);
+            }
 
             //sync time
             label.text = $"SyncTime...";
@@ -263,7 +302,7 @@ namespace Utils
                 var validity = DateTimeOffset.UtcNow.AddHours(23).ToUnixTimeSeconds();
                 tx.Instructions.Add(Web3Utils.SessionWallet.CreateSessionIX(true, validity));
                 tx.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
-                
+
                 await Web3.Wallet.ActiveRpcClient.SendTransactionAsync(Convert.ToBase64String(tx.Serialize()),
                     skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
             }

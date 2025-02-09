@@ -60,7 +60,7 @@ namespace Model
                     if (!_heightmap.ContainsKey(neighbor))
                         continue;
 
-                    if (GetHeightDiff(current, neighbor) > 1)
+                    if (GetHeightDiff(current, neighbor) > 1 && current != start)
                         continue;
 
                     var projectedG = GetGScore(current) + 1;
