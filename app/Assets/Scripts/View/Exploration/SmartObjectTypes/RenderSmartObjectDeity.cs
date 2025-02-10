@@ -29,7 +29,7 @@ namespace View.Exploration.SmartObjectTypes
             _interact.Add(OnInteractionRequest);
             _dialogInteractionState.AnswerSubmitted.Add(OnAnswerSubmitted);
 
-            _=_connector.Initialize();
+            _ = _connector.Initialize();
         }
 
         private void OnAnswerSubmitted(int value)
@@ -68,7 +68,7 @@ namespace View.Exploration.SmartObjectTypes
 
         private void OnDestroy()
         {
-            _connector.Unsubscribe();
+            _ = _connector.Unsubscribe();
             _interact.Remove(OnInteractionRequest);
             _dialogInteractionState.AnswerSubmitted.Remove(OnAnswerSubmitted);
         }

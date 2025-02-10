@@ -24,7 +24,7 @@ namespace View.Exploration
             _connector.SetDataAddress(value);
             var data = await _connector.LoadData();
 
-            if (data.Entity != "9SUS7n9moZHmTZE4zx1e3bjoJH9ZzzwV9cPCTySDDFLu")
+            if (data.Entity != "8DJpBQTwFApakMw9T2qmUSfHWtgKXCvtv4n74iL2iSh5")
             {
                 Destroy(gameObject);
                 return;

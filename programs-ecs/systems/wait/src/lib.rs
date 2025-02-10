@@ -135,7 +135,6 @@ pub mod wait {
                         BuildingType::FoodCollector => {}
                         BuildingType::WoodCollector => {}
                         BuildingType::StoneCollector => {}
-                        BuildingType::GoldCollector => {}
                         _ => settlement.worker_assignment[worker_index] = -1,
                     }
                 } else {
