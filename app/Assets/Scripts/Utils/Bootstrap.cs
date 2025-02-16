@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
+using GplSession.Program;
 using Model;
 using Newtonsoft.Json;
 using Solana.Unity.Rpc.Models;
@@ -52,6 +53,7 @@ namespace Utils
         [Inject] private PlayerModel _playerModel;
         [Inject] private SettlementModel _settlementModel;
         [Inject] private LootModel _lootModel;
+        private PublicKey _sessionToken;
 
 
         private IEnumerator Start()
@@ -183,7 +185,7 @@ namespace Utils
             if (Web3.Wallet is not InGameWallet)
             {
                 Debug.Log("Initialize Session..");
-                await InitializeSession();
+                await CreateSession();
             }
             else
             {
@@ -276,36 +278,57 @@ namespace Utils
             SceneManager.LoadScene("Settlement");
         }
 
-        private async Task InitializeSession()
+        private async Task CreateSession()
         {
-            var sessionPassword = PlayerPrefs.GetString(SessionPwdPrefKey, null);
+            
+            var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
+            var password = RandomString(10);
 
-            if (sessionPassword == null)
+            PlayerPrefs.SetString(SessionPwdPrefKey, password);
+            
+            await Web3Utils.SessionWallet.CreateAccount(mnemonic, password);
+            
+            Web3Utils.SessionToken =
+                WorldProgram.FindSessionTokenPda(Web3Utils.SessionWallet.Account.PublicKey, Web3.Wallet.Account.PublicKey);
+            
+            var createSession = new CreateSessionAccounts()
             {
-                sessionPassword = RandomString(10);
-                PlayerPrefs.SetString(SessionPwdPrefKey, sessionPassword);
-            }
+                SessionToken = _sessionToken,
+                SessionSigner = Web3.Wallet.Account.PublicKey,
+                Authority = Web3.Wallet.Account.PublicKey,
+                TargetProgram = new PublicKey(WorldProgram.ID)
+            };
 
-            Web3Utils.SessionWallet =
-                await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID), sessionPassword);
-
-            if (!await Web3Utils.SessionWallet.IsSessionTokenInitialized())
+            var latestBlockHash =
+                await Web3.Wallet.ActiveRpcClient.GetLatestBlockHashAsync(commitment: Commitment.Processed);
+            var tx = new Transaction
             {
-                var tx = new Transaction
+                FeePayer = Web3.Account,
+                Instructions = new List<TransactionInstruction>
                 {
-                    FeePayer = Web3.Account,
-                    Instructions = new List<TransactionInstruction>(),
-                    RecentBlockHash = await Web3.BlockHash()
-                };
+                    GplSessionProgram.CreateSession(createSession, true, 1000, 100000000)
+                },
+                RecentBlockHash = latestBlockHash.Result.Value.Blockhash
+            };
 
-                // Set to 1 day in unix time
-                var validity = DateTimeOffset.UtcNow.AddHours(23).ToUnixTimeSeconds();
-                tx.Instructions.Add(Web3Utils.SessionWallet.CreateSessionIX(true, validity));
-                tx.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
+            var signedTx = await Web3.Wallet.SignTransaction(tx);
 
-                await Web3.Wallet.ActiveRpcClient.SendTransactionAsync(Convert.ToBase64String(tx.Serialize()),
-                    skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
+            var signature = await Web3.Wallet.ActiveRpcClient.SendTransactionAsync(
+                Convert.ToBase64String(signedTx.Serialize()),
+                skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
+
+
+            if (signature.WasSuccessful)
+                Debug.Log(signature.Result);
+
+            var errorMessage = signature.Reason;
+            errorMessage += "\n" + signature.RawRpcResponse;
+            if (signature.ErrorData != null)
+            {
+                errorMessage += "\n" + string.Join("\n", signature.ErrorData.Logs);
             }
+
+            Debug.LogError(errorMessage);
         }
     }
 }

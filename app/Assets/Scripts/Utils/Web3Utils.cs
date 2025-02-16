@@ -2,15 +2,19 @@ using System;
 using System.Threading.Tasks;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
+using Solana.Unity.Wallet;
 using UnityEngine;
+using World.Program;
 
 namespace Utils
 {
     public static class Web3Utils
     {
-        
+        public static PublicKey SessionToken;
+
         public static readonly InGameWallet EphemeralWallet = new(RpcCluster.DevNet, "https://devnet.magicblock.app", "wss://devnet.magicblock.app", true);
-        public static SessionWallet SessionWallet { get; set; }
+        
+        public static InGameWallet SessionWallet;
 
         public static async Task EnsureBalance()
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using Cysharp.Threading.Tasks;
+using GplSession.Accounts;
 using Hero.Program;
 using Newtonsoft.Json;
 using Settlement.Program;
@@ -330,20 +331,11 @@ namespace Connectors
             AccountMeta[] accounts = null)
         {
             var componentProgramAddress = GetComponentProgramAddress();
-            if (componentProgramAddress == null)
-                throw new Exception("component program address not set");
 
             var systemApplicationInstruction =
                 useDataAddress
                     ? GetSystemApplicationInstructionFromDataAddress(
-                        new ApplyAccounts()
-                        {
-                            BoltSystem = systemAddress,
-                            ComponentProgram = componentProgramAddress,
-                            BoltComponent = new PublicKey(_dataAddress),
-                            Authority = Web3.Account.PublicKey,
-                            InstructionSysvarAccount = SysVars.InstructionAccount
-                        },
+                        systemAddress,
                         Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args))
                     )
                     : GetSystemApplicationInstructionFromEntities(componentProgramAddress, systemAddress, args,
@@ -375,41 +367,31 @@ namespace Connectors
                 ).ToArray();
 
             return WorldProgram.ApplySystem(
+                new(WorldProgram.ID),
                 system,
                 entities,
                 Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
-                Web3.Account.PublicKey
+                Web3.Account.PublicKey, Web3Utils.SessionToken
             );
         }
 
         private TransactionInstruction GetSystemApplicationInstructionFromDataAddress(
-            ApplyAccounts accounts,
+            PublicKey systemAddress,
             byte[] args)
         {
-            List<AccountMeta> accountMetaList = new List<AccountMeta>()
+            var transactionInstruction = WorldProgram.Apply(new ApplyAccounts()
             {
-                AccountMeta.ReadOnly(accounts.ComponentProgram, false),
-                AccountMeta.ReadOnly(accounts.BoltSystem, false),
-                AccountMeta.Writable(accounts.BoltComponent, false),
-                AccountMeta.ReadOnly(accounts.Authority, false),
-                AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false)
-            };
-            byte[] numArray = new byte[1200];
-            int offset1 = 0;
-            numArray.WriteU64(16258613031726085112UL, offset1);
-            int offset2 = offset1 + 8;
-            numArray.WriteS32(args.Length, offset2);
-            int offset3 = offset2 + 4;
-            numArray.WriteSpan((ReadOnlySpan<byte>)args, offset3);
-            int length = offset3 + args.Length;
-            byte[] destinationArray = new byte[length];
-            Array.Copy((Array)numArray, (Array)destinationArray, length);
-            return new TransactionInstruction()
-            {
-                Keys = (IList<AccountMeta>)accountMetaList,
-                ProgramId = new PublicKey("WorLD15A7CrDwLcLy4fRqtaTb9fbd8o8iqiEMUDse2n").KeyBytes,
-                Data = destinationArray
-            };
+                BoltSystem = systemAddress,
+                Authority = Web3.Wallet.Account.PublicKey,
+                InstructionSysvarAccount = SysVars.InstructionAccount,
+                World = new PublicKey(WorldProgram.ID),
+                SessionToken = Web3Utils.SessionToken
+            }, args, new PublicKey(WorldProgram.ID));
+
+            transactionInstruction.Keys.Add(AccountMeta.ReadOnly(GetComponentProgramAddress(), false));
+            transactionInstruction.Keys.Add(AccountMeta.Writable(new PublicKey(_dataAddress), false));
+            transactionInstruction.Keys.Add(AccountMeta.ReadOnly(new PublicKey(WorldProgram.ID), false));
+            return transactionInstruction;
         }
 
 
