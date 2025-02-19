@@ -19,7 +19,6 @@ using UnityEngine;
 using UnityEngine.PlayerLoop;
 using Utils.Injection;
 using View;
-using World;
 
 namespace Connectors
 {

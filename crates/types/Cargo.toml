@@ -9,5 +9,5 @@ crate-type = ["cdylib", "lib"]
 name = "bolt_types"
 
 [dependencies]
-bolt-lang = "0.2.0"
+bolt-lang = "0.2.1"
 anchor-lang = "0.30.1"

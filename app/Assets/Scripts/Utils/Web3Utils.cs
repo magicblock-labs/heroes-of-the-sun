@@ -4,7 +4,6 @@ using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
 using UnityEngine;
-using World.Program;
 
 namespace Utils
 {

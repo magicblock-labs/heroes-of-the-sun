@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
-using GplSession.Program;
 using Model;
 using Newtonsoft.Json;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
+using Solana.Unity.SessionKeys.GplSession.Program;
 using Solana.Unity.Wallet;
 using Solana.Unity.Wallet.Bip39;
 using TMPro;
@@ -280,21 +280,44 @@ namespace Utils
 
         private async Task CreateSession()
         {
-            
-            var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
-            var password = RandomString(10);
+            async Task CreateSessionSigner()
+            {
+                var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
+                var password = RandomString(10);
 
-            PlayerPrefs.SetString(SessionPwdPrefKey, password);
+                PlayerPrefs.SetString(SessionPwdPrefKey, password);
             
-            await Web3Utils.SessionWallet.CreateAccount(mnemonic, password);
-            
+                await Web3Utils.SessionWallet.CreateAccount(mnemonic, password);
+            }
+
+            var password = PlayerPrefs.GetString(SessionPwdPrefKey, null);
+
+            if (!string.IsNullOrEmpty(password))
+            {
+                var account = await Web3.Instance.LoginInGameWallet(password);
+                if (account == null) //password corrupt - recreate
+                {
+                    PlayerPrefs.DeleteKey(SessionPwdPrefKey);
+                    await CreateSessionSigner();
+                }
+                else
+                {
+                    await Web3Utils.SessionWallet.Login(password);
+                }
+            }
+
+            else
+            {
+                await CreateSessionSigner();
+            }
+        
             Web3Utils.SessionToken =
                 WorldProgram.FindSessionTokenPda(Web3Utils.SessionWallet.Account.PublicKey, Web3.Wallet.Account.PublicKey);
             
             var createSession = new CreateSessionAccounts()
             {
                 SessionToken = _sessionToken,
-                SessionSigner = Web3.Wallet.Account.PublicKey,
+                SessionSigner = Web3Utils.SessionWallet.Account.PublicKey,
                 Authority = Web3.Wallet.Account.PublicKey,
                 TargetProgram = new PublicKey(WorldProgram.ID)
             };
@@ -306,7 +329,7 @@ namespace Utils
                 FeePayer = Web3.Account,
                 Instructions = new List<TransactionInstruction>
                 {
-                    GplSessionProgram.CreateSession(createSession, true, 1000, 100000000)
+                    GplSessionProgram.CreateSession(createSession, true, 1000, new(WorldProgram.ID))
                 },
                 RecentBlockHash = latestBlockHash.Result.Value.Blockhash
             };

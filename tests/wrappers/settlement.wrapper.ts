@@ -289,18 +289,18 @@ export class SettlementWrapper {
 
   async reset() {
 
-    const applySystem = await ApplySystem({
-      world: this.worldPda,
-      authority: this.provider.wallet.publicKey,
-      systemId: this.resetSystem.programId,
-      entities: [{
-        entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
-      }],
-    }
-    );
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`Reset: ${txSign}`);
+    // const applySystem = await ApplySystem({
+    //   world: this.worldPda,
+    //   authority: this.provider.wallet.publicKey,
+    //   systemId: this.resetSystem.programId,
+    //   entities: [{
+    //     entity: this.entityPda,
+    //     components: [{ componentId: this.settlementComponent.programId }],
+    //   }],
+    // }
+    // );
+    // const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    // console.log(`Reset: ${txSign}`);
 
     return await this.state();
   }
