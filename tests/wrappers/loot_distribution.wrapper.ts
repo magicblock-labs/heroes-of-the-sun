@@ -38,7 +38,7 @@ export class LootDistributionWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: "hots_loot_distribution"
+        seed: Buffer.from("hots_loot_distribution")
       });
 
       this.lootDistributionComponent = anchor.workspace.Lootdistribution as Program<Lootdistribution>;

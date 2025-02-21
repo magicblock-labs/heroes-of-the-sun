@@ -45,7 +45,7 @@ export class SmartObjectWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: "hots_smart_object_test2"
+        seed: Buffer.from("hots_smart_object_test2")
       });
 
       this.smartObjectLocationComponent = anchor.workspace.Smartobjectlocation as Program<Smartobjectlocation>;

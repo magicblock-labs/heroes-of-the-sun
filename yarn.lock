@@ -43,23 +43,24 @@
     bn.js "^5.1.2"
     buffer-layout "^1.2.0"
 
-"@magicblock-labs/bolt-sdk@0.1.10":
-  version "0.1.10"
-  resolved "https://registry.npmjs.org/@magicblock-labs/bolt-sdk/-/bolt-sdk-0.1.10.tgz"
-  integrity sha512-i0qo27HAaTM5IG+TpKUWp9AFmqU2VTB8g7UuZlEDEc9K40XeuEfTuuz5U0FBCDozl6oWwDNtiBqMwmLYB8N+Rg==
+"@magicblock-labs/bolt-sdk@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@magicblock-labs/bolt-sdk/-/bolt-sdk-0.2.1.tgz"
+  integrity sha512-Ufhkiwb+2GJ5VUhu2BBeXRoJ8Z1EW6sJinM5/UIKAau8ds79uvneoJUJzniO0woUXVG7YDRI+UPDT2p7qnIbAw==
   dependencies:
     "@coral-xyz/anchor" "^0.30.1"
-    "@magicblock-labs/ephemeral-rollups-sdk" "0.0.6"
+    "@magicblock-labs/ephemeral-rollups-sdk" "0.2.1"
     "@metaplex-foundation/beet" "^0.7.1"
     "@metaplex-foundation/beet-solana" "^0.4.0"
 
-"@magicblock-labs/ephemeral-rollups-sdk@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.npmjs.org/@magicblock-labs/ephemeral-rollups-sdk/-/ephemeral-rollups-sdk-0.0.6.tgz"
-  integrity sha512-moep9ja4fmDXPa0OcjJBvvOTUNrds8rwTzxmbGd5Myu/6AsykcCpTuUZjleQCRotu/yODLVkpheMDr1S0/mtpA==
+"@magicblock-labs/ephemeral-rollups-sdk@0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@magicblock-labs/ephemeral-rollups-sdk/-/ephemeral-rollups-sdk-0.2.1.tgz"
+  integrity sha512-s1j6kXLbg6hA5ysSkG1pGEutAdxPOymtl2I94pD5UVfWWILcR0rbqONOvNV1WKDGZbILqC1AjFl/7GJGRMKB5Q==
   dependencies:
     "@metaplex-foundation/beet" "^0.7.2"
-    "@solana/web3.js" "^1.92.3"
+    "@solana/web3.js" "^1.98.0"
+    rpc-websockets "^9.0.4"
 
 "@metaplex-foundation/beet-solana@^0.4.0":
   version "0.4.1"
@@ -198,10 +199,10 @@
     "@solana/spl-token-metadata" "^0.1.6"
     buffer "^6.0.3"
 
-"@solana/web3.js@^1.32.0", "@solana/web3.js@^1.56.2", "@solana/web3.js@^1.68.0", "@solana/web3.js@^1.92.3", "@solana/web3.js@^1.95.3":
-  version "1.95.4"
-  resolved "https://registry.npmjs.org/@solana/web3.js/-/web3.js-1.95.4.tgz"
-  integrity sha512-sdewnNEA42ZSMxqkzdwEWi6fDgzwtJHaQa5ndUGEJYtoOnM6X5cvPmjoTUp7/k7bRrVAxfBgDnvQQHD6yhlLYw==
+"@solana/web3.js@^1.32.0", "@solana/web3.js@^1.56.2", "@solana/web3.js@^1.68.0", "@solana/web3.js@^1.95.3", "@solana/web3.js@^1.98.0":
+  version "1.98.0"
+  resolved "https://registry.npmjs.org/@solana/web3.js/-/web3.js-1.98.0.tgz"
+  integrity sha512-nz3Q5OeyGFpFCR+erX2f6JPt3sKhzhYcSycBCSPkWjzSVDh/Rr1FqTVMRe58FKO16/ivTUcuJjeS5MyBvpkbzA==
   dependencies:
     "@babel/runtime" "^7.25.0"
     "@noble/curves" "^1.4.2"
@@ -1260,10 +1261,10 @@ require-directory@^2.1.1:
   resolved "https://registry.npmjs.org/require-directory/-/require-directory-2.1.1.tgz"
   integrity sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==
 
-rpc-websockets@^9.0.2:
-  version "9.0.2"
-  resolved "https://registry.npmjs.org/rpc-websockets/-/rpc-websockets-9.0.2.tgz"
-  integrity sha512-YzggvfItxMY3Lwuax5rC18inhbjJv9Py7JXRHxTIi94JOLrqBsSsUUc5bbl5W6c11tXhdfpDPK0KzBhoGe8jjw==
+rpc-websockets@^9.0.2, rpc-websockets@^9.0.4:
+  version "9.0.4"
+  resolved "https://registry.npmjs.org/rpc-websockets/-/rpc-websockets-9.0.4.tgz"
+  integrity sha512-yWZWN0M+bivtoNLnaDbtny4XchdAIF5Q4g/ZsC5UC61Ckbp0QczwO8fg44rV3uYmY4WHd+EZQbn90W1d8ojzqQ==
   dependencies:
     "@swc/helpers" "^0.5.11"
     "@types/uuid" "^8.3.4"

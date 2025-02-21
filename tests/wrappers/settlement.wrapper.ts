@@ -113,7 +113,7 @@ export class SettlementWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: `${x}x${y}`
+        seed: Buffer.from(`${x}x${y}`)
       });
       let txSign = await this.provider.sendAndConfirm(addEntity.transaction);
       this.entityPda = addEntity.entityPda;
@@ -146,7 +146,7 @@ export class SettlementWrapper {
       }],
       args
     });
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction, null, { skipPreflight: true });
     console.log(`build tx: ${txSign}`);
 
     return await this.state();

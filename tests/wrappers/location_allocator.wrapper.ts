@@ -30,7 +30,7 @@ export class LocationAllocatorWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: "hots_allocator"
+        seed: Buffer.from("hots_allocator")
       });
 
       this.locationAllocatorComponent = anchor.workspace.Locationallocator as Program<Locationallocator>;
