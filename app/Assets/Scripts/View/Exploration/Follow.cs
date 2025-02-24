@@ -11,6 +11,8 @@ namespace View.Exploration
         private float _rotDuringMouseDown;
         private float _mousePositionOnDown;
 
+        [SerializeField] private bool rotate = true;
+
         void Update()
         {
             if (_target == null)
@@ -26,22 +28,31 @@ namespace View.Exploration
             }
 
             var currentTargetPosition = _target.position;
-            var targetPoint = currentTargetPosition + Quaternion.Euler(0, _rot, 0) * offset;
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                _rotDuringMouseDown = _rot;
-                _mousePositionOnDown = Input.mousePosition.x;
-            }
 
-            if (Input.GetMouseButton(0))
+            if (!rotate)
             {
-                _rot = _rotDuringMouseDown + (Input.mousePosition.x - _mousePositionOnDown) / 4;
-                transform.position = targetPoint;
+                transform.position = currentTargetPosition + offset;
             }
             else
             {
-                transform.position += (targetPoint - transform.position) * Time.deltaTime;
+                var targetPoint = currentTargetPosition + Quaternion.Euler(0, _rot, 0) * offset;
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    _rotDuringMouseDown = _rot;
+                    _mousePositionOnDown = Input.mousePosition.x;
+                }
+
+                if (Input.GetMouseButton(0))
+                {
+                    _rot = _rotDuringMouseDown + (Input.mousePosition.x - _mousePositionOnDown) / 4;
+                    transform.position = targetPoint;
+                }
+                else
+                {
+                    transform.position += (targetPoint - transform.position) * Time.deltaTime;
+                }
             }
 
             transform.LookAt(currentTargetPosition, Vector3.up);
