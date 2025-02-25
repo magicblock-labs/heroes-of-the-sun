@@ -48,7 +48,6 @@ namespace Utils
         [Inject] private PlayerSettlementConnector _settlement;
         [Inject] private HeroConnector _hero;
 
-
         [Inject] private PlayerModel _playerModel;
         [Inject] private SettlementModel _settlementModel;
         [Inject] private LootModel _lootModel;
@@ -194,8 +193,7 @@ namespace Utils
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
             await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
             _playerModel.Set(await _player.LoadData());
-
-
+            
             //check if settlement exists
             var settlements = _playerModel.Get().Settlements;
             if (settlements.Length == 0)
@@ -266,7 +264,7 @@ namespace Utils
             if (await _hero.Delegate())
             {
                 var settlement = _playerModel.Get().Settlements[0];
-                await _hero.Move(settlement.X * 48 - 1, settlement.Y * 48 - 1);
+                await _hero.Move(settlement.X * 96 - 1, settlement.Y * 96 - 1);
             }
 
             //sync time
