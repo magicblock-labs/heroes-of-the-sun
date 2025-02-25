@@ -25,11 +25,8 @@ namespace View.Exploration
                 var settlementLocation = location / chunksPerSettlement;
                 await _settlement.SetSeed($"{settlementLocation.x}_{settlementLocation.y}", false);
                 var data = await _settlement.LoadData();
-                if (data != null)
-                {
-                    gameObject.name = $"Settlement@{location.x}x{location.y}";
-                    Instantiate(settlementPrefab, transform).Create(data);
-                }
+                gameObject.name = $"Settlement@{location.x}x{location.y}";
+                Instantiate(settlementPrefab, transform).Create(data);
             }
             else
             {

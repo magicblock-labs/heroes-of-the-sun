@@ -10,7 +10,7 @@ namespace View.Exploration
 
         public void Create(Settlement.Accounts.Settlement value)
         {
-            keyLabel.text = value.Owner.ToString()[..4];
+            keyLabel.text = value?.Owner.ToString()[..4] ?? "Unoccupied..";
 
             foreach (var settlementDataRenderer in GetComponentsInChildren<IDisplaySettlementData>())
                 settlementDataRenderer.SetData(value);
