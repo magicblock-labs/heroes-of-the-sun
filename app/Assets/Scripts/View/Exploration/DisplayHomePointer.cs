@@ -2,40 +2,42 @@ using Model;
 using TMPro;
 using UnityEngine;
 using Utils.Injection;
-using View.Exploration;
 
-public class DisplayHomePointer : InjectableBehaviour
+namespace View.Exploration
 {
-    [Inject] private PlayerModel _playerModel;
-
-    [SerializeField] private RectTransform _homePointer;
-    [SerializeField] private TMP_Text _distanceLabel;
-
-    [SerializeField] private Camera _minimapCamera;
-
-    private Vector3 _settlementPosition;
-    private Transform _heroTransform;
-
-    void Start()
+    public class DisplayHomePointer : InjectableBehaviour
     {
-        var settlement = _playerModel.Get().Settlements[0];
-        _settlementPosition = new Vector3(settlement.X * 96 - 1, 0, settlement.Y * 96 - 1);
-    }
+        [Inject] private PlayerModel _playerModel;
 
-    void Update()
-    {
-        if (_heroTransform == null)
+        [SerializeField] private RectTransform _homePointer;
+        [SerializeField] private TMP_Text _distanceLabel;
+
+        [SerializeField] private Camera _minimapCamera;
+
+        private Vector3 _settlementPosition;
+        private Transform _heroTransform;
+
+        void Start()
         {
-            var hero = FindFirstObjectByType<PointAndClickMovement>();
-            if (hero != null)
-                _heroTransform = hero.transform;
-            else
-                return;
+            var settlement = _playerModel.Get().Settlements[0];
+            _settlementPosition = new Vector3(settlement.X * 96 - 1, 0, settlement.Y * 96 - 1);
         }
 
-        var viewportPos = _minimapCamera.WorldToViewportPoint(_settlementPosition);
-        _distanceLabel.text = $"{(_heroTransform.position - _settlementPosition).magnitude:0}m";
+        void Update()
+        {
+            if (_heroTransform == null)
+            {
+                var hero = FindFirstObjectByType<PointAndClickMovement>();
+                if (hero != null)
+                    _heroTransform = hero.transform;
+                else
+                    return;
+            }
 
-        _homePointer.anchoredPosition = new Vector2(Mathf.Clamp(viewportPos.x, 0, 1), Mathf.Clamp(viewportPos.y, 0, 1)) * 256;
+            var viewportPos = _minimapCamera.WorldToViewportPoint(_settlementPosition);
+            _distanceLabel.text = $"{(_heroTransform.position - _settlementPosition).magnitude:0}m";
+
+            _homePointer.anchoredPosition = new Vector2(Mathf.Clamp(viewportPos.x, 0, 1), Mathf.Clamp(viewportPos.y, 0, 1)) * 256;
+        }
     }
 }

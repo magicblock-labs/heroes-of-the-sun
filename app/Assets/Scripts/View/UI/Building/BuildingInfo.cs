@@ -65,7 +65,7 @@ namespace View.UI.Building
 
             var needsWorkers = value.TurnsToBuild > 0 ||
                                value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector
-                                   or BuildingType.StoneCollector ;
+                                   or BuildingType.StoneCollector;
             workerStatus.gameObject.SetActive(needsWorkers);
             if (needsWorkers)
                 workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
@@ -86,7 +86,8 @@ namespace View.UI.Building
             foreach (RectTransform child in controls.transform)
             {
                 child.anchoredPosition = Vector2.zero;
-                child.DOAnchorPos(_actionPositions[child], .1f);
+                if (value && _actionPositions.TryGetValue(child, out var pos))
+                    child.DOAnchorPos(pos, .1f);
             }
         }
     }

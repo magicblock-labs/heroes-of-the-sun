@@ -1,3 +1,4 @@
+using System;
 using Connectors;
 using Model;
 using UnityEngine;
@@ -25,8 +26,17 @@ namespace View.Exploration
                 var settlementLocation = location / chunksPerSettlement;
                 await _settlement.SetSeed($"{settlementLocation.x}_{settlementLocation.y}", false);
                 var data = await _settlement.LoadData();
-                gameObject.name = $"Settlement@{location.x}x{location.y}";
-                Instantiate(settlementPrefab, transform).Create(data);
+
+                //could have been destroyed during the await thing
+                try
+                {
+                    gameObject.name = $"Settlement@{location.x}x{location.y}";
+                    Instantiate(settlementPrefab, transform).Create(data);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning(e.Message); //can throw null as you can leave the scene before await is done
+                }
             }
             else
             {
