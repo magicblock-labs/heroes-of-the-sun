@@ -184,7 +184,7 @@ namespace Utils
             Web3.OnLogin -= HandleSignIn;
 
             Destroy(loginSelector);
-            loginSelector.SetActive(true);
+            loaderContainer.SetActive(true);
 
             AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
             {
