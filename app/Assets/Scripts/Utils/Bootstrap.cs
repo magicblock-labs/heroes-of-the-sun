@@ -41,6 +41,7 @@ namespace Utils
         public const string SelectedWalletTypeKey = nameof(SelectedWalletTypeKey);
         [SerializeField] private TMP_Text label;
         [SerializeField] private GameObject loginSelector;
+        [SerializeField] private GameObject loaderContainer;
         [SerializeField] private Image loader;
         [SerializeField] private Graphic[] final;
 
@@ -60,6 +61,7 @@ namespace Utils
         private IEnumerator Start()
         {
             loginSelector.SetActive(false);
+            loaderContainer.SetActive(false);
             yield return null;
 
             label.text = "Sign In..";
@@ -182,6 +184,7 @@ namespace Utils
             Web3.OnLogin -= HandleSignIn;
 
             Destroy(loginSelector);
+            loginSelector.SetActive(true);
 
             AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
             {
