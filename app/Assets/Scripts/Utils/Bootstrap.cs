@@ -326,7 +326,7 @@ namespace Utils
                 yield return null;
             }
             
-            // SceneManager.LoadScene("Settlement");
+            SceneManager.LoadScene("Settlement");
         }
 
         private async Task InitializeSession()
