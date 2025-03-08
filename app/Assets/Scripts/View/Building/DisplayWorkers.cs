@@ -9,6 +9,9 @@ namespace View.Building
 
         public void SetData(global::Settlement.Accounts.Settlement value)
         {
+            if (value == null)
+                return;
+            
             var allocation = value.WorkerAssignment;
             for (var i = 0; i < allocation.Length; i++)
             {

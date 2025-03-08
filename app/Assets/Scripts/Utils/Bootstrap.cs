@@ -20,6 +20,7 @@ using Unity.Services.Core;
 using Unity.Services.Core.Environments;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Utils.Injection;
 using World.Program;
 using Random = UnityEngine.Random;
@@ -41,6 +42,9 @@ namespace Utils
         public const string SelectedWalletTypeKey = nameof(SelectedWalletTypeKey);
         [SerializeField] private TMP_Text label;
         [SerializeField] private GameObject loginSelector;
+        [SerializeField] private GameObject loaderContainer;
+        [SerializeField] private Image loader;
+        [SerializeField] private Graphic[] final;
 
         [Inject] private PlayerConnector _player;
         [Inject] private TokenConnector _token;
@@ -49,16 +53,17 @@ namespace Utils
         [Inject] private PlayerSettlementConnector _settlement;
         [Inject] private HeroConnector _hero;
 
-
         [Inject] private PlayerModel _playerModel;
         [Inject] private SettlementModel _settlementModel;
         [Inject] private LootModel _lootModel;
+        private float _progress;
         private PublicKey _sessionToken;
 
 
         private IEnumerator Start()
         {
             loginSelector.SetActive(false);
+            loaderContainer.SetActive(false);
             yield return null;
 
             label.text = "Sign In..";
@@ -167,12 +172,21 @@ namespace Utils
                 .Select(s => s[Random.Range(0, s.Length)]).ToArray());
         }
 
+        private void Update()
+        {
+            if (loader.fillAmount < _progress)
+            {
+                loader.fillAmount += Time.deltaTime * 0.5f;
+            }
+        }
+
 
         private async void HandleSignIn(Account account)
         {
             Web3.OnLogin -= HandleSignIn;
 
             Destroy(loginSelector);
+            loaderContainer.SetActive(true);
 
             AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
             {
@@ -192,12 +206,17 @@ namespace Utils
                 label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
                 await Web3Utils.EnsureBalance();
             }
+            
+            
+
+            _progress = .1f;
 
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
             await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
             _playerModel.Set(await _player.LoadData());
-
-
+            
+            _progress = .2f;
+            
             //check if settlement exists
             var settlements = _playerModel.Get().Settlements;
             if (settlements.Length == 0)
@@ -206,6 +225,9 @@ namespace Utils
                 //otherwise - get state of allocator
                 await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
                 var allocator = await _allocator.LoadData();
+                
+                
+                _progress = .3f;
 
                 label.text = $"Creating Settlementn at {allocator.CurrentX}_{allocator.CurrentY}...";
                 await _settlement.SetSeed($"{allocator.CurrentX}_{allocator.CurrentY}");
@@ -223,11 +245,17 @@ namespace Utils
                         { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
                         { new PublicKey(_allocator.EntityPda), _allocator.GetComponentProgramAddress() },
                     });
+                
+                
+                _progress = .4f;
 
                 _playerModel.Set(await _player.LoadData());
             }
             else
                 await _settlement.SetSeed($"{settlements[0].X}_{settlements[0].Y}");
+            
+            
+            _progress = .5f;
 
             label.text = $"Loading Settlement Data...";
             //todo make connectors subscribe and dont keep bootstrap alive
@@ -235,18 +263,27 @@ namespace Utils
 
             if (await _settlement.Delegate())
                 await _settlement.CloneToRollup();
+            
+            
+            _progress = .6f;
 
             //load loot
             label.text = $"Loading Loot Data...";
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
             _lootModel.Set(await _loot.LoadData());
 
+            
+            _progress = .7f;
+            
             await _loot.Subscribe(_lootModel.Set);
             await _settlement.Subscribe(_settlementModel.Set);
 
             label.text = $"Init Gold Token...";
             await _token.LoadData();
             await _token.Subscribe(null);
+            
+            
+            _progress = .8f;
 
             //ensure hero is created
             label.text = $"Creating Hero Data...";
@@ -263,18 +300,34 @@ namespace Utils
                     });
             }
 
+            
+            _progress = .9f;
 
             label.text = $"Delegating Hero...";
             if (await _hero.Delegate())
             {
                 var settlement = _playerModel.Get().Settlements[0];
-                await _hero.Move(settlement.X * 48 - 1, settlement.Y * 48 - 1);
+                await _hero.Move(settlement.X * 96 - 1, settlement.Y * 96 - 1);
             }
 
+
+            _progress = 1;
             //sync time
             label.text = $"SyncTime...";
             await Web3Utils.SyncTime();
             label.text = $"Load Settlement...";
+
+            StartCoroutine(LoadingCompleted());
+        }
+
+        private IEnumerator LoadingCompleted()
+        {
+            for (var i = 0f; i < 1f; i += Time.deltaTime){
+                foreach (var g in final)
+                    g.color = new Color(1, 1, 1,  Mathf.Lerp(0f, 1f, i));
+                yield return null;
+            }
+            
             SceneManager.LoadScene("Settlement");
         }
 

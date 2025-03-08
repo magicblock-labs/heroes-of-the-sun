@@ -27,6 +27,9 @@ namespace View.Building
 
         public void SetData(global::Settlement.Accounts.Settlement value)
         {
+            if (value == null)
+                return;
+            
             if (transform.childCount > 0)
                 return;
 

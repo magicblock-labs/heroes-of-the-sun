@@ -14,6 +14,9 @@ namespace View.Building
 
         public void SetData(global::Settlement.Accounts.Settlement value)
         {
+            if (value == null)
+                return;
+            
             CreateBuildings(value.Buildings);
         }
 
