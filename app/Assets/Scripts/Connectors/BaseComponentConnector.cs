@@ -225,7 +225,9 @@ namespace Connectors
                                 Entity = new PublicKey(_entityPda),
                                 Data = dataAddress,
                                 ComponentProgram = GetComponentProgramAddress(),
-                                SystemProgram = SystemProgram.ProgramIdKey
+                                SystemProgram = SystemProgram.ProgramIdKey,
+                                Authority = Web3.Wallet.Account.PublicKey,
+                                InstructionSysvarAccount = SysVars.InstructionAccount
                             })
                         },
                         RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
@@ -330,16 +332,35 @@ namespace Connectors
         {
             var componentProgramAddress = GetComponentProgramAddress();
 
-            var systemApplicationInstruction =
-                useDataAddress
-                    ? GetSystemApplicationInstructionFromDataAddress(
-                        systemAddress,
-                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args))
-                    )
-                    : GetSystemApplicationInstructionFromEntities(componentProgramAddress, systemAddress, args,
-                        extraEntities);
+            var input = new WorldProgram.EntityType[]
+            {
+                new(new PublicKey(_entityPda), new[] { componentProgramAddress })
+            };
 
-            systemApplicationInstruction.Keys.Add(AccountMeta.ReadOnly(new(WorldPda), false));
+            if (extraEntities != null)
+                input = input
+                    .Concat(extraEntities.Select(pair => new WorldProgram.EntityType(pair.Key, new[] { pair.Value }))
+                        .ToArray()).ToArray();
+
+
+            var systemApplicationInstruction = WorldProgram.ApplySystem(
+                new PublicKey(WorldProgram.ID),
+                systemAddress,
+                input,
+                Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
+                Web3.Account.PublicKey,
+                Web3Utils.SessionToken?.SessionSigner);
+
+            // var systemApplicationInstruction =
+            //     useDataAddress
+            //         ? GetSystemApplicationInstructionFromDataAddress(
+            //             systemAddress,
+            //             Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args))
+            //         )
+            //         : GetSystemApplicationInstructionFromEntities(componentProgramAddress, systemAddress, args,
+            //             extraEntities);
+            //
+            // systemApplicationInstruction.Keys.Add(AccountMeta.ReadOnly(new(WorldPda), false));
 
             if (accounts != null)
                 foreach (var account in accounts)
@@ -365,11 +386,11 @@ namespace Connectors
                 ).ToArray();
 
             return WorldProgram.ApplySystem(
-                new(WorldProgram.ID),
+                new PublicKey(WorldProgram.ID),
                 system,
                 entities,
                 Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
-                Web3.Account.PublicKey, Web3Utils.SessionToken
+                Web3.Account.PublicKey, Web3Utils.SessionToken?.SessionSigner
             );
         }
 
@@ -382,8 +403,7 @@ namespace Connectors
                 BoltSystem = systemAddress,
                 Authority = Web3.Wallet.Account.PublicKey,
                 InstructionSysvarAccount = SysVars.InstructionAccount,
-                World = new PublicKey(WorldProgram.ID),
-                SessionToken = Web3Utils.SessionToken
+                World = new PublicKey(WorldProgram.ID)
             }, args, new PublicKey(WorldProgram.ID));
 
             transactionInstruction.Keys.Add(AccountMeta.ReadOnly(GetComponentProgramAddress(), false));

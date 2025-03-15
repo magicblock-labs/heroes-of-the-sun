@@ -46,6 +46,42 @@ namespace Settlement
             }
         }
 
+        public partial class SessionToken
+        {
+            public static ulong ACCOUNT_DISCRIMINATOR => 1081168673100727529UL;
+            public static ReadOnlySpan<byte> ACCOUNT_DISCRIMINATOR_BYTES => new byte[]{233, 4, 115, 14, 46, 21, 1, 15};
+            public static string ACCOUNT_DISCRIMINATOR_B58 => "fyZWTdUu1pS";
+            public PublicKey Authority { get; set; }
+
+            public PublicKey TargetProgram { get; set; }
+
+            public PublicKey SessionSigner { get; set; }
+
+            public long ValidUntil { get; set; }
+
+            public static SessionToken Deserialize(ReadOnlySpan<byte> _data)
+            {
+                int offset = 0;
+                ulong accountHashValue = _data.GetU64(offset);
+                offset += 8;
+                if (accountHashValue != ACCOUNT_DISCRIMINATOR)
+                {
+                    return null;
+                }
+
+                SessionToken result = new SessionToken();
+                result.Authority = _data.GetPubKey(offset);
+                offset += 32;
+                result.TargetProgram = _data.GetPubKey(offset);
+                offset += 32;
+                result.SessionSigner = _data.GetPubKey(offset);
+                offset += 32;
+                result.ValidUntil = _data.GetS64(offset);
+                offset += 8;
+                return result;
+            }
+        }
+
         public partial class Settlement
         {
             public static ulong ACCOUNT_DISCRIMINATOR => 13125890802739514167UL;
@@ -222,7 +258,7 @@ namespace Settlement
             WaterCollector,
             WaterStorage,
             StoneCollector,
-            StoneStorage,
+            StoneStorage
         }
 
         public partial class EnvironmentState
@@ -311,6 +347,17 @@ namespace Settlement
             return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Entity>>(res, resultingAccounts);
         }
 
+        public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SessionToken>>> GetSessionTokensAsync(string programAddress = SettlementProgram.ID, Commitment commitment = Commitment.Confirmed)
+        {
+            var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = SessionToken.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
+            var res = await RpcClient.GetProgramAccountsAsync(programAddress, commitment, memCmpList: list);
+            if (!res.WasSuccessful || !(res.Result?.Count > 0))
+                return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SessionToken>>(res);
+            List<SessionToken> resultingAccounts = new List<SessionToken>(res.Result.Count);
+            resultingAccounts.AddRange(res.Result.Select(result => SessionToken.Deserialize(Convert.FromBase64String(result.Account.Data[0]))));
+            return new Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<SessionToken>>(res, resultingAccounts);
+        }
+
         public async Task<Solana.Unity.Programs.Models.ProgramAccountsResultWrapper<List<Settlement.Accounts.Settlement>>> GetSettlementsAsync(string programAddress = SettlementProgram.ID, Commitment commitment = Commitment.Confirmed)
         {
             var list = new List<Solana.Unity.Rpc.Models.MemCmp>{new Solana.Unity.Rpc.Models.MemCmp{Bytes = Settlement.Accounts.Settlement.ACCOUNT_DISCRIMINATOR_B58, Offset = 0}};
@@ -331,6 +378,15 @@ namespace Settlement
             return new Solana.Unity.Programs.Models.AccountResultWrapper<Entity>(res, resultingAccount);
         }
 
+        public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<SessionToken>> GetSessionTokenAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
+        {
+            var res = await RpcClient.GetAccountInfoAsync(accountAddress, commitment);
+            if (!res.WasSuccessful)
+                return new Solana.Unity.Programs.Models.AccountResultWrapper<SessionToken>(res);
+            var resultingAccount = SessionToken.Deserialize(Convert.FromBase64String(res.Result.Value.Data[0]));
+            return new Solana.Unity.Programs.Models.AccountResultWrapper<SessionToken>(res, resultingAccount);
+        }
+
         public async Task<Solana.Unity.Programs.Models.AccountResultWrapper<Settlement.Accounts.Settlement>> GetSettlementAsync(string accountAddress, Commitment commitment = Commitment.Finalized)
         {
             var res = await RpcClient.GetAccountInfoAsync(accountAddress, commitment);
@@ -347,6 +403,18 @@ namespace Settlement
                 Entity parsingResult = null;
                 if (e.Value?.Data?.Count > 0)
                     parsingResult = Entity.Deserialize(Convert.FromBase64String(e.Value.Data[0]));
+                callback(s, e, parsingResult);
+            }, commitment);
+            return res;
+        }
+
+        public async Task<SubscriptionState> SubscribeSessionTokenAsync(string accountAddress, Action<SubscriptionState, Solana.Unity.Rpc.Messages.ResponseValue<Solana.Unity.Rpc.Models.AccountInfo>, SessionToken> callback, Commitment commitment = Commitment.Finalized)
+        {
+            SubscriptionState res = await StreamingRpcClient.SubscribeAccountInfoAsync(accountAddress, (s, e) =>
+            {
+                SessionToken parsingResult = null;
+                if (e.Value?.Data?.Count > 0)
+                    parsingResult = SessionToken.Deserialize(Convert.FromBase64String(e.Value.Data[0]));
                 callback(s, e, parsingResult);
             }, commitment);
             return res;
@@ -435,6 +503,7 @@ namespace Settlement
             public PublicKey Authority { get; set; }
 
             public PublicKey InstructionSysvarAccount { get; set; } = new PublicKey("Sysvar1nstructions1111111111111111111111111");
+            public PublicKey SessionToken { get; set; }
         }
 
         public static class SettlementProgram
@@ -525,7 +594,7 @@ namespace Settlement
             {
                 programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BoltComponent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BoltComponent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SessionToken == null ? programId : accounts.SessionToken, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(9222597562720635099UL, offset);

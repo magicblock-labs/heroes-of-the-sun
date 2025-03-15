@@ -536,9 +536,9 @@ checksum = "8d696c370c750c948ada61c69a0ee2cbbb9c50b1019ddb86d9317157a99c2cae"
 
 [[package]]
 name = "bolt-attribute-bolt-arguments"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "12f85cd39a1adc40ad8ddae8c5c159ad37952dc8b8b99485881c323d18fc9ff8"
+checksum = "1794aafe3b42c1cef581c0bf7050deab04c4a9664dd12a4ec7cc9b403112f04f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -547,9 +547,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-component"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f443f0b4a64c12d93cf3ddca283e784315c234cc099fea3b78329f94f22ee18e"
+checksum = "0be13edfc473075a6127d5382ff9f00766cabc8fdde3d4e7a5525d3a95a88ced"
 dependencies = [
  "bolt-utils",
  "ligen-ir",
@@ -560,9 +560,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-component-deserialize"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4d4e4967870ea6cb41d6078288db844a4998494bb76ae0d86530d50b2d6ccf1"
+checksum = "aebfca88dd2e021652d714db5e967145d255a7010c6204b5a28cba8aa1ec1b9f"
 dependencies = [
  "bolt-utils",
  "proc-macro2",
@@ -572,9 +572,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-component-id"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec2aca3a06a0268fb1e813522fb1c5cc46f17903ad71764bbb5ba194b533907c"
+checksum = "ed4c2cf4b8cc693cf34efbdcc4c32cb5e13dcdcad95f92a505482485e3d3bbe9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -583,9 +583,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-delegate"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1c098e8fea79c82025f66210d6c2bbf00de00197a3fa5ea779bc2b684bc84445"
+checksum = "0d895e401fafd26b7f6a35ca8a76ba771925de2062b2a63060f6710c37c46503"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -594,9 +594,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-extra-accounts"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91edf1cdaa68dc4d20b13dfbc13ee7ebe77a8b28e15eb7de39d82c70b2bbc2c9"
+checksum = "078a131a02d9725b278be6b77979efaf2bdbf60d726a05b87a969a31008f90e8"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -605,9 +605,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-program"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51afb23ea70a8045e410117b2aeab998fce2962cc82cd47ffeb1dd20923e7958"
+checksum = "9291970a7aad0364b41ff8e6a0c661e6fce8e382ec9eb17cebce5c3f2fee457c"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -616,9 +616,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-system"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ece95b3817a1181ba6ce8a30a20e42db84c26c763f6f385bf9886381a919fe0"
+checksum = "e0ffb60b05b761a402fdc95e20c5946b3d63fcc1542a943484362ffc65c4c0f6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -627,9 +627,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-system-input"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "04cb1414a9d7c2186375ce5c55d24b3a26680006b29b067102a4c05e02b945f1"
+checksum = "a3908ae5145ea87ef4f492be8092265348a43421031691f29d25c72f9c96a206"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -638,9 +638,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-component"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0bf6a8c53186f2944cdb724aaf03222aa6a6f7c00200d5d421cea64ece83049"
+checksum = "edc520e98b9583352ec3a7ed26442bdb5bbbbc08324998cc88de1f7b4c1c4409"
 dependencies = [
  "anchor-lang",
  "bolt-system",
@@ -648,12 +648,13 @@ dependencies = [
 
 [[package]]
 name = "bolt-lang"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "991ceeb7b5c55e7403a8d7cbeab4041ad337f9d71ffee7ba97fd7e60416ce18f"
+checksum = "1a78df6e4f47f86f08977f7b6bec84c2ec1215e1373436ba29727e1b8175cbed"
 dependencies = [
  "ahash 0.8.11",
  "anchor-lang",
+ "bincode",
  "bolt-attribute-bolt-arguments",
  "bolt-attribute-bolt-component",
  "bolt-attribute-bolt-component-deserialize",
@@ -668,23 +669,24 @@ dependencies = [
  "serde",
  "serde_json",
  "session-keys",
+ "solana-program",
  "world",
 ]
 
 [[package]]
 name = "bolt-system"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e707c94b3a6f7885feb8f6d696cbc9909011d2335d757e58eae85c7a527524d0"
+checksum = "ec05c874d743697ae5d33355389883656ff1079894b9c4d7873733dcf318e668"
 dependencies = [
  "anchor-lang",
 ]
 
 [[package]]
 name = "bolt-utils"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2d819723449fc9829292f129e4490f29bd3dbf7752e386471bfff598be9dc6f6"
+checksum = "6b03e419a0e8c8c49c7187e9c96d202b5cf554f6cb674cf72c0ad373571ee677"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3314,9 +3316,9 @@ dependencies = [
 
 [[package]]
 name = "world"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "52c8bb25b2c607c443b4af388b6c4d6e087d9ebbb691132dea327b834327f605"
+checksum = "dbfcdd85f1d0bbcb0c049d08dd912359c95bda58910e5c19c7360ca20b55f8f6"
 dependencies = [
  "anchor-lang",
  "bolt-component",
