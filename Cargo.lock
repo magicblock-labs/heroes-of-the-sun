@@ -831,6 +831,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "bump_location_allocator"
+version = "0.1.8"
+dependencies = [
+ "anchor-lang",
+ "bolt-lang",
+ "location_allocator",
+ "serde",
+]
+
+[[package]]
 name = "bumpalo"
 version = "3.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

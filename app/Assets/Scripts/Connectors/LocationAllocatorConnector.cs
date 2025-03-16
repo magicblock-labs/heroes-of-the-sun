@@ -30,6 +30,9 @@ namespace Connectors
             {
                 var currentState = await LoadData();
                 var extraSeed = $"{currentState.CurrentX}_{currentState.CurrentY}";
+                
+                Debug.Log($"[Allocator state]: {extraSeed}");
+                
                 var settlementEntity = Pda.FindEntityPda(WorldIndex, 0, extraSeed);
 
                 var entityState = await RpcClient.GetAccountInfoAsync(settlementEntity);
@@ -44,7 +47,7 @@ namespace Connectors
 
         private async Task<bool> Bump()
         {
-            return await ApplySystem(new PublicKey("4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"), new { });
+            return await ApplySystem(new PublicKey("C2H1sb7ZVpgEZFWqXujRK3rx5C2543GNN251wmgfbhUH"), new { });
         }
     }
 }
