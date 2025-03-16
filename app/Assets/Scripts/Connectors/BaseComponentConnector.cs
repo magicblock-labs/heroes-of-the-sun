@@ -327,10 +327,30 @@ namespace Connectors
         }
 
         protected abstract T DeserialiseBytes(byte[] value);
-        
+
         protected async UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
             Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
             AccountMeta[] accounts = null)
+        {
+
+            var systemApplicationInstruction =
+                useDataAddress
+                    ? GetSystemApplicationInstructionFromDataAddress(
+                        systemAddress,
+                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args))
+                    )
+                    : CreateSystemApplicationInstructionFromEntities(systemAddress, args, extraEntities);
+
+
+            if (accounts != null)
+                foreach (var account in accounts)
+                    systemApplicationInstruction.Keys.Add(account);
+
+            Debug.Log($"Applying System {systemAddress} with args.. :  {JsonConvert.SerializeObject(args)}");
+            return await ExecuteSystemApplicationInstruction(systemApplicationInstruction);
+        }
+
+        private TransactionInstruction CreateSystemApplicationInstructionFromEntities(PublicKey systemAddress, object args, Dictionary<PublicKey, PublicKey> extraEntities)
         {
             var componentProgramAddress = GetComponentProgramAddress();
 
@@ -345,72 +365,41 @@ namespace Connectors
                         .ToArray()).ToArray();
 
 
-            var systemApplicationInstruction = WorldProgram.ApplySystem(
+            
+            return WorldProgram.ApplySystem(
                 new PublicKey(WorldPda),
                 systemAddress,
                 input,
                 Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
                 Web3.Account.PublicKey,
                 Web3Utils.SessionToken?.SessionSigner);
-
-            // var systemApplicationInstruction =
-            //     useDataAddress
-            //         ? GetSystemApplicationInstructionFromDataAddress(
-            //             systemAddress,
-            //             Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args))
-            //         )
-            //         : GetSystemApplicationInstructionFromEntities(componentProgramAddress, systemAddress, args,
-            //             extraEntities);
-            //
-            // systemApplicationInstruction.Keys.Add(AccountMeta.ReadOnly(new(WorldPda), false));
-
-            if (accounts != null)
-                foreach (var account in accounts)
-                    systemApplicationInstruction.Keys.Add(account);
-
-            Debug.Log($"Applying System {systemAddress} with args.. :  {JsonConvert.SerializeObject(args)}");
-            return await ExecuteSystemApplicationInstruction(systemApplicationInstruction);
-        }
-
-        private TransactionInstruction GetSystemApplicationInstructionFromEntities(PublicKey componentProgramAddress,
-            PublicKey system, object args, Dictionary<PublicKey, PublicKey> extraEntities = null)
-        {
-            var entities = new[]
-            {
-                new WorldProgram.EntityType(new(_entityPda),
-                    new[] { componentProgramAddress })
-            };
-
-            if (extraEntities != null)
-                entities = entities.Concat(
-                    extraEntities.Select(kvp => new WorldProgram.EntityType(kvp.Key,
-                        new[] { kvp.Value })).ToArray()
-                ).ToArray();
-
-            return WorldProgram.ApplySystem(
-                new PublicKey(WorldProgram.ID),
-                system,
-                entities,
-                Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
-                Web3.Account.PublicKey, Web3Utils.SessionToken?.SessionSigner
-            );
         }
 
         private TransactionInstruction GetSystemApplicationInstructionFromDataAddress(
             PublicKey systemAddress,
-            byte[] args)
+            byte[] args, PublicKey sessionToken = null)
         {
-            var transactionInstruction = WorldProgram.Apply(new ApplyAccounts()
-            {
-                BoltSystem = systemAddress,
-                Authority = Web3.Wallet.Account.PublicKey,
-                InstructionSysvarAccount = SysVars.InstructionAccount,
-                World = new PublicKey(WorldProgram.ID)
-            }, args, new PublicKey(WorldProgram.ID));
-
+            TransactionInstruction transactionInstruction;
+            if (sessionToken != null)
+                transactionInstruction = WorldProgram.ApplyWithSession(new ApplyWithSessionAccounts()
+                {
+                    BoltSystem = systemAddress,
+                    Authority = Web3.Account.PublicKey,
+                    World = new PublicKey(WorldPda),
+                    SessionToken = sessionToken
+                }, args, new PublicKey(WorldProgram.ID));
+            else
+                transactionInstruction = WorldProgram.Apply(new ApplyAccounts()
+                {
+                    BoltSystem = systemAddress,
+                    Authority = Web3.Account.PublicKey,
+                    World = new PublicKey(WorldPda)
+                }, args, new PublicKey(WorldProgram.ID));
+            
             transactionInstruction.Keys.Add(AccountMeta.ReadOnly(GetComponentProgramAddress(), false));
             transactionInstruction.Keys.Add(AccountMeta.Writable(new PublicKey(_dataAddress), false));
             transactionInstruction.Keys.Add(AccountMeta.ReadOnly(new PublicKey(WorldProgram.ID), false));
+            
             return transactionInstruction;
         }
 
