@@ -200,8 +200,7 @@ namespace Utils
             if (Web3.Wallet is not InGameWallet)
             {
                 Debug.Log("Initialize Session..");
-                if (!IsSessionValid())
-                    await UpdateSessionValid();
+                await CreateNewSession();
             }
             else
             {
@@ -225,19 +224,15 @@ namespace Utils
                 label.text = $"Fetching new location for Settlements.. ";
                 //otherwise - get state of allocator
                 await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
-                var allocator = await _allocator.LoadData();
 
 
                 _progress = .3f;
 
-                label.text = $"Creating Settlementn at {allocator.CurrentX}_{allocator.CurrentY}...";
-                await _settlement.SetSeed($"{allocator.CurrentX}_{allocator.CurrentY}");
+                label.text = $"Creating new Settlement...";
 
-                Debug.Log(JsonConvert.SerializeObject(await _settlement.LoadData()));
+                await _settlement.SetSeed(await _allocator.GetNextUnallocatedLocation());
+                await _settlement.LoadData();
 
-                // await _settlement.Undelegate();
-
-                label.text = $"Assigning Settlement to the Player...";
                 label.text = $"Assigning Settlement to the Player...";
                 //assign settlement in player
                 await _player.AssignSettlement(
@@ -366,7 +361,8 @@ namespace Utils
 
         public async Task<SessionToken> RequestSessionToken()
         {
-            if (Web3Utils.SessionWallet == null) 
+            //nullify if expired TODO
+            if (Web3Utils.SessionWallet == null)
                 await RefreshSessionWallet();
 
             var sessionTokenData =
@@ -390,15 +386,15 @@ namespace Utils
         {
             var password = PlayerPrefs.GetString(PwdPrefKey, null);
 
-            if (!string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(password))
             {
                 password = RandomString(10);
                 PlayerPrefs.SetString(PwdPrefKey, password);
-
-                Web3Utils.SessionWallet = await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID),
-                    password,
-                    Web3.Wallet);
             }
+
+            Web3Utils.SessionWallet = await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID),
+                password,
+                Web3.Wallet);
         }
 
         public async Task CreateNewSession()

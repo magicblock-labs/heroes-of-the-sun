@@ -2,7 +2,6 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { AccountMeta, ComputeBudgetProgram, PublicKey } from "@solana/web3.js";
 import {
-  InitializeNewWorld,
   AddEntity,
   InitializeComponent,
   ApplySystem,
@@ -113,7 +112,7 @@ export class SettlementWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: Buffer.from(`${x}x${y}`)
+        seed: new Uint8Array(Buffer.from(`${x}x${y}`))
       });
       let txSign = await this.provider.sendAndConfirm(addEntity.transaction);
       this.entityPda = addEntity.entityPda;

@@ -9,12 +9,14 @@ using Newtonsoft.Json;
 using Settlement.Program;
 using Solana.Unity.Programs;
 using Solana.Unity.Rpc;
+using Solana.Unity.Rpc.Builders;
 using Solana.Unity.Rpc.Core.Sockets;
 using Solana.Unity.Rpc.Messages;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using Utils;
 using Utils.Injection;
@@ -43,7 +45,7 @@ namespace Connectors
         //WorldPda = "5Fj5HJud66muuDyateWdP2HAPkED7CnyApDQBMreVQQH";
 
 
-        private const int WorldIndex = 1777;
+        protected const int WorldIndex = 1777;
         //private const int WorldIndex = 2;
 
         public string EntityPda => _entityPda;
@@ -325,7 +327,7 @@ namespace Connectors
         }
 
         protected abstract T DeserialiseBytes(byte[] value);
-
+        
         protected async UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
             Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
             AccountMeta[] accounts = null)
@@ -344,7 +346,7 @@ namespace Connectors
 
 
             var systemApplicationInstruction = WorldProgram.ApplySystem(
-                new PublicKey(WorldProgram.ID),
+                new PublicKey(WorldPda),
                 systemAddress,
                 input,
                 Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
@@ -416,31 +418,63 @@ namespace Connectors
         private async UniTask<bool> ExecuteSystemApplicationInstruction(
             TransactionInstruction systemApplicationInstruction)
         {
-            var latestBlockHash = await RpcClient.GetLatestBlockHashAsync(commitment: Commitment.Processed);
-            var tx = new Transaction
+            var signers = new List<Account> { Wallet.Account };
+
+            var blockHashResponse = await RpcClient.GetLatestBlockHashAsync(Commitment.Processed);
+            if (!blockHashResponse.WasSuccessful || blockHashResponse.Result?.Value?.Blockhash == null)
+                throw new Exception("Failed to get latest blockhash");
+            var blockhash = blockHashResponse.Result.Value.Blockhash;
+            var transaction = new TransactionBuilder()
+                .SetFeePayer(Wallet.Account.PublicKey)
+                .SetRecentBlockHash(blockhash)
+                .AddInstruction(systemApplicationInstruction)
+                .Build(signers);
+
+            var signature = await RpcClient.SendTransactionAsync(transaction, true, Commitment.Confirmed);
+            var confirmed = await RpcClient.ConfirmTransaction(signature.Result, Commitment.Confirmed);
+            if (signature.WasSuccessful && confirmed)
             {
-                FeePayer = Web3.Account,
-                Instructions = new List<TransactionInstruction>
-                {
-                    systemApplicationInstruction,
-                    ComputeBudgetProgram.SetComputeUnitLimit(500000)
-                },
-                RecentBlockHash = latestBlockHash.Result.Value.Blockhash
-            };
+                Debug.Log($"System Application Result: {signature.WasSuccessful} {signature.Result}");
+                return true;
+            }
 
-            var signedTx = await Web3.Wallet.SignTransaction(tx);
-            var result = await RpcClient.SendTransactionAsync(
-                Convert.ToBase64String(signedTx.Serialize()),
-                skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
+            string errorMessage = signature.Reason;
+            errorMessage += "\n" + signature.RawRpcResponse;
+            if (signature.ErrorData != null)
+            {
+                errorMessage += "\n" + string.Join("\n", signature.ErrorData.Logs);
+            }
 
-            Debug.Log($"System Application Result: {result.WasSuccessful} {result.Result}");
-
-            if (!result.WasSuccessful)
-                Debug.LogError($"System Application ErrorReason: {result.Reason}");
-
-            await RpcClient.ConfirmTransaction(result.Result, Commitment.Processed);
-            return result.WasSuccessful;
+            throw new Exception(errorMessage);
+            return false;
         }
+
+
+        // var latestBlockHash = await RpcClient.GetLatestBlockHashAsync(commitment: Commitment.Processed);
+        //     var tx = new Transaction
+        //     {
+        //         FeePayer = Web3.Account,
+        //         Instructions = new List<TransactionInstruction>
+        //         {
+        //             systemApplicationInstruction,
+        //             ComputeBudgetProgram.SetComputeUnitLimit(500000)
+        //         },
+        //         RecentBlockHash = latestBlockHash.Result.Value.Blockhash
+        //     };
+        //
+        //     var signedTx = await Web3.Wallet.SignTransaction(tx);
+        //     var result = await RpcClient.SendTransactionAsync(
+        //         Convert.ToBase64String(signedTx.Serialize()),
+        //         skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
+        //
+        //     Debug.Log($"System Application Result: {result.WasSuccessful} {result.Result}");
+        //
+        //     if (!result.WasSuccessful)
+        //         Debug.LogError($"System Application ErrorReason: {result.Reason}");
+        //
+        //     await RpcClient.ConfirmTransaction(result.Result, Commitment.Processed);
+        //     return result.WasSuccessful;
+        // }
 
 
         public async UniTask<Transaction> DelegateTransaction(PublicKey entityPda, PublicKey playerDataPda)

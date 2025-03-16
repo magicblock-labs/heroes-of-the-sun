@@ -5,7 +5,7 @@ import {
   AddEntity,
   InitializeComponent,
 } from "@magicblock-labs/bolt-sdk"
-import { Locationallocator } from "../../target/types/locationallocator";
+import { LocationAllocator } from "../../target/types/location_allocator";
 
 
 
@@ -17,7 +17,7 @@ export class LocationAllocatorWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
-  locationAllocatorComponent: Program<Locationallocator>;
+  locationAllocatorComponent: Program<LocationAllocator>;
 
   async init(worldPda: PublicKey) {
 
@@ -30,10 +30,10 @@ export class LocationAllocatorWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: Buffer.from("hots_allocator")
+        seed: new Uint8Array(Buffer.from("hots_allocator"))
       });
 
-      this.locationAllocatorComponent = anchor.workspace.Locationallocator as Program<Locationallocator>;
+      this.locationAllocatorComponent = anchor.workspace.LocationAllocator as Program<LocationAllocator>;
 
       let txSign = await this.provider.sendAndConfirm(allocatorEntity.transaction);
       this.entityPda = allocatorEntity.entityPda;

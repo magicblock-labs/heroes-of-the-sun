@@ -81,7 +81,7 @@ export class PlayerWrapper {
       }],
     });
 
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction, null, { skipPreflight: true });
     console.log(`assignSettlement tx: ${txSign}`);
 
     return await this.state();
