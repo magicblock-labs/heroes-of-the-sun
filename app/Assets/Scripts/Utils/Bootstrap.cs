@@ -197,16 +197,16 @@ namespace Utils
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
 
-            if (Web3.Wallet is not InGameWallet)
+            //if (Web3.Wallet is not InGameWallet)
             {
                 Debug.Log("Initialize Session..");
                 await CreateNewSession();
             }
-            else
-            {
-                label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
-                await Web3Utils.EnsureBalance();
-            }
+            // else
+            // {
+            //     label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
+            //     await Web3Utils.EnsureBalance();
+            // }
 
 
             _progress = .1f;
@@ -405,6 +405,10 @@ namespace Utils
                 await Web3Utils.SessionWallet.CloseSession();
             }
 
+            
+            SessionWallet.Instance = null;
+            await RefreshSessionWallet();
+            
             var transaction = new Transaction()
             {
                 FeePayer = Web3.Account,
@@ -412,13 +416,11 @@ namespace Utils
                 RecentBlockHash = await Web3.BlockHash(Commitment.Confirmed, false)
             };
 
-            SessionWallet.Instance = null;
-            await RefreshSessionWallet();
             var sessionIx = Web3Utils.SessionWallet.CreateSessionIX(true, GetSessionKeysEndTime());
             transaction.Add(sessionIx);
             transaction.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
 
-            var res = await Web3.Wallet.SignAndSendTransaction(transaction, commitment: Commitment.Confirmed);
+            var res = await Web3.Wallet.SignAndSendTransaction(transaction, true,  Commitment.Confirmed);
 
             Debug.Log("Create session wallet: " + res.RawRpcResponse);
             await Web3.Wallet.ActiveRpcClient.ConfirmTransaction(res.Result, Commitment.Confirmed);
