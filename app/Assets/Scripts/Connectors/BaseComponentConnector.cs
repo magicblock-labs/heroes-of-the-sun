@@ -332,7 +332,6 @@ namespace Connectors
             Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
             AccountMeta[] accounts = null)
         {
-
             var systemApplicationInstruction =
                 useDataAddress
                     ? GetSystemApplicationInstructionFromDataAddress(
@@ -350,7 +349,8 @@ namespace Connectors
             return await ExecuteSystemApplicationInstruction(systemApplicationInstruction);
         }
 
-        private TransactionInstruction CreateSystemApplicationInstructionFromEntities(PublicKey systemAddress, object args, Dictionary<PublicKey, PublicKey> extraEntities)
+        private TransactionInstruction CreateSystemApplicationInstructionFromEntities(PublicKey systemAddress,
+            object args, Dictionary<PublicKey, PublicKey> extraEntities)
         {
             var componentProgramAddress = GetComponentProgramAddress();
 
@@ -365,28 +365,35 @@ namespace Connectors
                         .ToArray()).ToArray();
 
 
+            var authority = Web3Utils.SessionToken == null
+                ? Web3.Wallet.Account.PublicKey
+                : Web3Utils.SessionWallet.Account.PublicKey;
+            
+            
+            Debug.Log($"authority: {authority}");
+            Debug.Log($"SessionTokenPDA: {Web3Utils.SessionWallet?.SessionTokenPDA}");
             
             return WorldProgram.ApplySystem(
                 new PublicKey(WorldPda),
                 systemAddress,
                 input,
                 Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
-                Web3.Account.PublicKey,
-                Web3Utils.SessionToken?.SessionSigner);
+                authority,
+                Web3Utils.SessionWallet?.SessionTokenPDA);
         }
 
         private TransactionInstruction GetSystemApplicationInstructionFromDataAddress(
             PublicKey systemAddress,
-            byte[] args, PublicKey sessionToken = null)
+            byte[] args)
         {
             TransactionInstruction transactionInstruction;
-            if (sessionToken != null)
+            if (Web3Utils.SessionToken?.SessionSigner != null)
                 transactionInstruction = WorldProgram.ApplyWithSession(new ApplyWithSessionAccounts()
                 {
                     BoltSystem = systemAddress,
-                    Authority = Web3.Account.PublicKey,
+                    Authority = Web3Utils.SessionWallet.Account.PublicKey,
                     World = new PublicKey(WorldPda),
-                    SessionToken = sessionToken
+                    SessionToken = Web3Utils.SessionWallet?.SessionTokenPDA
                 }, args, new PublicKey(WorldProgram.ID));
             else
                 transactionInstruction = WorldProgram.Apply(new ApplyAccounts()
@@ -395,11 +402,11 @@ namespace Connectors
                     Authority = Web3.Account.PublicKey,
                     World = new PublicKey(WorldPda)
                 }, args, new PublicKey(WorldProgram.ID));
-            
+
             transactionInstruction.Keys.Add(AccountMeta.ReadOnly(GetComponentProgramAddress(), false));
             transactionInstruction.Keys.Add(AccountMeta.Writable(new PublicKey(_dataAddress), false));
             transactionInstruction.Keys.Add(AccountMeta.ReadOnly(new PublicKey(WorldProgram.ID), false));
-            
+
             return transactionInstruction;
         }
 
