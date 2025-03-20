@@ -369,10 +369,6 @@ namespace Connectors
                 ? Web3.Wallet.Account.PublicKey
                 : Web3Utils.SessionWallet.Account.PublicKey;
             
-            
-            Debug.Log($"authority: {authority}");
-            Debug.Log($"SessionTokenPDA: {Web3Utils.SessionWallet?.SessionTokenPDA}");
-            
             return WorldProgram.ApplySystem(
                 new PublicKey(WorldPda),
                 systemAddress,
@@ -414,35 +410,40 @@ namespace Connectors
         private async UniTask<bool> ExecuteSystemApplicationInstruction(
             TransactionInstruction systemApplicationInstruction)
         {
-            var signers = new List<Account> { Wallet.Account };
+            var walletAccount = Web3Utils.SessionToken == null ? Wallet.Account : Web3Utils.SessionWallet.Account;
+            var signers = new List<Account>
+                {
+                    walletAccount
+                };
 
             var blockHashResponse = await RpcClient.GetLatestBlockHashAsync(Commitment.Processed);
             if (!blockHashResponse.WasSuccessful || blockHashResponse.Result?.Value?.Blockhash == null)
                 throw new Exception("Failed to get latest blockhash");
             var blockhash = blockHashResponse.Result.Value.Blockhash;
             var transaction = new TransactionBuilder()
-                .SetFeePayer(Wallet.Account.PublicKey)
+                .SetFeePayer(walletAccount)
                 .SetRecentBlockHash(blockhash)
                 .AddInstruction(systemApplicationInstruction)
                 .Build(signers);
 
             var signature = await RpcClient.SendTransactionAsync(transaction, true, Commitment.Confirmed);
-            var confirmed = await RpcClient.ConfirmTransaction(signature.Result, Commitment.Confirmed);
-            if (signature.WasSuccessful && confirmed)
+            if (!signature.WasSuccessful)
             {
-                Debug.Log($"System Application Result: {signature.WasSuccessful} {signature.Result}");
-                return true;
-            }
 
-            string errorMessage = signature.Reason;
-            errorMessage += "\n" + signature.RawRpcResponse;
-            if (signature.ErrorData != null)
-            {
-                errorMessage += "\n" + string.Join("\n", signature.ErrorData.Logs);
-            }
+                string errorMessage = signature.Reason;
+                errorMessage += "\n" + signature.RawRpcResponse;
+                if (signature.ErrorData != null)
+                {
+                    errorMessage += "\n" + string.Join("\n", signature.ErrorData.Logs);
+                }
 
-            throw new Exception(errorMessage);
-            return false;
+                Debug.LogError(errorMessage);
+                return false;
+            }
+            
+            await RpcClient.ConfirmTransaction(signature.Result, Commitment.Confirmed);
+            Debug.Log($"System Application Result: {signature.WasSuccessful} {signature.Result}");
+            return true;
         }
 
 

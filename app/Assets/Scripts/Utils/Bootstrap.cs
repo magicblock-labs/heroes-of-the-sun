@@ -197,7 +197,7 @@ namespace Utils
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
 
-            //if (Web3.Wallet is not InGameWallet)
+            if (Web3.Wallet is not InGameWallet)
             {
                 Debug.Log("Initialize Session..");
                 await CreateNewSession();
@@ -328,23 +328,23 @@ namespace Utils
             SceneManager.LoadScene("Settlement");
         }
 
-        public async Task RevokeSession()
-        {
-            await Web3Utils.SessionWallet.CloseSession();
-            Debug.Log("Session closed");
-        }
-
-        public async Task<bool> IsSessionTokenInitialized()
-        {
-            var sessionTokenData =
-                await Web3.Rpc.GetAccountInfoAsync(Web3Utils.SessionWallet.SessionTokenPDA, Commitment.Confirmed);
-            if (sessionTokenData.Result != null && sessionTokenData.Result.Value != null)
-            {
-                return true;
-            }
-
-            return false;
-        }
+        // public async Task RevokeSession()
+        // {
+        //     await Web3Utils.SessionWallet.CloseSession();
+        //     Debug.Log("Session closed");
+        // }
+        //
+        // public async Task<bool> IsSessionTokenInitialized()
+        // {
+        //     var sessionTokenData =
+        //         await Web3.Rpc.GetAccountInfoAsync(Web3Utils.SessionWallet.SessionTokenPDA, Commitment.Confirmed);
+        //     if (sessionTokenData.Result != null && sessionTokenData.Result.Value != null)
+        //     {
+        //         return true;
+        //     }
+        //
+        //     return false;
+        // }
 
         public async Task<bool> UpdateSessionValid()
         {
@@ -384,12 +384,12 @@ namespace Utils
 
         private async Task RefreshSessionWallet()
         {
-            var password = PlayerPrefs.GetString(PwdPrefKey, null);
+            var password = PlayerPrefs.GetString(SessionPwdPrefKey, null);
 
             if (string.IsNullOrEmpty(password))
             {
                 password = RandomString(10);
-                PlayerPrefs.SetString(PwdPrefKey, password);
+                PlayerPrefs.SetString(SessionPwdPrefKey, password);
             }
 
             Web3Utils.SessionWallet = await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID),
@@ -397,7 +397,7 @@ namespace Utils
                 Web3.Wallet);
         }
 
-        public async Task CreateNewSession()
+        private async Task CreateNewSession()
         {
             Web3Utils.SessionToken = await RequestSessionToken();
             if (Web3Utils.SessionToken != null)
@@ -416,7 +416,7 @@ namespace Utils
                 RecentBlockHash = await Web3.BlockHash(Commitment.Confirmed, false)
             };
 
-            var sessionIx = Web3Utils.SessionWallet.CreateSessionIX(true, GetSessionKeysEndTime());
+            var sessionIx = Web3Utils.SessionWallet.CreateSessionIX(true, GetSessionKeysEndTime(), 100000000);
             transaction.Add(sessionIx);
             transaction.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
 

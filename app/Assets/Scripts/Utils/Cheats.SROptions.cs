@@ -1,5 +1,7 @@
 ﻿using Connectors;
 using Model;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using Utils.Injection;
 using Utils;
 
@@ -14,10 +16,11 @@ namespace StompyRobot.SROptions
         {
             Injector.Instance.Resolve(this);
         }
-
-        public async void Airdrop()
+        
+        public void ClearPreferences()
         {
-            await Web3Utils.Airdrop();
+            PlayerPrefs.DeleteAll();
+            SceneManager.LoadScene("Loading");
         }
 
         public async void Reset()
