@@ -16,7 +16,6 @@ using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using Utils;
 using Utils.Injection;
