@@ -100,18 +100,21 @@ namespace Utils
         public void LoginWalletAdapter()
         {
             PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Adapter);
+            Web3.OnLogin += HandleSignIn;
             _ = Web3.Instance.LoginWalletAdapter();
         }
 
         public void LoginWeb3Auth()
         {
             PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Web3Auth);
+            Web3.OnLogin += HandleSignIn;
             _ = Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
         }
 
         public void LoginInGameWallet()
         {
             PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.InGame);
+            Web3.OnLogin += HandleSignIn;
             _ = LoginInGameWalletAsync();
         }
 
@@ -119,8 +122,6 @@ namespace Utils
         {
             if (Web3.Account == null)
             {
-                Web3.OnLogin += HandleSignIn;
-
                 string password = PlayerPrefs.GetString(PwdPrefKey, null);
 
 #if FTUE_TESTING
@@ -184,6 +185,9 @@ namespace Utils
 
         private async void HandleSignIn(Account account)
         {
+            Debug.Log("HandleSignIn:");
+            Debug.Log(account.PublicKey);
+            
             Web3.OnLogin -= HandleSignIn;
 
             Destroy(loginSelector);
@@ -193,9 +197,6 @@ namespace Utils
             {
                 { "PublicKey", account.PublicKey.ToString() },
             });
-
-            Debug.Log("HandleSignIn:");
-            Debug.Log(account.PublicKey);
 
             if (Web3.Wallet is not InGameWallet)
             {

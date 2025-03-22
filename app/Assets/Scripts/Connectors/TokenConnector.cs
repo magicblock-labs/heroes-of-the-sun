@@ -8,6 +8,7 @@ using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
+using Utils;
 using Utils.Injection;
 
 
@@ -45,9 +46,13 @@ namespace Connectors
 
         public AccountMeta[] GetMintExtraAccounts()
         {
+            var authority = Web3Utils.SessionToken == null
+                ? Web3.Wallet.Account
+                : Web3Utils.SessionWallet.Account;
+            
             return new[]
             {
-                AccountMeta.Writable(Web3.Account, true),
+                AccountMeta.Writable(authority, true),
                 AccountMeta.Writable(new PublicKey(AssociatedTokenAccount), false),
                 AccountMeta.Writable(new PublicKey(TokenMintPda), false),
                 AccountMeta.ReadOnly(new PublicKey(TokenMinterProgramID), false),
@@ -59,9 +64,15 @@ namespace Connectors
 
         public AccountMeta[] GetBurnExtraAccounts()
         {
+            
+            var authority = Web3Utils.SessionToken == null
+                ? Web3.Wallet.Account
+                : Web3Utils.SessionWallet.Account;
+
+            
             return new[]
             {
-                AccountMeta.Writable(Web3.Account, true),
+                AccountMeta.Writable(authority, true),
                 AccountMeta.Writable(new PublicKey(AssociatedTokenAccount), false),
                 AccountMeta.Writable(new PublicKey(TokenMintPda), false),
                 AccountMeta.ReadOnly(new PublicKey(TokenMinterProgramID), false),
