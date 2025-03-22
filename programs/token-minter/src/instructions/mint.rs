@@ -4,10 +4,19 @@ use {
         associated_token::AssociatedToken,
         token::{mint_to, Mint, MintTo, Token, TokenAccount},
     },
+ session_keys::{SessionError, SessionToken, session_auth_or, Session}
 };
 
-#[derive(Accounts)]
+#[derive(Accounts, Session)]
 pub struct MintToken<'info> {
+
+
+    #[session(
+        signer = payer,
+        authority = associated_token_account.owner.key() 
+    )]
+    pub session_token: Option<Account<'info, SessionToken>>,
+
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -30,7 +39,15 @@ pub struct MintToken<'info> {
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
+
+
 }
+
+
+    #[session_auth_or(
+        ctx.accounts.associated_token_account.owner.key() == ctx.accounts.payer.key(),
+        SessionError::InvalidToken
+    )]
 
 pub fn mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
     msg!("Minting token to associated token account...");

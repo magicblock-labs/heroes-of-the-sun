@@ -40,20 +40,20 @@ pub fn callback_from_agent(ctx: Context<CallbackFromAgent>, response: String) ->
     }
 
     // Invoke the mint_to instruction on the token program
-    token_minter::cpi::mint_token(
-        CpiContext::new(
-            ctx.accounts.minter_program.to_account_info(),
-            MintToken {
-                payer: ctx.accounts.user.to_account_info(),
-                mint_account: ctx.accounts.mint_account.to_account_info(),
-                associated_token_account: ctx.accounts.associated_token_account.to_account_info(),
-                token_program: ctx.accounts.token_program.to_account_info(),
-                associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
-                system_program: ctx.accounts.system_program.to_account_info(),
-            },
-        ),
-        1 as u64,
-    )?;
+    // token_minter::cpi::mint_token(
+    //     CpiContext::new(
+    //         ctx.accounts.minter_program.to_account_info(),
+    //         MintToken {
+    //             payer: ctx.accounts.user.to_account_info(),
+    //             mint_account: ctx.accounts.mint_account.to_account_info(),
+    //             associated_token_account: ctx.accounts.associated_token_account.to_account_info(),
+    //             token_program: ctx.accounts.token_program.to_account_info(),
+    //             associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
+    //             system_program: ctx.accounts.system_program.to_account_info(),
+    //         },
+    //     ),
+    //     1 as u64,
+    // )?;
     Ok(())
 }
 
