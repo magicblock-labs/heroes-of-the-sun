@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Locationallocator.Accounts;
-using Locationallocator.Program;
 using Lootdistribution.Accounts;
+using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
+using UnityEngine;
+using Utils;
 using Utils.Injection;
 
 namespace Connectors
@@ -26,8 +27,19 @@ namespace Connectors
 
         public async Task<bool> Claim(int index, Dictionary<PublicKey, PublicKey> extraEntities)
         {
-            return await ApplySystem(new PublicKey("4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf"),
+            var applySystem = await ApplySystem(new PublicKey("4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf"),
                 new { index }, null, false, _token.GetMintExtraAccounts());
+
+
+            if (applySystem && Web3Utils.SessionWallet != null)
+            {
+                var transfer = await Web3Utils.SessionWallet.Transfer(Web3.Account.PublicKey,
+                    new PublicKey(TokenConnector.TokenMintPda), 1000000000);
+                
+                Debug.Log($"transfer.Result: {transfer.Result}");
+            }
+
+            return applySystem;
         }
     }
 }

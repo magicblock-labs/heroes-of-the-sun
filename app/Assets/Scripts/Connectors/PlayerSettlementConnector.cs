@@ -77,7 +77,7 @@ namespace Connectors
             //2. apply
             var result =  await ApplySystem(new PublicKey("Csna3V2jUMdQEQKUCxLsQEnYThAGPSWcPCxW9vea1S8d"),
                 new { tokens_for_food, tokens_for_water, tokens_for_wood, tokens_for_stone }, null, false,
-                _token.GetBurnExtraAccounts());
+                _token.GetBurnExtraAccounts(), true);
 
             //re-delegate
             await Delegate();

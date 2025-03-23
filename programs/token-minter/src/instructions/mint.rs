@@ -4,17 +4,11 @@ use {
         associated_token::AssociatedToken,
         token::{mint_to, Mint, MintTo, Token, TokenAccount},
     },
- session_keys::{SessionError, SessionToken, session_auth_or, Session}
+    session_keys::SessionToken,
 };
 
-#[derive(Accounts, Session)]
+#[derive(Accounts)]
 pub struct MintToken<'info> {
-
-
-    #[session(
-        signer = payer,
-        authority = associated_token_account.owner.key() 
-    )]
     pub session_token: Option<Account<'info, SessionToken>>,
 
     #[account(mut)]
@@ -39,15 +33,12 @@ pub struct MintToken<'info> {
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub system_program: Program<'info, System>,
-
-
 }
 
-
-    #[session_auth_or(
-        ctx.accounts.associated_token_account.owner.key() == ctx.accounts.payer.key(),
-        SessionError::InvalidToken
-    )]
+// #[session_auth_or(
+//         ctx.accounts.associated_token_account.owner.key() == ctx.accounts.payer.key(),
+//         SessionError::InvalidToken
+//     )]
 
 pub fn mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
     msg!("Minting token to associated token account...");
@@ -55,6 +46,16 @@ pub fn mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
     msg!(
         "Token Address: {}",
         &ctx.accounts.associated_token_account.key()
+    );
+
+    msg!(
+        "session_token [authority]: {}",
+        ctx.accounts.session_token.as_ref().unwrap().authority
+    );
+
+    msg!(
+        "session_token [session_signer]: {}",
+        ctx.accounts.session_token.as_ref().unwrap().session_signer
     );
 
     // PDA signer seeds

@@ -87,7 +87,10 @@ namespace Utils
                     LoginWeb3Auth();
                     break;
                 case WalletType.InGame:
-                    await LoginInGameWalletAsync();
+                    // ReSharper disable once MethodHasAsyncOverload
+                    //its not an async overload lol
+                    
+                    LoginInGameWallet();
                     break;
 
                 case WalletType.None:
@@ -198,7 +201,7 @@ namespace Utils
                 { "PublicKey", account.PublicKey.ToString() },
             });
 
-            if (Web3.Wallet is not InGameWallet)
+            if (true) //(Web3.Wallet is not InGameWallet)
             {
                 Debug.Log("Initialize Session..");
                 await CreateNewSession();

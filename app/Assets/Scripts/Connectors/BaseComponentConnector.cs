@@ -156,7 +156,7 @@ namespace Connectors
             try
             {
                 var resUndelegation = await Wallet.SignAndSendTransaction(txUndelegate, true);
-
+                await RpcClient.ConfirmTransaction(resUndelegation.Result, Commitment.Confirmed);
                 Debug.Log($"Undelegate Signature: {resUndelegation.Result}");
                 if (resUndelegation.WasSuccessful)
                 {
@@ -329,15 +329,16 @@ namespace Connectors
 
         protected async UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
             Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
-            AccountMeta[] accounts = null)
+            AccountMeta[] accounts = null, bool ignoreSession = false)
         {
             var systemApplicationInstruction =
                 useDataAddress
                     ? GetSystemApplicationInstructionFromDataAddress(
                         systemAddress,
-                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args))
+                        Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
+                        ignoreSession
                     )
-                    : CreateSystemApplicationInstructionFromEntities(systemAddress, args, extraEntities);
+                    : CreateSystemApplicationInstructionFromEntities(systemAddress, args, extraEntities, ignoreSession);
 
 
             if (accounts != null)
@@ -345,11 +346,11 @@ namespace Connectors
                     systemApplicationInstruction.Keys.Add(account);
 
             Debug.Log($"Applying System {systemAddress} with args.. :  {JsonConvert.SerializeObject(args)}");
-            return await ExecuteSystemApplicationInstruction(systemApplicationInstruction);
+            return await ExecuteSystemApplicationInstruction(systemApplicationInstruction, ignoreSession);
         }
 
         private TransactionInstruction CreateSystemApplicationInstructionFromEntities(PublicKey systemAddress,
-            object args, Dictionary<PublicKey, PublicKey> extraEntities)
+            object args, Dictionary<PublicKey, PublicKey> extraEntities, bool ignoreSession = false)
         {
             var componentProgramAddress = GetComponentProgramAddress();
 
@@ -364,7 +365,7 @@ namespace Connectors
                         .ToArray()).ToArray();
 
 
-            var authority = Web3Utils.SessionToken == null
+            var authority = Web3Utils.SessionToken == null || ignoreSession
                 ? Web3.Wallet.Account.PublicKey
                 : Web3Utils.SessionWallet.Account.PublicKey;
             
@@ -374,15 +375,15 @@ namespace Connectors
                 input,
                 Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(args)),
                 authority,
-                Web3Utils.SessionWallet?.SessionTokenPDA);
+                ignoreSession?null:Web3Utils.SessionWallet?.SessionTokenPDA);
         }
 
         private TransactionInstruction GetSystemApplicationInstructionFromDataAddress(
             PublicKey systemAddress,
-            byte[] args)
+            byte[] args, bool ignoreSession = false)
         {
             TransactionInstruction transactionInstruction;
-            if (Web3Utils.SessionToken?.SessionSigner != null)
+            if (Web3Utils.SessionToken?.SessionSigner != null && !ignoreSession)
                 transactionInstruction = WorldProgram.ApplyWithSession(new ApplyWithSessionAccounts()
                 {
                     BoltSystem = systemAddress,
@@ -407,9 +408,9 @@ namespace Connectors
 
 
         private async UniTask<bool> ExecuteSystemApplicationInstruction(
-            TransactionInstruction systemApplicationInstruction)
+            TransactionInstruction systemApplicationInstruction, bool ignoreSession = false)
         {
-            var walletAccount = Web3Utils.SessionToken == null ? Wallet.Account : Web3Utils.SessionWallet.Account;
+            var walletAccount = Web3Utils.SessionToken == null || ignoreSession ? Wallet.Account : Web3Utils.SessionWallet.Account;
             var signers = new List<Account>
                 {
                     walletAccount
@@ -423,6 +424,7 @@ namespace Connectors
                 .SetFeePayer(walletAccount)
                 .SetRecentBlockHash(blockhash)
                 .AddInstruction(systemApplicationInstruction)
+                .AddInstruction(ComputeBudgetProgram.SetComputeUnitLimit(1000000)) //be generous for now
                 .Build(signers);
 
             var signature = await RpcClient.SendTransactionAsync(transaction, true, Commitment.Confirmed);

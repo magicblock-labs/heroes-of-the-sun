@@ -109,7 +109,6 @@ pub mod claim_loot {
 
         #[account()]
         system_program: Program<'info, System>,
-
         #[account()]
         pub session_token: Option<Account<'info, SessionToken>>,
     }
