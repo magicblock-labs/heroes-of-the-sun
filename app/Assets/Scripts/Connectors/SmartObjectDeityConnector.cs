@@ -17,6 +17,7 @@ using Solana.Unity.Wallet;
 using TMPro;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using Utils;
 using Utils.Injection;
 using View;
 
@@ -65,18 +66,25 @@ namespace Connectors
             // var agentAddress = "CjgncsnDm7YLtVtKxRMrhPzkmFshucvb61QXDzSMjsQJ";
             var agent = await RpcClient.GetAccountInfoAsync(agentAddress);
 
-            if (agent.WasSuccessful)
+            if (!agent.WasSuccessful)
             {
-                var agentAccount = Agent.Deserialize(Convert.FromBase64String(agent.Result.Value.Data[0]));
-                ContextAccount = agentAccount.Context;
-
-                PublicKey.TryFindProgramAddress(new[]
-                {
-                    Encoding.UTF8.GetBytes("interaction"),
-                    Web3.Account.PublicKey.KeyBytes,
-                    agentAccount.Context.KeyBytes
-                }, OracleProgramId, out InteractionAccount, out _);
+                return;
             }
+            
+            var agentAccount = Agent.Deserialize(Convert.FromBase64String(agent.Result.Value.Data[0]));
+            ContextAccount = agentAccount.Context;
+            
+            
+            var authority = Web3Utils.SessionToken == null
+                ? Web3.Wallet.Account
+                : Web3Utils.SessionWallet.Account;
+            
+            PublicKey.TryFindProgramAddress(new[]
+            {
+                Encoding.UTF8.GetBytes("interaction"),
+                authority.PublicKey.KeyBytes,
+                agentAccount.Context.KeyBytes
+            }, OracleProgramId, out InteractionAccount, out _);
 
             _interactionAccounts = new[]
             {
