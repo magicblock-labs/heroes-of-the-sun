@@ -6,8 +6,8 @@ import {
   ApplySystem,
   InitializeComponent,
 } from "@magicblock-labs/bolt-sdk"
-import { Smartobjectlocation } from "../../target/types/smartobjectlocation";
-import { Smartobjectdeity } from "../../target/types/smartobjectdeity";
+import { SmartObjectLocation } from "../../target/types/smart_object_location";
+import { SmartObjectDeity } from "../../target/types/smart_object_deity";
 import { SmartObjectInit } from "../../target/types/smart_object_init";
 
 
@@ -31,8 +31,8 @@ export class SmartObjectWrapper {
   locationComponentPda: PublicKey;
   deityComponentPda: PublicKey;
 
-  smartObjectLocationComponent: Program<Smartobjectlocation>;
-  smartObjectDeityComponent: Program<Smartobjectdeity>;
+  smartObjectLocationComponent: Program<SmartObjectLocation>;
+  smartObjectDeityComponent: Program<SmartObjectDeity>;
 
   async init(worldPda: PublicKey) {
 
@@ -45,11 +45,11 @@ export class SmartObjectWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: "hots_smart_object_test2"
+        seed: new Uint8Array(Buffer.from("hots_smart_object_test2"))
       });
 
-      this.smartObjectLocationComponent = anchor.workspace.Smartobjectlocation as Program<Smartobjectlocation>;
-      this.smartObjectDeityComponent = anchor.workspace.Smartobjectdeity as Program<Smartobjectdeity>;
+      this.smartObjectLocationComponent = anchor.workspace.SmartObjectLocation as Program<SmartObjectLocation>;
+      this.smartObjectDeityComponent = anchor.workspace.SmartObjectDeity as Program<SmartObjectDeity>;
 
       let txSign = await this.provider.sendAndConfirm(smartObjectEntity.transaction);
       this.entityPda = smartObjectEntity.entityPda;

@@ -4,10 +4,13 @@ use {
         associated_token::AssociatedToken,
         token::{mint_to, Mint, MintTo, Token, TokenAccount},
     },
+    session_keys::SessionToken,
 };
 
 #[derive(Accounts)]
 pub struct MintToken<'info> {
+    pub session_token: Option<Account<'info, SessionToken>>,
+
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -32,12 +35,27 @@ pub struct MintToken<'info> {
     pub system_program: Program<'info, System>,
 }
 
+// #[session_auth_or(
+//         ctx.accounts.associated_token_account.owner.key() == ctx.accounts.payer.key(),
+//         SessionError::InvalidToken
+//     )]
+
 pub fn mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
     msg!("Minting token to associated token account...");
     msg!("Mint: {}", &ctx.accounts.mint_account.key());
     msg!(
         "Token Address: {}",
         &ctx.accounts.associated_token_account.key()
+    );
+
+    msg!(
+        "session_token [authority]: {}",
+        ctx.accounts.session_token.as_ref().unwrap().authority
+    );
+
+    msg!(
+        "session_token [session_signer]: {}",
+        ctx.accounts.session_token.as_ref().unwrap().session_signer
     );
 
     // PDA signer seeds

@@ -50,6 +50,7 @@ pub fn callback_from_agent(ctx: Context<CallbackFromAgent>, response: String) ->
                 token_program: ctx.accounts.token_program.to_account_info(),
                 associated_token_program: ctx.accounts.associated_token_program.to_account_info(),
                 system_program: ctx.accounts.system_program.to_account_info(),
+                session_token: ctx.accounts.session_token.clone(),
             },
         ),
         1 as u64,
@@ -80,4 +81,6 @@ pub struct CallbackFromAgent<'info> {
     ///CHECK: todo add type?
     #[account()]
     minter_program: AccountInfo<'info>,
+    #[account()]
+    pub session_token: Option<AccountInfo<'info>>,
 }

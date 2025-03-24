@@ -2,7 +2,6 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { AccountMeta, ComputeBudgetProgram, PublicKey } from "@solana/web3.js";
 import {
-  InitializeNewWorld,
   AddEntity,
   InitializeComponent,
   ApplySystem,
@@ -113,7 +112,7 @@ export class SettlementWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: `${x}x${y}`
+        seed: new Uint8Array(Buffer.from(`${x}x${y}`))
       });
       let txSign = await this.provider.sendAndConfirm(addEntity.transaction);
       this.entityPda = addEntity.entityPda;
@@ -146,7 +145,7 @@ export class SettlementWrapper {
       }],
       args
     });
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    const txSign = await this.provider.sendAndConfirm(applySystem.transaction, null, { skipPreflight: true });
     console.log(`build tx: ${txSign}`);
 
     return await this.state();
@@ -289,18 +288,18 @@ export class SettlementWrapper {
 
   async reset() {
 
-    const applySystem = await ApplySystem({
-      world: this.worldPda,
-      authority: this.provider.wallet.publicKey,
-      systemId: this.resetSystem.programId,
-      entities: [{
-        entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
-      }],
-    }
-    );
-    const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
-    console.log(`Reset: ${txSign}`);
+    // const applySystem = await ApplySystem({
+    //   world: this.worldPda,
+    //   authority: this.provider.wallet.publicKey,
+    //   systemId: this.resetSystem.programId,
+    //   entities: [{
+    //     entity: this.entityPda,
+    //     components: [{ componentId: this.settlementComponent.programId }],
+    //   }],
+    // }
+    // );
+    // const txSign = await this.provider.sendAndConfirm(applySystem.transaction);
+    // console.log(`Reset: ${txSign}`);
 
     return await this.state();
   }

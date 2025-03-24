@@ -77,6 +77,11 @@ pub fn interact_agent(ctx: Context<InteractAgent>, option: u8) -> Result<()> {
                 is_signer: false,
                 is_writable: false,
             },
+            solana_gpt_oracle::AccountMeta {
+                pubkey: ctx.accounts.session_token.to_account_info().key(),
+                is_signer: false,
+                is_writable: false,
+            },
         ]),
     )?;
 
@@ -113,4 +118,6 @@ pub struct InteractAgent<'info> {
 
     /// CHECK: todo
     pub minter_program: AccountInfo<'info>,
+    /// CHECK: todo
+    pub session_token: AccountInfo<'info>,
 }

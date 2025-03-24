@@ -44,6 +44,10 @@ pub mod smart_object_deity_interact {
             .map_err(|_| ProgramError::InvalidAccountData)?;
         let payer = ctx.signer().map_err(|_| ProgramError::InvalidAccountData)?;
 
+        let session_token = ctx
+            .session_token()
+            .map_err(|_| ProgramError::InvalidAccountData)?;
+
         msg!("payer: {}", payer.key);
         msg!("deity_bot_program: {}", deity_bot_program.key);
         msg!("mint_account: {}", mint_account.key);
@@ -56,6 +60,7 @@ pub mod smart_object_deity_interact {
         msg!("agent: {}", agent.key);
         msg!("oracle_program: {}", oracle_program.key);
         msg!("minter_program: {}", minter_program.key);
+        msg!("session_token: {}", session_token.key);
 
         //CPI TO DEITY LLM
 
@@ -69,6 +74,7 @@ pub mod smart_object_deity_interact {
                     token_program: token_program.clone(),
                     associated_token_program: associated_token_program.clone(),
                     system_program: system_program.clone(),
+                    session_token: session_token.clone(),
                     interaction: interaction.clone(),
                     agent: agent.clone(),
                     context_account: context_account.clone(),
@@ -114,6 +120,8 @@ pub mod smart_object_deity_interact {
 
         #[account()]
         system_program: Program<'info, System>,
+        #[account()]
+        pub session_token: Option<Account<'info, SessionToken>>,
 
         #[account()]
         deity_bot_program: AccountInfo,

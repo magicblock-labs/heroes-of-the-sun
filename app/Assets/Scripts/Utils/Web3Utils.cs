@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GplSession.Accounts;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using UnityEngine;
@@ -8,29 +9,12 @@ namespace Utils
 {
     public static class Web3Utils
     {
-        
+        public static SessionToken SessionToken;
+
         public static readonly InGameWallet EphemeralWallet = new(RpcCluster.DevNet, "https://devnet.magicblock.app", "wss://devnet.magicblock.app", true);
-        public static SessionWallet SessionWallet { get; set; }
-
-        public static async Task EnsureBalance()
-        {
-            var requestResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
-            Debug.Log($"{Web3.Account.PublicKey} {requestResult.Result.Value} ");
-
-            if (requestResult.Result.Value < 50000000)
-            {
-                await Airdrop();
-            }
-        }
-
-        public static async Task Airdrop()
-        {
-            var airdropResult = await Web3.Rpc.RequestAirdropAsync(Web3.Account.PublicKey, 100000000);
-            var txResult = await Web3.Rpc.ConfirmTransaction(airdropResult.Result, Commitment.Confirmed);
-            var balanceResult = await Web3.Rpc.GetBalanceAsync(Web3.Account.PublicKey);
-            Debug.Log(
-                $"{Web3.Account.PublicKey} \nairdropResult.Result: {airdropResult.Result}, \ntxResult{txResult} \n balanceResult:{balanceResult} ");
-        }
+        
+        public static SessionWallet SessionWallet;
+        public static long SessionValidUntil;
         
         private static long _timeOffset;
 

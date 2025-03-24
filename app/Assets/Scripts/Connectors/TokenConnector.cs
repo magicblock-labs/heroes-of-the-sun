@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Model;
 using Solana.Unity.Programs;
@@ -8,6 +9,7 @@ using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
 using Solana.Unity.Wallet;
+using Utils;
 using Utils.Injection;
 
 
@@ -18,16 +20,29 @@ namespace Connectors
     {
         [Inject] private TokenModel _model;
 
-        private const string TokenMintPda = "Fn7ndp5EocCfzDkFMdWUZj5B55AoM7nA5o5cXSUbtDrn";
+        public const string TokenMintPda = "Fn7ndp5EocCfzDkFMdWUZj5B55AoM7nA5o5cXSUbtDrn";
         private const string TokenMinterProgramID = "4ZxRnucEWC62kVktmx27cz9d1PzWWNgiZLT5VWFLbfB2";
 
         private string _ata;
 
-        private string AssociatedTokenAccount => _ata ??=
+        public string AssociatedTokenAccount => _ata ??=
             AssociatedTokenAccountProgram
                 .DeriveAssociatedTokenAccount(Web3.Account, new PublicKey(TokenMintPda));
 
 
+        private string AssociatedTokenAccountSession
+        {
+            get
+            {
+                var authority = Web3Utils.SessionToken == null
+                    ? Web3.Wallet.Account
+                    : Web3Utils.SessionWallet.Account;
+
+                return AssociatedTokenAccountProgram
+                    .DeriveAssociatedTokenAccount(authority, new PublicKey(TokenMintPda));
+            }
+        }
+        
         public async Task LoadData()
         {
             var accountInfo = await Web3.Wallet.ActiveRpcClient.GetAccountInfoAsync(AssociatedTokenAccount);
@@ -45,23 +60,39 @@ namespace Connectors
 
         public AccountMeta[] GetMintExtraAccounts()
         {
-            return new[]
+            var authority = Web3Utils.SessionToken == null
+                ? Web3.Wallet.Account
+                : Web3Utils.SessionWallet.Account;
+
+            var mintExtraAccounts = new List<AccountMeta>
             {
-                AccountMeta.Writable(Web3.Account, true),
-                AccountMeta.Writable(new PublicKey(AssociatedTokenAccount), false),
+                AccountMeta.Writable(authority, true),
+                AccountMeta.Writable(new PublicKey(AssociatedTokenAccountSession), false),
                 AccountMeta.Writable(new PublicKey(TokenMintPda), false),
                 AccountMeta.ReadOnly(new PublicKey(TokenMinterProgramID), false),
                 AccountMeta.ReadOnly(TokenProgram.ProgramIdKey, false),
                 AccountMeta.ReadOnly(AssociatedTokenAccountProgram.ProgramIdKey, false),
                 AccountMeta.ReadOnly(SystemProgram.ProgramIdKey, false)
             };
+
+            if (Web3Utils.SessionWallet?.SessionTokenPDA != null)
+            {
+                mintExtraAccounts.Add(AccountMeta.ReadOnly(Web3Utils.SessionWallet?.SessionTokenPDA, false));
+            }
+
+            return mintExtraAccounts.ToArray();
         }
 
         public AccountMeta[] GetBurnExtraAccounts()
         {
+            var authority = true// Web3Utils.SessionToken == null
+                ? Web3.Wallet.Account
+                : Web3Utils.SessionWallet.Account;
+
+
             return new[]
             {
-                AccountMeta.Writable(Web3.Account, true),
+                AccountMeta.Writable(authority, true),
                 AccountMeta.Writable(new PublicKey(AssociatedTokenAccount), false),
                 AccountMeta.Writable(new PublicKey(TokenMintPda), false),
                 AccountMeta.ReadOnly(new PublicKey(TokenMinterProgramID), false),

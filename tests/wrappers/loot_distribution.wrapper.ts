@@ -6,7 +6,7 @@ import {
   ApplySystem,
   InitializeComponent,
 } from "@magicblock-labs/bolt-sdk"
-import { Lootdistribution } from "../../target/types/lootdistribution";
+import { LootDistribution } from "../../target/types/loot_distribution";
 import { ClaimLoot } from "../../target/types/claim_loot";
 
 
@@ -23,7 +23,7 @@ export class LootDistributionWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
-  lootDistributionComponent: Program<Lootdistribution>;
+  lootDistributionComponent: Program<LootDistribution>;
   claimLootSystem: Program<ClaimLoot>;
 
   async init(worldPda: PublicKey) {
@@ -38,10 +38,10 @@ export class LootDistributionWrapper {
         payer: this.provider.wallet.publicKey,
         world: this.worldPda,
         connection: this.provider.connection,
-        seed: "hots_loot_distribution"
+        seed: new Uint8Array(Buffer.from("hots_loot_distribution"))
       });
 
-      this.lootDistributionComponent = anchor.workspace.Lootdistribution as Program<Lootdistribution>;
+      this.lootDistributionComponent = anchor.workspace.LootDistribution as Program<LootDistribution>;
 
       let txSign = await this.provider.sendAndConfirm(lootEntity.transaction);
       this.entityPda = lootEntity.entityPda;

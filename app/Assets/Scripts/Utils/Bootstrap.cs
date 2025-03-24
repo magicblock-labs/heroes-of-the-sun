@@ -6,8 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
+using GplSession.Accounts;
 using Model;
-using Newtonsoft.Json;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
@@ -22,6 +22,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utils.Injection;
 using World.Program;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
 namespace Utils
@@ -36,7 +37,7 @@ namespace Utils
 
     public class Bootstrap : InjectableBehaviour
     {
-        private const string PwdPrefKey = "pwd";
+        private const string PwdPrefKey = nameof(PwdPrefKey);
         private const string SessionPwdPrefKey = nameof(SessionPwdPrefKey);
         public const string SelectedWalletTypeKey = nameof(SelectedWalletTypeKey);
         [SerializeField] private TMP_Text label;
@@ -56,6 +57,7 @@ namespace Utils
         [Inject] private SettlementModel _settlementModel;
         [Inject] private LootModel _lootModel;
         private float _progress;
+        private PublicKey _sessionToken;
 
 
         private IEnumerator Start()
@@ -84,7 +86,10 @@ namespace Utils
                     LoginWeb3Auth();
                     break;
                 case WalletType.InGame:
-                    await LoginInGameWalletAsync();
+                    // ReSharper disable once MethodHasAsyncOverload
+                    //its not an async overload lol
+                    
+                    LoginInGameWallet();
                     break;
 
                 case WalletType.None:
@@ -97,18 +102,21 @@ namespace Utils
         public void LoginWalletAdapter()
         {
             PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Adapter);
+            Web3.OnLogin += HandleSignIn;
             _ = Web3.Instance.LoginWalletAdapter();
         }
 
         public void LoginWeb3Auth()
         {
             PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Web3Auth);
+            Web3.OnLogin += HandleSignIn;
             _ = Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
         }
 
         public void LoginInGameWallet()
         {
             PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.InGame);
+            Web3.OnLogin += HandleSignIn;
             _ = LoginInGameWalletAsync();
         }
 
@@ -116,8 +124,6 @@ namespace Utils
         {
             if (Web3.Account == null)
             {
-                Web3.OnLogin += HandleSignIn;
-
                 string password = PlayerPrefs.GetString(PwdPrefKey, null);
 
 #if FTUE_TESTING
@@ -181,6 +187,9 @@ namespace Utils
 
         private async void HandleSignIn(Account account)
         {
+            Debug.Log("HandleSignIn:");
+            Debug.Log(account.PublicKey);
+            
             Web3.OnLogin -= HandleSignIn;
 
             Destroy(loginSelector);
@@ -191,30 +200,26 @@ namespace Utils
                 { "PublicKey", account.PublicKey.ToString() },
             });
 
-            Debug.Log("HandleSignIn:");
-            Debug.Log(account.PublicKey);
-
-            if (Web3.Wallet is not InGameWallet)
+            if (true) //(Web3.Wallet is not InGameWallet)
             {
                 Debug.Log("Initialize Session..");
-                await InitializeSession();
+                await CreateNewSession();
             }
-            else
-            {
-                label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
-                await Web3Utils.EnsureBalance();
-            }
-            
-            
+            // else
+            // {
+            //     label.text = $"[{Web3.Account.PublicKey}] Balance top up.. ";
+            //     await Web3Utils.EnsureBalance();
+            // }
+
 
             _progress = .1f;
 
             label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. ";
             await _player.SetSeed(Web3.Account.PublicKey.Key[..20]);
             _playerModel.Set(await _player.LoadData());
-            
+
             _progress = .2f;
-            
+
             //check if settlement exists
             var settlements = _playerModel.Get().Settlements;
             if (settlements.Length == 0)
@@ -222,19 +227,15 @@ namespace Utils
                 label.text = $"Fetching new location for Settlements.. ";
                 //otherwise - get state of allocator
                 await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
-                var allocator = await _allocator.LoadData();
-                
-                
+
+
                 _progress = .3f;
 
-                label.text = $"Creating Settlementn at {allocator.CurrentX}_{allocator.CurrentY}...";
-                await _settlement.SetSeed($"{allocator.CurrentX}_{allocator.CurrentY}");
+                label.text = $"Creating new Settlement...";
 
-                Debug.Log(JsonConvert.SerializeObject(await _settlement.LoadData()));
+                await _settlement.SetSeed(await _allocator.GetNextUnallocatedLocation());
+                await _settlement.LoadData();
 
-                // await _settlement.Undelegate();
-
-                label.text = $"Assigning Settlement to the Player...";
                 label.text = $"Assigning Settlement to the Player...";
                 //assign settlement in player
                 await _player.AssignSettlement(
@@ -243,16 +244,16 @@ namespace Utils
                         { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
                         { new PublicKey(_allocator.EntityPda), _allocator.GetComponentProgramAddress() },
                     });
-                
-                
+
+
                 _progress = .4f;
 
                 _playerModel.Set(await _player.LoadData());
             }
             else
                 await _settlement.SetSeed($"{settlements[0].X}_{settlements[0].Y}");
-            
-            
+
+
             _progress = .5f;
 
             label.text = $"Loading Settlement Data...";
@@ -261,8 +262,8 @@ namespace Utils
 
             if (await _settlement.Delegate())
                 await _settlement.CloneToRollup();
-            
-            
+
+
             _progress = .6f;
 
             //load loot
@@ -270,17 +271,17 @@ namespace Utils
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
             _lootModel.Set(await _loot.LoadData());
 
-            
+
             _progress = .7f;
-            
+
             await _loot.Subscribe(_lootModel.Set);
             await _settlement.Subscribe(_settlementModel.Set);
 
             label.text = $"Init Gold Token...";
             await _token.LoadData();
             await _token.Subscribe(null);
-            
-            
+
+
             _progress = .8f;
 
             //ensure hero is created
@@ -298,7 +299,7 @@ namespace Utils
                     });
             }
 
-            
+
             _progress = .9f;
 
             label.text = $"Delegating Hero...";
@@ -320,45 +321,119 @@ namespace Utils
 
         private IEnumerator LoadingCompleted()
         {
-            for (var i = 0f; i < 1f; i += Time.deltaTime){
+            for (var i = 0f; i < 1f; i += Time.deltaTime)
+            {
                 foreach (var g in final)
-                    g.color = new Color(1, 1, 1,  Mathf.Lerp(0f, 1f, i));
+                    g.color = new Color(1, 1, 1, Mathf.Lerp(0f, 1f, i));
                 yield return null;
             }
-            
+
             SceneManager.LoadScene("Settlement");
         }
 
-        private async Task InitializeSession()
+        // public async Task RevokeSession()
+        // {
+        //     await Web3Utils.SessionWallet.CloseSession();
+        //     Debug.Log("Session closed");
+        // }
+        //
+        // public async Task<bool> IsSessionTokenInitialized()
+        // {
+        //     var sessionTokenData =
+        //         await Web3.Rpc.GetAccountInfoAsync(Web3Utils.SessionWallet.SessionTokenPDA, Commitment.Confirmed);
+        //     if (sessionTokenData.Result != null && sessionTokenData.Result.Value != null)
+        //     {
+        //         return true;
+        //     }
+        //
+        //     return false;
+        // }
+
+        public async Task<bool> UpdateSessionValid()
         {
-            var sessionPassword = PlayerPrefs.GetString(SessionPwdPrefKey, null);
+            Web3Utils.SessionToken = await RequestSessionToken();
 
-            if (sessionPassword == null)
+            if (Web3Utils.SessionToken == null) return false;
+
+            Debug.Log("Session token valid until: " +
+                      (new DateTime(1970, 1, 1)).AddSeconds(Web3Utils.SessionToken.ValidUntil) +
+                      " Now: " + DateTimeOffset.UtcNow);
+            Web3Utils.SessionValidUntil = Web3Utils.SessionToken.ValidUntil;
+            return IsSessionValid();
+        }
+
+        public async Task<SessionToken> RequestSessionToken()
+        {
+            //nullify if expired TODO
+            if (Web3Utils.SessionWallet == null)
+                await RefreshSessionWallet();
+
+            var sessionTokenData =
+                (await Web3.Rpc.GetAccountInfoAsync(Web3Utils.SessionWallet.SessionTokenPDA, Commitment.Confirmed))
+                .Result;
+
+            if (sessionTokenData?.Value?.Data[0] == null)
+                return null;
+
+            var sessionToken = SessionToken.Deserialize(Convert.FromBase64String(sessionTokenData.Value.Data[0]));
+
+            return sessionToken;
+        }
+
+        private bool IsSessionValid()
+        {
+            return Web3Utils.SessionValidUntil > DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        }
+
+        private async Task RefreshSessionWallet()
+        {
+            var password = PlayerPrefs.GetString(SessionPwdPrefKey, null);
+
+            if (string.IsNullOrEmpty(password))
             {
-                sessionPassword = RandomString(10);
-                PlayerPrefs.SetString(SessionPwdPrefKey, sessionPassword);
+                password = RandomString(10);
+                PlayerPrefs.SetString(SessionPwdPrefKey, password);
             }
 
-            Web3Utils.SessionWallet =
-                await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID), sessionPassword);
+            Web3Utils.SessionWallet = await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID),
+                password,
+                Web3.Wallet);
+        }
 
-            if (!await Web3Utils.SessionWallet.IsSessionTokenInitialized())
+        private async Task CreateNewSession()
+        {
+            Web3Utils.SessionToken = await RequestSessionToken();
+            if (Web3Utils.SessionToken != null)
             {
-                var tx = new Transaction
-                {
-                    FeePayer = Web3.Account,
-                    Instructions = new List<TransactionInstruction>(),
-                    RecentBlockHash = await Web3.BlockHash()
-                };
-
-                // Set to 1 day in unix time
-                var validity = DateTimeOffset.UtcNow.AddHours(23).ToUnixTimeSeconds();
-                tx.Instructions.Add(Web3Utils.SessionWallet.CreateSessionIX(true, validity));
-                tx.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
-
-                await Web3.Wallet.ActiveRpcClient.SendTransactionAsync(Convert.ToBase64String(tx.Serialize()),
-                    skipPreflight: true, preFlightCommitment: Commitment.Confirmed);
+                await Web3Utils.SessionWallet.CloseSession();
             }
+
+            
+            SessionWallet.Instance = null;
+            await RefreshSessionWallet();
+            
+            var transaction = new Transaction()
+            {
+                FeePayer = Web3.Account,
+                Instructions = new List<TransactionInstruction>(),
+                RecentBlockHash = await Web3.BlockHash(Commitment.Confirmed, false)
+            };
+
+            var sessionIx = Web3Utils.SessionWallet.CreateSessionIX(true, GetSessionKeysEndTime(), 100000000);
+            transaction.Add(sessionIx);
+            transaction.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
+
+            var res = await Web3.Wallet.SignAndSendTransaction(transaction, true,  Commitment.Confirmed);
+
+            Debug.Log("Create session wallet: " + res.RawRpcResponse);
+            await Web3.Wallet.ActiveRpcClient.ConfirmTransaction(res.Result, Commitment.Confirmed);
+            var sessionValid = await UpdateSessionValid();
+            Debug.Log("After create session, the session is valid: " + sessionValid);
+        }
+
+        private long GetSessionKeysEndTime()
+        {
+            return DateTimeOffset.UtcNow.AddDays(6).ToUnixTimeSeconds();
         }
     }
 }

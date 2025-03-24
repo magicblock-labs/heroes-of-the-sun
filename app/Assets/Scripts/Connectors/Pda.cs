@@ -4,9 +4,11 @@ using System.Text;
 using JetBrains.Annotations;
 using Solana.Unity.Wallet;
 using World;
+using World.Program;
 
 namespace Connectors
 {
+    
     public class Pda
     {
         public static PublicKey FindWorldPda(int world)
@@ -14,7 +16,7 @@ namespace Connectors
             PublicKey.TryFindProgramAddress(new[]
             {
                 Encoding.UTF8.GetBytes("world"), BitConverter.GetBytes((ulong)world).Reverse().ToArray()
-            }, WorldClient.ProgramID, out var pda, out _);
+            }, new PublicKey(WorldProgram.ID), out var pda, out _);
             return pda;
         }
 
@@ -24,7 +26,7 @@ namespace Connectors
             {
                 Encoding.UTF8.GetBytes("entity"), BitConverter.GetBytes((ulong)world).Reverse().ToArray(),
                 BitConverter.GetBytes((ulong)entity).Reverse().ToArray(), Encoding.UTF8.GetBytes(extraSeed)
-            }, WorldClient.ProgramID, out var pda, out _);
+            }, new PublicKey(WorldProgram.ID), out var pda, out _);
             return pda;
         }
 
