@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Model;
@@ -8,6 +9,7 @@ namespace View.Exploration
 {
     public class RenderLoot : InjectableBehaviour
     {
+        private const int ChunkSize = 24;
         [Inject] private LootModel _model;
         [Inject] private PathfindingModel _pathfinding;
 
@@ -38,20 +40,26 @@ namespace View.Exploration
 
         private async void Redraw()
         {
+
             _lootMap.Clear();
 
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
+            var i = 0;
             foreach (var loot in _model.Get().Loots)
             {
-                var pos = ConfigModel.GetWorldCellPosition(loot.X, loot.Y);
-                pos.y = _pathfinding.GetY(new Vector2Int(loot.X, loot.Y)) + 1f;
+                i++;
+                var lootLocation = new Vector2Int(loot.X, loot.Y);
+
+
+                var pos = ConfigModel.GetWorldCellPosition(lootLocation.x, lootLocation.y);
+                pos.y = _pathfinding.GetY(new Vector2Int(lootLocation.x, lootLocation.y)) + 1f;
 
                 var lootTransform = Instantiate(prefab, transform).transform;
                 lootTransform.localPosition = pos;
 
-                _lootMap[new Vector2Int(loot.X, loot.Y)] = lootTransform;
+                _lootMap[new Vector2Int(lootLocation.x, lootLocation.y)] = lootTransform;
             }
         }
 

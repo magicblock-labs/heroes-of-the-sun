@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Connectors;
 using GplSession.Accounts;
 using Model;
-using Newtonsoft.Json;
 using Solana.Unity.Rpc.Models;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
