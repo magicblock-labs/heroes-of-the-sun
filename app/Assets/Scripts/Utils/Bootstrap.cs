@@ -75,8 +75,12 @@ namespace Utils
         {
             await InitialiseAnalytics();
 
-            var type = (WalletType)PlayerPrefs.GetInt(SelectedWalletTypeKey, (int)WalletType.None);
-
+#if UNITY_EDITOR
+            var type = WalletType
+                .InGame; // (WalletType)PlayerPrefs.GetInt(SelectedWalletTypeKey, (int)WalletType.None);
+#else
+      var type = WalletType.Adapter;// (WalletType)PlayerPrefs.GetInt(SelectedWalletTypeKey, (int)WalletType.None);
+#endif
             switch (type)
             {
                 case WalletType.Adapter:
@@ -88,7 +92,7 @@ namespace Utils
                 case WalletType.InGame:
                     // ReSharper disable once MethodHasAsyncOverload
                     //its not an async overload lol
-                    
+
                     LoginInGameWallet();
                     break;
 
@@ -189,7 +193,7 @@ namespace Utils
         {
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
-            
+
             Web3.OnLogin -= HandleSignIn;
 
             Destroy(loginSelector);
@@ -408,10 +412,10 @@ namespace Utils
                 await Web3Utils.SessionWallet.CloseSession();
             }
 
-            
+
             SessionWallet.Instance = null;
             await RefreshSessionWallet();
-            
+
             var transaction = new Transaction()
             {
                 FeePayer = Web3.Account,
@@ -423,7 +427,7 @@ namespace Utils
             transaction.Add(sessionIx);
             transaction.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
 
-            var res = await Web3.Wallet.SignAndSendTransaction(transaction, true,  Commitment.Confirmed);
+            var res = await Web3.Wallet.SignAndSendTransaction(transaction, true, Commitment.Confirmed);
 
             Debug.Log("Create session wallet: " + res.RawRpcResponse);
             await Web3.Wallet.ActiveRpcClient.ConfirmTransaction(res.Result, Commitment.Confirmed);
