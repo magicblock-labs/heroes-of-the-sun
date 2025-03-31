@@ -1,9 +1,13 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GplSession.Accounts;
 using Solana.Unity.Rpc.Types;
 using Solana.Unity.SDK;
+using Solana.Unity.Wallet;
 using UnityEngine;
+using World.Program;
+using Random = UnityEngine.Random;
 
 namespace Utils
 {
@@ -17,6 +21,24 @@ namespace Utils
         public static long SessionValidUntil;
         
         private static long _timeOffset;
+        
+        private const string SessionPwdPrefKey = nameof(SessionPwdPrefKey);
+
+
+        public static async Task RefreshSessionWallet()
+        {
+            var password = PlayerPrefs.GetString(SessionPwdPrefKey, null);
+
+            if (string.IsNullOrEmpty(password))
+            {
+                password = RandomString(10);
+                PlayerPrefs.SetString(SessionPwdPrefKey, password);
+            }
+
+            Web3Utils.SessionWallet = await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID),
+                password,
+                Web3.Wallet);
+        }
 
         public static async Task SyncTime()
         {
@@ -30,6 +52,14 @@ namespace Utils
         public static long GetNodeTime()
         {
             return DateTimeOffset.UtcNow.ToUnixTimeSeconds() - _timeOffset;
+        }
+
+
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[Random.Range(0, s.Length)]).ToArray());
         }
     }
 }

@@ -36,6 +36,8 @@ pub mod wait {
                 BuildingType::TownHall => {
                     water_storage += config::TOWNHALL_STORAGE_PER_LEVEL * building.level as u16;
                     food_storage += config::TOWNHALL_STORAGE_PER_LEVEL * building.level as u16;
+                    wood_storage += config::TOWNHALL_STORAGE_PER_LEVEL * building.level as u16;
+                    stone_storage += config::TOWNHALL_STORAGE_PER_LEVEL * building.level as u16;
                 }
                 BuildingType::WaterStorage => {
                     water_storage += config::WATER_STORAGE_PER_LEVEL

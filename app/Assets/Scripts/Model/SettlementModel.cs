@@ -120,6 +120,8 @@ namespace Model
                     case BuildingType.TownHall:
                         storage.Food += building.Level * 10;
                         storage.Water += building.Level * 10;
+                        storage.Wood += building.Level * 10;
+                        storage.Stone += building.Level * 10;
                         break;
                     
                     case BuildingType.WaterStorage:

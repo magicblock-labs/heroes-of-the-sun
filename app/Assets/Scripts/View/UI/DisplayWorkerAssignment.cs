@@ -38,9 +38,11 @@ namespace View.UI
                 grouped[allocation[i]].Add(i);
             }
 
-
             foreach (var (buildingId, workerIds) in grouped)
             {
+                if (buildingId < 0)
+                    continue; //skip dead workers
+
                 var allocationEntry = Instantiate(workerAssignmentEntry, transform);
                 allocationEntry.SetData(buildingId, workerIds);
                 allocationEntry.onSelected.AddListener(TryAssignLabour);

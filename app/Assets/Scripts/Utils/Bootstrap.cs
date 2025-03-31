@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Connectors;
 using GplSession.Accounts;
 using Model;
@@ -38,7 +39,6 @@ namespace Utils
     public class Bootstrap : InjectableBehaviour
     {
         private const string PwdPrefKey = nameof(PwdPrefKey);
-        private const string SessionPwdPrefKey = nameof(SessionPwdPrefKey);
         public const string SelectedWalletTypeKey = nameof(SelectedWalletTypeKey);
         [SerializeField] private TMP_Text label;
         [SerializeField] private GameObject loginSelector;
@@ -151,7 +151,7 @@ namespace Utils
                 else
                 {
                     var mnemonic = new Mnemonic(WordList.English, WordCount.TwentyFour).ToString().Trim();
-                    password = RandomString(10);
+                    password = Web3Utils.RandomString(10);
 
                     // // TODO: Remove this as it's for testing only
                     // var mnemonic = "wet mistake floor suffer melody talk tackle fame uncle inherit thing dumb jazz wolf smart lawsuit carbon denial found alert huge liar cost wealth";
@@ -171,13 +171,6 @@ namespace Utils
 
             await UnityServices.InitializeAsync(options);
             AnalyticsService.Instance.StartDataCollection();
-        }
-
-        private static string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[Random.Range(0, s.Length)]).ToArray());
         }
 
         private void Update()
@@ -335,24 +328,6 @@ namespace Utils
             SceneManager.LoadScene("Settlement");
         }
 
-        // public async Task RevokeSession()
-        // {
-        //     await Web3Utils.SessionWallet.CloseSession();
-        //     Debug.Log("Session closed");
-        // }
-        //
-        // public async Task<bool> IsSessionTokenInitialized()
-        // {
-        //     var sessionTokenData =
-        //         await Web3.Rpc.GetAccountInfoAsync(Web3Utils.SessionWallet.SessionTokenPDA, Commitment.Confirmed);
-        //     if (sessionTokenData.Result != null && sessionTokenData.Result.Value != null)
-        //     {
-        //         return true;
-        //     }
-        //
-        //     return false;
-        // }
-
         public async Task<bool> UpdateSessionValid()
         {
             Web3Utils.SessionToken = await RequestSessionToken();
@@ -368,9 +343,8 @@ namespace Utils
 
         public async Task<SessionToken> RequestSessionToken()
         {
-            //nullify if expired TODO
             if (Web3Utils.SessionWallet == null)
-                await RefreshSessionWallet();
+                await Web3Utils.RefreshSessionWallet();
 
             var sessionTokenData =
                 (await Web3.Rpc.GetAccountInfoAsync(Web3Utils.SessionWallet.SessionTokenPDA, Commitment.Confirmed))
@@ -384,39 +358,20 @@ namespace Utils
             return sessionToken;
         }
 
-        private bool IsSessionValid()
+        private static bool IsSessionValid(long buffer = 60 * 60) //make sure its valid for at least 1h ahead
         {
-            return Web3Utils.SessionValidUntil > DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        }
-
-        private async Task RefreshSessionWallet()
-        {
-            var password = PlayerPrefs.GetString(SessionPwdPrefKey, null);
-
-            if (string.IsNullOrEmpty(password))
-            {
-                password = RandomString(10);
-                PlayerPrefs.SetString(SessionPwdPrefKey, password);
-            }
-
-            Web3Utils.SessionWallet = await SessionWallet.GetSessionWallet(new PublicKey(WorldProgram.ID),
-                password,
-                Web3.Wallet);
+            return Web3Utils.SessionValidUntil > DateTimeOffset.UtcNow.ToUnixTimeSeconds() + buffer;
         }
 
         private async Task CreateNewSession()
         {
-            Web3Utils.SessionToken = await RequestSessionToken();
+            if (await UpdateSessionValid())
+                return;
+
             if (Web3Utils.SessionToken != null)
-            {
                 await Web3Utils.SessionWallet.CloseSession();
-            }
 
-
-            SessionWallet.Instance = null;
-            await RefreshSessionWallet();
-
-            var transaction = new Transaction()
+            var transaction = new Transaction
             {
                 FeePayer = Web3.Account,
                 Instructions = new List<TransactionInstruction>(),
