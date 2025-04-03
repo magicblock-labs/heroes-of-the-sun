@@ -152,7 +152,6 @@ pub const FAITH_TO_RUNWAY_LERP_PER_TURN: u8 = 1;
 pub const BASE_DETERIORATION_CAP: u8 = 50;
 pub const DETERIORATION_CAP_RESEARCH_MULTIPLIER: u8 = 5;
 
-
 pub const TOWNHALL_STORAGE_PER_LEVEL: u16 = 10;
 pub const WATER_STORAGE_PER_LEVEL: u16 = 10;
 pub const FOOD_STORAGE_PER_LEVEL: u16 = 20;
@@ -218,7 +217,7 @@ pub fn get_research_cost(_research_type: u8, level: u8) -> u16 {
 }
 
 pub fn get_regeneration_rate(research: u32) -> u16 {
-    return 1 + get_research_level(research, ResearchType::EnvironmentRegeneration) as u16;
+    return 3 + get_research_level(research, ResearchType::EnvironmentRegeneration) as u16;
 }
 
 fn calculate_cost(research: u32, tier: u8, level: u8, level_offset: u8, multiplier: f32) -> u16 {
