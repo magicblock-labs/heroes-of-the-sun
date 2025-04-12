@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using Settlement.Types;
 using UnityEngine;
@@ -7,6 +8,14 @@ using Utils.Signal;
 
 namespace Model
 {
+    public enum Resource
+    {
+        Food,
+        Wood,
+        Water,
+        Stone
+    }
+
     public struct StorageCapacity
     {
         public int Food;
@@ -123,7 +132,7 @@ namespace Model
                         storage.Wood += building.Level * 10;
                         storage.Stone += building.Level * 10;
                         break;
-                    
+
                     case BuildingType.WaterStorage:
                         storage.Water += ConfigModel.WATER_STORAGE_PER_LEVEL *
                                          GetStorageLevelMultiplier(building.Level);
@@ -256,68 +265,89 @@ namespace Model
         }
 
         public long GetNextEnergyClaimTimestamp()
-            {
-                var secondsPerUnit = SecondsInMinute
-                                     * (BaseMinutePerEnergyUnit
-                                        - (int)(EnergyRegenResearchMultiplier
-                                                * GetResearchLevel(ResearchType.EnergyRegeneration))
-                                        - (int)(_data.Faith * EnergyRegenFaithMultiplier));
+        {
+            var secondsPerUnit = SecondsInMinute
+                                 * (BaseMinutePerEnergyUnit
+                                    - (int)(EnergyRegenResearchMultiplier
+                                            * GetResearchLevel(ResearchType.EnergyRegeneration))
+                                    - (int)(_data.Faith * EnergyRegenFaithMultiplier));
 
-                return _data.LastTimeClaim + secondsPerUnit;
+            return _data.LastTimeClaim + secondsPerUnit;
+        }
+
+
+        private ushort CalculateCost(uint tier, int level, int levelOffset, float multiplier)
+        {
+            if (levelOffset >= level)
+            {
+                return 0;
             }
 
+            const int baseCost = 2;
+            const float levelMultiplier = 1.5f;
+            var costResearch = GetResearchLevel(ResearchType.BuildingCost);
+            var cost = baseCost * tier * Math.Pow(levelMultiplier, level - levelOffset)
+                       * (1.0 - BuildingCostResearchMultiplier * costResearch)
+                       * multiplier;
 
-            private ushort CalculateCost(uint tier, int level, int levelOffset, float multiplier)
+            return (ushort)Math.Ceiling(cost);
+        }
+
+        public ResourceBalance GetConstructionCost(uint tier, int level, float multiplier)
+        {
+            return new ResourceBalance
             {
-                if (levelOffset >= level)
-                {
-                    return 0;
-                }
+                Food = 0,
+                Water = 0,
+                Wood = CalculateCost(tier, level, 0, multiplier),
+                Stone = CalculateCost(tier, level, 4, multiplier)
+            };
+        }
 
-                const int baseCost = 2;
-                const float levelMultiplier = 1.5f;
-                var costResearch = GetResearchLevel(ResearchType.BuildingCost);
-                var cost = baseCost * tier * Math.Pow(levelMultiplier, level - levelOffset)
-                           * (1.0 - BuildingCostResearchMultiplier * costResearch)
-                           * multiplier;
+        public int GetBuildTime(uint tier, int level)
+        {
+            const float levelMultiplier = 1.2f;
+            var baseCost = (int)(tier * Math.Pow(levelMultiplier, level));
+            return baseCost
+                   - (int)Math.Min(
+                       BuildingSpeedResearchTurnReduction * GetResearchLevel(ResearchType.BuildingSpeed),
+                       baseCost
+                   );
+        }
 
-                return (ushort)Math.Ceiling(cost);
-            }
-
-            public ResourceBalance GetConstructionCost(uint tier, int level, float multiplier)
-            {
-                return new ResourceBalance
-                {
-                    Food = 0,
-                    Water = 0,
-                    Wood = CalculateCost(tier, level, 0, multiplier),
-                    Stone = CalculateCost(tier, level, 4, multiplier)
-                };
-            }
-
-            public int GetBuildTime(uint tier, int level)
-            {
-                const float levelMultiplier = 1.2f;
-                var baseCost = (int)(tier * Math.Pow(levelMultiplier, level));
-                return baseCost
-                       - (int)Math.Min(
-                           BuildingSpeedResearchTurnReduction * GetResearchLevel(ResearchType.BuildingSpeed),
-                           baseCost
-                       );
-            }
-
-            public float GetMaxDeterioration()
-            {
-                return ConfigModel.BASE_DETERIORATION_CAP
-                       + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
-                       * GetResearchLevel(ResearchType.DeteriorationCap);
-            }
+        public float GetMaxDeterioration()
+        {
+            return ConfigModel.BASE_DETERIORATION_CAP
+                   + ConfigModel.DETERIORATION_CAP_RESEARCH_MULTIPLIER
+                   * GetResearchLevel(ResearchType.DeteriorationCap);
+        }
 
         private const int BaseResearchCost = 5;
 
         public int GetResearchCost(ResearchType type)
         {
             return BaseResearchCost * (int)Math.Pow(2, GetResearchLevel(type));
+        }
+
+        public uint GetQuestProgress(QuestData data)
+        {
+            return data.type switch
+            {
+                QuestType.Build => (uint)_data.Buildings.Count(b => b.Id == (BuildingType)data.targetType),
+                QuestType.Upgrade => _data.Buildings.Where(b => b.Id == (BuildingType)data.targetType)
+                    .Max(b => b.Level),
+                QuestType.Store => (Resource)data.targetType switch
+                {
+                    Resource.Food => _data.Treasury.Food,
+                    Resource.Wood => _data.Treasury.Wood,
+                    Resource.Water => _data.Treasury.Water,
+                    Resource.Stone => _data.Treasury.Stone,
+                    _ => throw new ArgumentOutOfRangeException()
+                },
+                QuestType.Research => GetResearchLevel((ResearchType)data.targetType),
+                QuestType.Faith => _data.Faith,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
     }
 }

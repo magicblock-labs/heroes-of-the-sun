@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using Settlement.Types;
+using UnityEditor;
 using UnityEngine;
 using Utils.Injection;
 
@@ -184,6 +186,133 @@ namespace Model
                         result[i, j] = 1;
                 }
 
+            return result;
+        }
+
+        public static QuestData[] Quests =
+        {
+            new()
+            {
+                type = QuestType.Build,
+                targetType = (int)BuildingType.FoodStorage,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 10
+            },
+            new()
+            {
+                type = QuestType.Build,
+                targetType = (int)BuildingType.FoodCollector,
+                rewardType = (int)Resource.Water,
+                rewardValue = 10
+            },
+            new()
+            {
+                type = QuestType.Build,
+                targetType = (int)BuildingType.WaterStorage,
+                rewardType = (int)Resource.Water,
+                rewardValue = 10
+            },
+            new()
+            {
+                type = QuestType.Build,
+                targetType = (int)BuildingType.WaterCollector,
+                rewardType = (int)Resource.Water,
+                rewardValue = 10
+            },
+
+            new()
+            {
+                type = QuestType.Upgrade,
+                targetType = (int)BuildingType.TownHall,
+                targetValue = 2,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 100
+            },
+
+            new()
+            {
+                type = QuestType.Upgrade,
+                targetType = (int)BuildingType.WoodCollector,
+                targetValue = 2,
+                rewardType = (int)Resource.Water,
+                rewardValue = 20
+            },
+
+            new()
+            {
+                type = QuestType.Upgrade,
+                targetType = (int)BuildingType.TownHall,
+                targetValue = 3,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 10
+            },
+
+            new()
+            {
+                type = QuestType.Store,
+                targetType = (int)Resource.Food,
+                targetValue = 30,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5
+            },
+            new()
+            {
+                type = QuestType.Store,
+                targetType = (int)Resource.Wood,
+                targetValue = 50,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5
+            },
+            new()
+            {
+                type = QuestType.Store,
+                targetType = (int)Resource.Stone,
+                targetValue = 30,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 20
+            },
+            new()
+            {
+                type = QuestType.Research,
+                targetType = (int)SettlementModel.ResearchType.BuildingCost,
+                targetValue = 1,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5
+            },
+            new()
+            {
+                type = QuestType.Research,
+                targetType = (int)SettlementModel.ResearchType.Consumption,
+                targetValue = 1,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5
+            },
+            new()
+            {
+                type = QuestType.Faith,
+                targetValue = 30,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 15
+            },
+            new()
+            {
+                type = QuestType.Faith,
+                targetValue = 60,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 30
+            },
+        };
+
+        public Dictionary<QuestType, QuestData> GetFirstUnclaimedQuests(ulong progress)
+        {
+            var result = new Dictionary<QuestType, QuestData>();
+            foreach (var quest in Quests)
+            {
+                //if claimd continue
+
+                result.TryAdd(quest.type, quest);
+            }
+                
             return result;
         }
     }
