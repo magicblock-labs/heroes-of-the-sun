@@ -17,16 +17,18 @@ public enum QuestType
 [Serializable]
 public class QuestData
 {
+    public int id;
     public QuestType type;
     public int targetType;
     public int targetValue = 1;
     
     public int rewardType;
-    public int rewardValue;
+    public ushort rewardValue;
 }
 
-public class DisplayQuest : MonoBehaviour
+public class DisplayQuest : InjectableBehaviour
 {
+    [Inject] SettlementModel _settlement;
     
     [SerializeField] private Image typeIcon;
     [SerializeField] private Sprite[] questTypeIcons;
@@ -40,9 +42,12 @@ public class DisplayQuest : MonoBehaviour
     [SerializeField] private Text claimText;
     [SerializeField] private Image claimResourceIcon;
     [SerializeField] private Sprite[] resourceIcons;
+    
+    private QuestData _data;
 
-    public void SetData(QuestData data, uint progress)
+    public bool SetData(QuestData data, uint progress)
     {
+        _data = data;
         typeIcon.sprite = questTypeIcons[(int)data.type];
         title.text = data.type switch
         {
@@ -61,6 +66,8 @@ public class DisplayQuest : MonoBehaviour
         claimButton.interactable = progress >= data.targetValue;
         claimText.text = $"Claim x{data.rewardValue}";
         claimResourceIcon.sprite = resourceIcons[data.rewardType % 4];
+
+        return progress >= data.targetValue;
     }
 
     public void OnInfoClick()
@@ -70,6 +77,6 @@ public class DisplayQuest : MonoBehaviour
     
     public void OnClaimClick()
     {
-        
+        _settlement.ClaimQuestLocalSim(_data.id);
     }
 }

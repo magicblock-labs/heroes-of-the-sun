@@ -101,6 +101,8 @@ namespace Settlement
 
             public long LastTimeClaim { get; set; }
 
+            public ulong QuestClaimStatus { get; set; }
+
             public uint Research { get; set; }
 
             public sbyte[] WorkerAssignment { get; set; }

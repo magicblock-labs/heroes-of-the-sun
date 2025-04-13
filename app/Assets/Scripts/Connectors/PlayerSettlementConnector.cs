@@ -88,6 +88,14 @@ namespace Connectors
             return result;
         }
         
+        public async UniTask<bool> ClaimQuest()
+        {
+            //return await ApplySystem(new PublicKey("4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"), new { });
+            
+            
+            return true;
+        }
+        
         
         public override UniTask CloneToRollup()
         {

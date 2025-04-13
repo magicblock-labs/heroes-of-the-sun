@@ -5079,6 +5079,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   questsContainer: {fileID: 1623685450}
   ctaButton: {fileID: 206268397}
+  ctaStatus: {fileID: 1165810617}
   arrow: {fileID: 1022993127}
   questPrefab: {fileID: 4716285049833107936, guid: 401f85e704aa84289a1f37fa5e589d54,
     type: 3}

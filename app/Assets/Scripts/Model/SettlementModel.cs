@@ -331,11 +331,16 @@ namespace Model
 
         public uint GetQuestProgress(QuestData data)
         {
+            byte GetMaxBuildingLevel(BuildingType bulidingType)
+            {
+                var buildingsOfType = _data.Buildings.Where(b => b.Id == bulidingType).ToArray();
+                return buildingsOfType.Any() ? buildingsOfType.Max(b => b.Level) : (byte)0;
+            }
+
             return data.type switch
             {
                 QuestType.Build => (uint)_data.Buildings.Count(b => b.Id == (BuildingType)data.targetType),
-                QuestType.Upgrade => _data.Buildings.Where(b => b.Id == (BuildingType)data.targetType)
-                    .Max(b => b.Level),
+                QuestType.Upgrade => GetMaxBuildingLevel((BuildingType)data.targetType),
                 QuestType.Store => (Resource)data.targetType switch
                 {
                     Resource.Food => _data.Treasury.Food,
@@ -348,6 +353,40 @@ namespace Model
                 QuestType.Faith => _data.Faith,
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+
+        public void ClaimQuestLocalSim(int index)
+        {
+            if ((_data.QuestClaimStatus & (1ul << index)) > 0)
+                return;
+
+            _data.QuestClaimStatus |= (1ul << index);
+
+            var quest = ConfigModel.Quests.FirstOrDefault(data => data.id == index);
+
+            if (quest == null)
+                return;
+
+            switch ((Resource)quest.rewardType)
+            {
+                case Resource.Food:
+                    _data.Treasury.Food += quest.rewardValue;
+                    break;
+                case Resource.Wood:
+                    _data.Treasury.Wood += quest.rewardValue;
+                    break;
+                case Resource.Water:
+                    _data.Treasury.Water += quest.rewardValue;
+                    break;
+                case Resource.Stone:
+                    _data.Treasury.Stone += quest.rewardValue;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+
+            Updated.Dispatch();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using Model;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class DisplayQuests : InjectableBehaviour
 
     [SerializeField] private Transform questsContainer;
     [SerializeField] private Toggle ctaButton;
+    [SerializeField] private Text ctaStatus;
     [SerializeField] private Transform arrow;
     [SerializeField] private DisplayQuest questPrefab;
 
@@ -18,6 +20,8 @@ public class DisplayQuests : InjectableBehaviour
     {
         SetOpen(false);
         Redraw();
+        
+        _settlement.Updated.Add(Redraw);
     }
 
     public void SetOpen(bool value)
@@ -33,7 +37,21 @@ public class DisplayQuests : InjectableBehaviour
         foreach (Transform child in questsContainer)
             Destroy(child.gameObject);
 
-        foreach (var (_, quest) in _configModel.GetFirstUnclaimedQuests(0))
-            Instantiate(questPrefab, questsContainer).SetData(quest, _settlement.GetQuestProgress(quest));
+        var claimable = 0;
+        var total = 0;
+        foreach (var (_, quest) in _configModel.GetFirstUnclaimedQuests(_settlement.Get().QuestClaimStatus))
+        {
+            total++;
+            if (Instantiate(questPrefab, questsContainer).SetData(quest, _settlement.GetQuestProgress(quest)))
+                claimable++;
+        }
+
+
+        ctaStatus.text = $"Quests: {claimable}/{total}";
+    }
+
+    private void OnDestroy()
+    {
+        _settlement.Updated.Remove(Redraw);
     }
 }

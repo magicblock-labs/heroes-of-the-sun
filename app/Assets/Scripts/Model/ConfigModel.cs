@@ -193,6 +193,7 @@ namespace Model
         {
             new()
             {
+                id = 0,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.FoodStorage,
                 rewardType = (int)Resource.Wood,
@@ -200,6 +201,7 @@ namespace Model
             },
             new()
             {
+                id = 1,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.FoodCollector,
                 rewardType = (int)Resource.Water,
@@ -207,6 +209,7 @@ namespace Model
             },
             new()
             {
+                id = 2,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WaterStorage,
                 rewardType = (int)Resource.Water,
@@ -214,6 +217,7 @@ namespace Model
             },
             new()
             {
+                id = 3,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WaterCollector,
                 rewardType = (int)Resource.Water,
@@ -222,6 +226,7 @@ namespace Model
 
             new()
             {
+                id = 4,
                 type = QuestType.Upgrade,
                 targetType = (int)BuildingType.TownHall,
                 targetValue = 2,
@@ -231,6 +236,7 @@ namespace Model
 
             new()
             {
+                id = 5,
                 type = QuestType.Upgrade,
                 targetType = (int)BuildingType.WoodCollector,
                 targetValue = 2,
@@ -240,6 +246,7 @@ namespace Model
 
             new()
             {
+                id = 6,
                 type = QuestType.Upgrade,
                 targetType = (int)BuildingType.TownHall,
                 targetValue = 3,
@@ -249,6 +256,7 @@ namespace Model
 
             new()
             {
+                id = 7,
                 type = QuestType.Store,
                 targetType = (int)Resource.Food,
                 targetValue = 30,
@@ -257,6 +265,7 @@ namespace Model
             },
             new()
             {
+                id = 8,
                 type = QuestType.Store,
                 targetType = (int)Resource.Wood,
                 targetValue = 50,
@@ -265,6 +274,7 @@ namespace Model
             },
             new()
             {
+                id = 9,
                 type = QuestType.Store,
                 targetType = (int)Resource.Stone,
                 targetValue = 30,
@@ -273,6 +283,7 @@ namespace Model
             },
             new()
             {
+                id = 10,
                 type = QuestType.Research,
                 targetType = (int)SettlementModel.ResearchType.BuildingCost,
                 targetValue = 1,
@@ -281,6 +292,7 @@ namespace Model
             },
             new()
             {
+                id = 11,
                 type = QuestType.Research,
                 targetType = (int)SettlementModel.ResearchType.Consumption,
                 targetValue = 1,
@@ -289,6 +301,7 @@ namespace Model
             },
             new()
             {
+                id = 12,
                 type = QuestType.Faith,
                 targetValue = 30,
                 rewardType = (int)Resource.Stone,
@@ -296,6 +309,7 @@ namespace Model
             },
             new()
             {
+                id = 13,
                 type = QuestType.Faith,
                 targetValue = 60,
                 rewardType = (int)Resource.Stone,
@@ -303,16 +317,17 @@ namespace Model
             },
         };
 
-        public Dictionary<QuestType, QuestData> GetFirstUnclaimedQuests(ulong progress)
+        public Dictionary<QuestType, QuestData> GetFirstUnclaimedQuests(ulong claimStatus)
         {
             var result = new Dictionary<QuestType, QuestData>();
             foreach (var quest in Quests)
             {
-                //if claimd continue
+                if ((claimStatus & (1ul << quest.id)) > 0)
+                    continue;
 
                 result.TryAdd(quest.type, quest);
             }
-                
+
             return result;
         }
     }
