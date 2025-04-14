@@ -101,11 +101,11 @@ namespace Settlement
 
             public long LastTimeClaim { get; set; }
 
-            public ulong QuestClaimStatus { get; set; }
-
             public uint Research { get; set; }
 
             public sbyte[] WorkerAssignment { get; set; }
+
+            public ulong QuestClaimStatus { get; set; }
 
             public BoltMetadata BoltMetadata { get; set; }
 
@@ -152,6 +152,8 @@ namespace Settlement
                     offset += 1;
                 }
 
+                result.QuestClaimStatus = _data.GetU64(offset);
+                offset += 8;
                 offset += BoltMetadata.Deserialize(_data, offset, out var resultBoltMetadata);
                 result.BoltMetadata = resultBoltMetadata;
                 return result;
@@ -463,6 +465,22 @@ namespace Settlement
             public PublicKey SystemProgram { get; set; }
         }
 
+        public class DestroyAccounts
+        {
+            public PublicKey Authority { get; set; }
+
+            public PublicKey Receiver { get; set; }
+
+            public PublicKey Entity { get; set; }
+
+            public PublicKey Component { get; set; }
+
+            public PublicKey ComponentProgramData { get; set; }
+
+            public PublicKey InstructionSysvarAccount { get; set; } = new PublicKey("Sysvar1nstructions1111111111111111111111111");
+            public PublicKey SystemProgram { get; set; } = new PublicKey("11111111111111111111111111111111");
+        }
+
         public class InitializeAccounts
         {
             public PublicKey Payer { get; set; }
@@ -505,6 +523,15 @@ namespace Settlement
             public PublicKey Authority { get; set; }
 
             public PublicKey InstructionSysvarAccount { get; set; } = new PublicKey("Sysvar1nstructions1111111111111111111111111");
+        }
+
+        public class UpdateWithSessionAccounts
+        {
+            public PublicKey BoltComponent { get; set; }
+
+            public PublicKey Authority { get; set; }
+
+            public PublicKey InstructionSysvarAccount { get; set; } = new PublicKey("Sysvar1nstructions1111111111111111111111111");
             public PublicKey SessionToken { get; set; }
         }
 
@@ -535,6 +562,20 @@ namespace Settlement
                     offset += 1;
                 }
 
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
+            public static Solana.Unity.Rpc.Models.TransactionInstruction Destroy(DestroyAccounts accounts, PublicKey programId = null)
+            {
+                programId ??= new(ID);
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Receiver, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Entity, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Component, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.ComponentProgramData, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(5372736661213948061UL, offset);
+                offset += 8;
                 byte[] resultData = new byte[offset];
                 Array.Copy(_data, resultData, offset);
                 return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
@@ -596,10 +637,28 @@ namespace Settlement
             {
                 programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BoltComponent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SessionToken == null ? programId : accounts.SessionToken, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BoltComponent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(9222597562720635099UL, offset);
+                offset += 8;
+                _data.WriteS32(data.Length, offset);
+                offset += 4;
+                _data.WriteSpan(data, offset);
+                offset += data.Length;
+                byte[] resultData = new byte[offset];
+                Array.Copy(_data, resultData, offset);
+                return new Solana.Unity.Rpc.Models.TransactionInstruction{Keys = keys, ProgramId = programId.KeyBytes, Data = resultData};
+            }
+
+            public static Solana.Unity.Rpc.Models.TransactionInstruction UpdateWithSession(UpdateWithSessionAccounts accounts, byte[] data, PublicKey programId = null)
+            {
+                programId ??= new(ID);
+                List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.BoltComponent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Authority, true), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.InstructionSysvarAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SessionToken, false)};
+                byte[] _data = new byte[1200];
+                int offset = 0;
+                _data.WriteU64(13131745794163226589UL, offset);
                 offset += 8;
                 _data.WriteS32(data.Length, offset);
                 offset += 4;

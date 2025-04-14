@@ -296,6 +296,8 @@ namespace DeityBot
             public PublicKey AssociatedTokenProgram { get; set; } = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
             public PublicKey SystemProgram { get; set; } = new PublicKey("11111111111111111111111111111111");
             public PublicKey MinterProgram { get; set; }
+
+            public PublicKey SessionToken { get; set; }
         }
 
         public class InitialiseAgentAccounts
@@ -332,6 +334,8 @@ namespace DeityBot
             public PublicKey AssociatedTokenProgram { get; set; } = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
             public PublicKey SystemProgram { get; set; } = new PublicKey("11111111111111111111111111111111");
             public PublicKey MinterProgram { get; set; }
+
+            public PublicKey SessionToken { get; set; }
         }
 
         public static class DeityBotProgram
@@ -341,7 +345,7 @@ namespace DeityBot
             {
                 programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Identity, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.User, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Agent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MintAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.AssociatedTokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.AssociatedTokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MinterProgram, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Identity, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.User, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Agent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MintAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.AssociatedTokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.AssociatedTokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MinterProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SessionToken == null ? programId : accounts.SessionToken, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(4409787423541985137UL, offset);
@@ -370,7 +374,7 @@ namespace DeityBot
             {
                 programId ??= new(ID);
                 List<Solana.Unity.Rpc.Models.AccountMeta> keys = new()
-                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Interaction, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Agent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.ContextAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.AssociatedTokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MintAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.OracleProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.AssociatedTokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MinterProgram, false)};
+                {Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Payer, true), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.Interaction, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.Agent, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.ContextAccount, false), Solana.Unity.Rpc.Models.AccountMeta.Writable(accounts.AssociatedTokenAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MintAccount, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.OracleProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.TokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.AssociatedTokenProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SystemProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.MinterProgram, false), Solana.Unity.Rpc.Models.AccountMeta.ReadOnly(accounts.SessionToken, false)};
                 byte[] _data = new byte[1200];
                 int offset = 0;
                 _data.WriteU64(6407477965579940893UL, offset);

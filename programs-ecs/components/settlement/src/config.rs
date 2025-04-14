@@ -270,7 +270,7 @@ pub enum QuestType {
 }
 
 #[repr(u8)]
-enum Resource {
+pub enum Resource {
     Food,
     Water,
     Wood,
@@ -278,12 +278,12 @@ enum Resource {
 }
 
 pub struct QuestConfig {
-    id: u32,
-    quest_type: QuestType,
-    target_type: u8,
-    target_value: u8,
-    reward_type: u8,
-    reward_value: u8,
+    pub id: u32,
+    pub quest_type: QuestType,
+    pub target_type: u8,
+    pub target_value: u8,
+    pub reward_type: u8,
+    pub reward_value: u16,
 }
 
 pub const QUESTS_CONFIG: [QuestConfig; 14] = [
