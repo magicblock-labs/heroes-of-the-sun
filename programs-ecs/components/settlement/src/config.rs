@@ -259,3 +259,144 @@ pub fn get_build_time(research: u32, tier: u8, level: u8) -> u8 {
             base_cost,
         );
 }
+
+#[repr(u8)]
+pub enum QuestType {
+    Build,
+    Upgrade,
+    Store,
+    Research,
+    Faith,
+}
+
+#[repr(u8)]
+enum Resource {
+    Food,
+    Water,
+    Wood,
+    Stone,
+}
+
+pub struct QuestConfig {
+    id: u32,
+    quest_type: QuestType,
+    target_type: u8,
+    target_value: u8,
+    reward_type: u8,
+    reward_value: u8,
+}
+
+pub const QUESTS_CONFIG: [QuestConfig; 14] = [
+    QuestConfig {
+        id: 0,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::FoodStorage as u8,
+        target_value: 1,
+        reward_type: Resource::Wood as u8,
+        reward_value: 10,
+    },
+    QuestConfig {
+        id: 1,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::FoodCollector as u8,
+        target_value: 1,
+        reward_type: Resource::Water as u8,
+        reward_value: 10,
+    },
+    QuestConfig {
+        id: 2,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::WaterStorage as u8,
+        target_value: 1,
+        reward_type: Resource::Water as u8,
+        reward_value: 10,
+    },
+    QuestConfig {
+        id: 3,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::WaterCollector as u8,
+        target_value: 1,
+        reward_type: Resource::Water as u8,
+        reward_value: 10,
+    },
+    QuestConfig {
+        id: 4,
+        quest_type: QuestType::Upgrade,
+        target_type: BuildingType::TownHall as u8,
+        target_value: 2,
+        reward_type: Resource::Wood as u8,
+        reward_value: 100,
+    },
+    QuestConfig {
+        id: 5,
+        quest_type: QuestType::Upgrade,
+        target_type: BuildingType::WoodCollector as u8,
+        target_value: 2,
+        reward_type: Resource::Water as u8,
+        reward_value: 20,
+    },
+    QuestConfig {
+        id: 6,
+        quest_type: QuestType::Upgrade,
+        target_type: BuildingType::TownHall as u8,
+        target_value: 3,
+        reward_type: Resource::Stone as u8,
+        reward_value: 10,
+    },
+    QuestConfig {
+        id: 7,
+        quest_type: QuestType::Store,
+        target_type: Resource::Food as u8,
+        target_value: 30,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+    },
+    QuestConfig {
+        id: 8,
+        quest_type: QuestType::Store,
+        target_type: Resource::Wood as u8,
+        target_value: 50,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+    },
+    QuestConfig {
+        id: 9,
+        quest_type: QuestType::Store,
+        target_type: Resource::Stone as u8,
+        target_value: 30,
+        reward_type: Resource::Stone as u8,
+        reward_value: 20,
+    },
+    QuestConfig {
+        id: 10,
+        quest_type: QuestType::Research,
+        target_type: ResearchType::BuildingCost as u8,
+        target_value: 1,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+    },
+    QuestConfig {
+        id: 11,
+        quest_type: QuestType::Research,
+        target_type: ResearchType::Consumption as u8,
+        target_value: 1,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+    },
+    QuestConfig {
+        id: 12,
+        quest_type: QuestType::Faith,
+        target_type: 0,
+        target_value: 30,
+        reward_type: Resource::Stone as u8,
+        reward_value: 15,
+    },
+    QuestConfig {
+        id: 13,
+        quest_type: QuestType::Faith,
+        target_type: 0,
+        target_value: 60,
+        reward_type: Resource::Stone as u8,
+        reward_value: 30,
+    },
+];
