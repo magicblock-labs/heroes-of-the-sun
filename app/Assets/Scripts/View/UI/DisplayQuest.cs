@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using Model;
+using Notifications;
 using Settlement.Types;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,6 +31,9 @@ public class QuestData
 public class DisplayQuest : InjectableBehaviour
 {
     [Inject] SettlementModel _settlement;
+    
+    [Inject] ShowFtuePrompt _showFtue;
+    [Inject] HideFtuePrompt _hideFtue;
     
     [SerializeField] private Image typeIcon;
     [SerializeField] private Sprite[] questTypeIcons;
@@ -72,9 +77,28 @@ public class DisplayQuest : InjectableBehaviour
 
     public void OnInfoClick()
     {
-        
+        StartCoroutine(DisplayTutorial());
     }
-    
+
+    private IEnumerator DisplayTutorial()
+    {
+        _showFtue.Dispatch(new []
+        {
+            new FtuePrompt()
+            {
+                blocking = true, promptLocation = Vector2Int.right, promptText = "Open Build Menu", cutoutScreenSpace = new Rect(200, 120, 160, 160)
+            }
+        });
+
+        yield return null;
+    }
+
+    public void StopTutorial()
+    {
+        StopAllCoroutines();
+        _hideFtue.Dispatch();
+    }
+
     public void OnClaimClick()
     {
         _settlement.ClaimQuestLocalSim(_data.id);
