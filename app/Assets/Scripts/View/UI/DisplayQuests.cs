@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Model;
+using Notifications;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
@@ -9,6 +10,7 @@ public class DisplayQuests : InjectableBehaviour
 {
     [Inject] private ConfigModel _configModel;
     [Inject] private SettlementModel _settlement;
+    [Inject] private ShowFtuePrompt _showFtue;
 
     [SerializeField] private Transform questsContainer;
     [SerializeField] private Toggle ctaButton;
@@ -22,6 +24,12 @@ public class DisplayQuests : InjectableBehaviour
         Redraw();
         
         _settlement.Updated.Add(Redraw);
+        _showFtue.Add(OnShowFtue);
+    }
+
+    private void OnShowFtue(FtuePrompt[] _)
+    {
+        SetOpen(false);
     }
 
     public void SetOpen(bool value)
@@ -53,5 +61,6 @@ public class DisplayQuests : InjectableBehaviour
     private void OnDestroy()
     {
         _settlement.Updated.Remove(Redraw);
+        _showFtue.Remove(OnShowFtue);
     }
 }

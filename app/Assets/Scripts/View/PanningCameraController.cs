@@ -8,7 +8,7 @@ namespace View
 {
     public class PanningCameraController : InjectableBehaviour
     {
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         [SerializeField] private EventSystem eventSystem;
 
@@ -47,13 +47,13 @@ namespace View
                         _panFingerId = touch.fingerId;
                     }
                     else if (touch.fingerId == _panFingerId && touch.phase == TouchPhase.Moved &&
-                             _interaction.State is InteractionState.Idle or InteractionState.Panning)
+                             _gridInteraction.State is GridInteractionState.Idle or GridInteractionState.Panning)
                     {
-                        _interaction.SetState(InteractionState.Panning);
+                        _gridInteraction.SetState(GridInteractionState.Panning);
                         PanCamera(touch.position);
                     }
-                    else if (_interaction.State == InteractionState.Panning)
-                        _interaction.SetState(InteractionState.Idle);
+                    else if (_gridInteraction.State == GridInteractionState.Panning)
+                        _gridInteraction.SetState(GridInteractionState.Idle);
 
                     break;
             }
@@ -68,17 +68,17 @@ namespace View
 
             if (
                 Input.GetMouseButton(0) &&
-                _interaction.State is InteractionState.Idle &&
+                _gridInteraction.State is GridInteractionState.Idle &&
                 _lastPanPosition != Input.mousePosition)
             {
-                _interaction.SetState(InteractionState.Panning);
+                _gridInteraction.SetState(GridInteractionState.Panning);
             }
 
-            if (_interaction.State == InteractionState.Panning)
+            if (_gridInteraction.State == GridInteractionState.Panning)
             {
                 PanCamera(Input.mousePosition);
 
-                if (Input.GetMouseButtonUp(0)) _interaction.SetState(InteractionState.Idle);
+                if (Input.GetMouseButtonUp(0)) _gridInteraction.SetState(GridInteractionState.Idle);
             }
         }
 
@@ -112,7 +112,7 @@ namespace View
 
         private void OnDestroy()
         {
-            _interaction.SetState(InteractionState.Idle);
+            _gridInteraction.SetState(GridInteractionState.Idle);
         }
     }
 }

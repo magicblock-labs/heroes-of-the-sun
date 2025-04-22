@@ -13,7 +13,7 @@ namespace View.ActionRequest
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private ConfigModel _config;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         [SerializeField] private GameObject costWood;
         [SerializeField] private Text costWoodLabel;
@@ -54,7 +54,7 @@ namespace View.ActionRequest
 
         public void Upgrade()
         {
-            _interaction.LockInteraction();
+            _gridInteraction.LockInteraction();
 
             if (_canAfford)
                 _ = _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex());

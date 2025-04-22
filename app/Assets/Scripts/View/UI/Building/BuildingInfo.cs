@@ -16,7 +16,7 @@ namespace View.UI.Building
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
         [Inject] private ShowWorkerSelection _showWorkerSelection;
 
         [SerializeField] private TMP_Text nameLabel;

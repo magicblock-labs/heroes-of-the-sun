@@ -12,6 +12,8 @@ namespace View.Ftue
     {
         [Inject] ShowFtuePrompt _showFtuePrompt;
         [Inject] HideFtuePrompt _hideFtuePrompt;
+        
+        [Inject] StopFtueSequence _stopFtueSequence;
 
         [SerializeField] private RectTransform uiRoot;
 
@@ -109,6 +111,11 @@ namespace View.Ftue
                 ShowCurrentPrompt();
             else
                 _hideFtuePrompt.Dispatch();
+        }
+
+        public void StopFtueSequence()
+        {
+            _stopFtueSequence.Dispatch();
         }
 
         private void OnDestroy()

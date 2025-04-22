@@ -9,7 +9,7 @@ namespace View.ActionRequest
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         private int _index;
 
@@ -23,7 +23,7 @@ namespace View.ActionRequest
 
         public async void Sacrifice()
         {
-            _interaction.LockInteraction();
+            _gridInteraction.LockInteraction();
 
             var workerIndex = _settlement.GetFreeWorkerIndex();
 

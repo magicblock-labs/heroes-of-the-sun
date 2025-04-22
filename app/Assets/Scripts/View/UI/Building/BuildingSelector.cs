@@ -11,7 +11,7 @@ namespace View.UI.Building
     {
         [Inject] private ConfigModel _config;
         [Inject] private SettlementModel _model;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         [SerializeField] private BuildingSnapshot snapshot;
         [SerializeField] private Text nameLabel;
@@ -47,7 +47,7 @@ namespace View.UI.Building
 
         public void OnClick()
         {
-            _interaction.StartPlacement(_type);
+            _gridInteraction.StartPlacement(_type);
         }
     }
 }

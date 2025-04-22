@@ -8,7 +8,7 @@ namespace View.UI.Building
 {
     public class PlacementPanel : BuildingUIPanel
     {
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private ConfigModel _config;
@@ -17,40 +17,40 @@ namespace View.UI.Building
 
         public void OnTryDragStart()
         {
-            if (_interaction.State != InteractionState.Dragging)
-                _interaction.SetState(InteractionState.Dragging);
+            if (_gridInteraction.State != GridInteractionState.Dragging)
+                _gridInteraction.SetState(GridInteractionState.Dragging);
         }
 
         public void OnTryDragStop()
         {
-            _interaction.SetState(InteractionState.Idle);
+            _gridInteraction.SetState(GridInteractionState.Idle);
         }
 
         public async void OnSubmit()
         {
-            if (_interaction.ValidPlacement && _interaction.SelectedBuildingType.HasValue)
+            if (_gridInteraction.ValidPlacement && _gridInteraction.SelectedBuildingType.HasValue)
             {
                 var freeWorkerIndex = _settlement.GetFreeWorkerIndex();
 
                 if (freeWorkerIndex == -1)
-                    _interaction.SelectedBuildingIndex = _settlement.Get().Buildings.Length;
+                    _gridInteraction.SelectedBuildingIndex = _settlement.Get().Buildings.Length;
 
                 await _connector.Build(
-                    (byte)_interaction.CellPosX,
-                    (byte)_interaction.CellPosZ,
-                    (byte)_interaction.SelectedBuildingType,
+                    (byte)_gridInteraction.CellPosX,
+                    (byte)_gridInteraction.CellPosZ,
+                    (byte)_gridInteraction.SelectedBuildingType,
                     freeWorkerIndex);
 
                 if (freeWorkerIndex == -1)
                     _showWorkerSelection.Dispatch();
 
-                _interaction.FinishPlacement();
+                _gridInteraction.FinishPlacement();
             }
         }
 
         public void OnCancel()
         {
-            _interaction.FinishPlacement();
+            _gridInteraction.FinishPlacement();
         }
     }
 }

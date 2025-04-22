@@ -9,7 +9,7 @@ namespace View.ActionRequest
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private ShowResearch _showResearch;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         private int _index;
 
@@ -23,7 +23,7 @@ namespace View.ActionRequest
 
         public void ShowResearch()
         {
-            _interaction.LockInteraction();
+            _gridInteraction.LockInteraction();
             _showResearch.Dispatch();
         }
     }

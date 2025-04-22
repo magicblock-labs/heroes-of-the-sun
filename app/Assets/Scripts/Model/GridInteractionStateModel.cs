@@ -7,7 +7,7 @@ using Utils.Signal;
 namespace Model
 {
     [Flags]
-    public enum InteractionState
+    public enum GridInteractionState
     {
         None = 0,
         Idle = 1 << 0,
@@ -17,14 +17,15 @@ namespace Model
     }
 
     [Singleton]
-    public class InteractionStateModel
+    public class GridInteractionStateModel
     {
-        private InteractionState _state = InteractionState.Idle;
+        private GridInteractionState _state = GridInteractionState.Idle;
         public Signal Updated = new();
 
+        //goest to nav context
         public BuildingType? SelectedBuildingType;
 
-        public InteractionState State => _state;
+        public GridInteractionState State => _state;
 
         public bool ValidPlacement;
 
@@ -43,7 +44,7 @@ namespace Model
             Updated.Dispatch();
         }
 
-        public void SetState(InteractionState value)
+        public void SetState(GridInteractionState value)
         {
             if (_state == value) return;
 

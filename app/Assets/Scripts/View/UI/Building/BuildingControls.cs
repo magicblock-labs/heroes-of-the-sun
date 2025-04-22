@@ -11,7 +11,7 @@ namespace View.UI.Building
         [SerializeField] private BuildingProgress progress;
         [SerializeField] private BuildingInfo info;
 
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
         [Inject] private PlayerSettlementConnector _connector;
 
         private Camera _camera;
@@ -34,7 +34,7 @@ namespace View.UI.Building
 
         private void LateUpdate()
         {
-            if (!_interaction.CanInteract)
+            if (!_gridInteraction.CanInteract)
                 return;
 
             var mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
@@ -43,8 +43,8 @@ namespace View.UI.Building
             if (Input.GetMouseButtonUp(0))
                 info.ShowExtendedControls(
                     intersectRay
-                    && _interaction.State == InteractionState.Idle
-                    && !_interaction.SelectedBuildingType.HasValue);
+                    && _gridInteraction.State == GridInteractionState.Idle
+                    && !_gridInteraction.SelectedBuildingType.HasValue);
         }
     }
 }
