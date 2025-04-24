@@ -13,7 +13,7 @@ using UnityEngine.Audio;
 #endif
 
 #pragma warning disable 1591
-namespace Plugins.Demigiant.DOTween.Modules
+namespace DG.Tweening
 {
 	public static class DOTweenModuleAudio
     {

@@ -1,8 +1,11 @@
+using System;
 using System.Collections;
 using Model;
 using Notifications;
+using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
+using View.UI.Building;
 
 namespace View.UI
 {
@@ -10,11 +13,14 @@ namespace View.UI
     {
         [Inject] StartFtueSequence _startFtueSequence;
         [Inject] StopFtueSequence _stopFtueSequence;
-    
+        [Inject] CtaRegister _ctaRegister;
+        [Inject] ConfigModel _config;
+
         [Inject] ShowFtuePrompt _showFtue;
         [Inject] HideFtuePrompt _hideFtue;
-    
+
         [Inject] NavigationContextModel _nav;
+        [Inject] private GridInteractionStateModel _interaction;
 
         private void Start()
         {
@@ -35,19 +41,112 @@ namespace View.UI
 
         private IEnumerator DisplayTutorial(QuestData questData)
         {
-            _showFtue.Dispatch(new []
+            switch (questData.type)
             {
-                new FtuePrompt
-                {
-                    blocking = true, promptLocation = Vector2Int.right, promptText = "Open Build Menu", cutoutScreenSpace = new Rect(200, 120, 160, 160)
-                }
-            });
+                case QuestType.Build:
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.right,
+                            promptText = "Open Build Menu",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.HUDBuildMenu)
+                        }
+                    });
 
-            yield return new WaitUntil(() => _nav.IsBuildMenuOpen);
-            _hideFtue.Dispatch();
+                    yield return new WaitUntil(() => _nav.IsBuildMenuOpen);
+                    yield return null;
+                    _hideFtue.Dispatch();
+
+                    var buildingType = (BuildingType)questData.targetType;
+                    var buildingFilter = _config.BuildingTypeMapping[buildingType];
+
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Select <color=green>{buildingFilter}</color> Buildings",
+                            cutoutScreenSpace = GetScreenRect(buildingFilter switch
+                            {
+                                BuildingFilter.ResourceCollection => CtaTag.BuildSectionResource,
+                                BuildingFilter.Storage => CtaTag.BuildSectionStorage,
+                                BuildingFilter.Special => CtaTag.BuildSectionSpecial,
+                                _ => throw new ArgumentOutOfRangeException()
+                            })
+                        }
+                    });
+
+                    yield return new WaitUntil(() => _nav.SelectedFilter == buildingFilter);
+
+                    yield return null;
+                    _hideFtue.Dispatch();
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Select <color=green>{buildingType}</color>",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.BuildMenuBuilding, buildingType)
+                        }
+                    });
+
+                    yield return new WaitUntil(() => _interaction.SelectedBuildingType == buildingType);
+                    _hideFtue.Dispatch();
+                    break;
+                case QuestType.Upgrade:
+                    break;
+                case QuestType.Store:
+                    break;
+                case QuestType.Research:
+                    break;
+                case QuestType.Faith:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-    
+        private Rect GetScreenRect(CtaTag ctaTag, BuildingType? buildingType = null)
+        {
+            //get rect transform from register
+            var ctaTransform = _ctaRegister.Get(ctaTag, buildingType);
+            if (ctaTransform is not RectTransform rectTransform)
+            {
+                Debug.LogError($"Failed to get rect transform for CtaTag: {ctaTag}[{buildingType}]");
+                return Rect.zero;
+            }
+
+            // Get the world corners of the RectTransform
+            var corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+
+            // Calculate the screen bounds
+            var min = new Vector2(float.MaxValue, float.MaxValue);
+            var max = new Vector2(float.MinValue, float.MinValue);
+
+            for (var i = 0; i < 4; i++)
+            {
+                // For Overlay canvas, world corners are already in screen space
+                Vector2 screenPoint = corners[i];
+
+                // Find min/max for creating our bounding rect
+                min.x = Mathf.Min(min.x, screenPoint.x);
+                min.y = Mathf.Min(min.y, screenPoint.y);
+                max.x = Mathf.Max(max.x, screenPoint.x);
+                max.y = Mathf.Max(max.y, screenPoint.y);
+            }
+
+            // Create and return the screen rect
+            var width = max.x - min.x;
+            var height = max.y - min.y;
+            return new Rect(min.x + width / 2, min.y + height / 2, width, height);
+        }
+
+
         private void OnDestroy()
         {
             _startFtueSequence.Remove(OnStartFtue);

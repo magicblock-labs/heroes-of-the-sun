@@ -1,0 +1,34 @@
+using System;
+using Model;
+using UnityEngine;
+using Utils.Injection;
+
+public enum CtaTag:byte
+{
+    None,
+    HUDBuildMenu = 1,
+    BuildSectionResource = 10,
+    BuildSectionStorage,
+    BuildSectionSpecial,
+    BuildMenuBuilding,
+    RadialActionUpgrade=20,
+    RadialActionResearch,
+    PlacedBuilding = 30
+}
+
+public class CtaTagMarker : InjectableBehaviour
+{
+    [Inject] private CtaRegister _register;
+    
+    [SerializeField] private CtaTag ctaTag = CtaTag.None;
+    
+    private void Start()
+    {
+        _register.Add(transform, ctaTag);
+    }
+
+    private void OnDestroy()
+    {
+        _register.Remove(ctaTag);
+    }
+}

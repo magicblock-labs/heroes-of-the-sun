@@ -4,6 +4,7 @@ using Settlement.Types;
 using UnityEditor;
 using UnityEngine;
 using Utils.Injection;
+using View.UI.Building;
 
 namespace Model
 {
@@ -157,6 +158,21 @@ namespace Model
                 }
             }
         };
+
+        public Dictionary<BuildingType, BuildingFilter> BuildingTypeMapping =
+            new()
+            {
+                { BuildingType.FoodCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.WaterCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.WoodCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.StoneCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.FoodStorage, BuildingFilter.Storage },
+                { BuildingType.WaterStorage, BuildingFilter.Storage },
+                { BuildingType.WoodStorage, BuildingFilter.Storage },
+                { BuildingType.StoneStorage, BuildingFilter.Storage },
+                { BuildingType.Altar, BuildingFilter.Special },
+                { BuildingType.Research, BuildingFilter.Special },
+            };
 
         public const int BASE_DETERIORATION_CAP = 50;
         public const int DETERIORATION_CAP_RESEARCH_MULTIPLIER = 5;

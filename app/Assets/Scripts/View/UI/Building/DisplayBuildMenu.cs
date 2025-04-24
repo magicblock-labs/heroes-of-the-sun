@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Model;
 using Settlement.Types;
 using UnityEngine;
+using Utils.Injection;
 
 namespace View.UI.Building
 {
@@ -13,11 +16,13 @@ namespace View.UI.Building
         Special
     }
 
-    public class DisplayBuildMenu : MonoBehaviour
+    public class DisplayBuildMenu : InjectableBehaviour
     {
+        [Inject] private NavigationContextModel _nav;
+        [Inject] private ConfigModel _config;
+
         [SerializeField] private BuildingSelector prefab;
 
-        private BuildingFilter _selectedFilter;
 
         void Start()
         {
@@ -26,7 +31,7 @@ namespace View.UI.Building
 
         public void SetFilter(int value)
         {
-            _selectedFilter = (BuildingFilter)value;
+            _nav.SelectedFilter = (BuildingFilter)value;
             Redraw();
         }
 
@@ -35,38 +40,12 @@ namespace View.UI.Building
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
-            foreach (var type in GetFilteredBuildings())
+            foreach (var type in _config.BuildingTypeMapping.Where(b => b.Value == _nav.SelectedFilter)
+                         .Select(b => b.Key))
             {
                 if (type is not BuildingType.TownHall)
                     Instantiate(prefab, transform).SetData(type);
             }
-        }
-
-        private IEnumerable<BuildingType> GetFilteredBuildings()
-        {
-            return _selectedFilter switch
-            {
-                BuildingFilter.ResourceCollection => new[]
-                {
-                    BuildingType.WaterCollector,
-                    BuildingType.FoodCollector,
-                    BuildingType.WoodCollector,
-                    BuildingType.StoneCollector,
-                },
-                BuildingFilter.Storage => new[]
-                {
-                    BuildingType.WaterStorage,
-                    BuildingType.FoodStorage,
-                    BuildingType.WoodStorage,
-                    BuildingType.StoneStorage,
-                },
-                BuildingFilter.Special => new[]
-                {
-                    BuildingType.Altar,
-                    BuildingType.Research
-                },
-                _ => throw new ArgumentOutOfRangeException()
-            };
         }
     }
 }
