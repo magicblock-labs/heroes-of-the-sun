@@ -53,4 +53,5 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/nick/dev/magicblock/heroes-of-the-sun/app/Packages/com.solana.unity_sdk/Packages/Solana.Unity.Wallet.dll" /&gt;
   &lt;Assembly Path="/Users/nick/dev/magicblock/heroes-of-the-sun/app/Assets/Plugins/Bolt/Solana.Unity.Bolt.dll" /&gt;
+  &lt;Assembly Path="/Users/nick/dev/magicblock/heroes-of-the-sun/app/Library/ScriptAssemblies/Assembly-CSharp.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String></wpf:ResourceDictionary>

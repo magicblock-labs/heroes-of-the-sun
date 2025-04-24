@@ -29,7 +29,7 @@ namespace View.UI.Building
         [SerializeField] private ExtractionStatus extractionStatus;
 
         private IBuildingActionButton[] _actionButtons;
-        [SerializeField] private GameObject controls;
+        [SerializeField] public GameObject controls;
 
         private readonly Dictionary<RectTransform, Vector2> _actionPositions = new();
         private int _index;

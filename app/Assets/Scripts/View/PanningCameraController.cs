@@ -1,5 +1,7 @@
 using System;
+using DG.Tweening;
 using Model;
+using Notifications;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utils.Injection;
@@ -9,6 +11,7 @@ namespace View
     public class PanningCameraController : InjectableBehaviour
     {
         [Inject] private GridInteractionStateModel _gridInteraction;
+        [Inject] FocusOn _focusOn;
 
         [SerializeField] private EventSystem eventSystem;
 
@@ -20,6 +23,19 @@ namespace View
         private void Start()
         {
             _cam = GetComponent<Camera>();
+            _focusOn.Add(OnFocus);
+        }
+
+        private void OnFocus(Vector3 position)
+        {
+            var angles = transform.rotation.eulerAngles;
+            var forwardOffset = transform.position.y * (float)Math.Sin((90 - angles.x) * Mathf.Deg2Rad);
+            var cameraOffset = new Vector3(Mathf.Cos(angles.y * Mathf.Deg2Rad), 0, Mathf.Sin(angles.y * Mathf.Deg2Rad)) * forwardOffset;
+
+            transform.DOMove(new Vector3(
+                position.x + cameraOffset.x,
+                transform.position.y,
+                position.z + cameraOffset.z), .2f);
         }
 
         private void Update()
@@ -113,6 +129,7 @@ namespace View
         private void OnDestroy()
         {
             _gridInteraction.SetState(GridInteractionState.Idle);
+            _focusOn.Remove(OnFocus);
         }
     }
 }

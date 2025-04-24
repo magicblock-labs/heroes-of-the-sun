@@ -6,7 +6,7 @@ namespace View.UI.Building
 {
     public abstract class BuildingUIPanel : InjectableBehaviour
     {
-        [SerializeField] protected Transform worldAnchor;
+        [SerializeField] public Transform worldAnchor;
         private Camera _camera;
 
         protected virtual void Start()

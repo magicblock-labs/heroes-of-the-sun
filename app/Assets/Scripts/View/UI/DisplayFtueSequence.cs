@@ -18,6 +18,7 @@ namespace View.UI
 
         [Inject] ShowFtuePrompt _showFtue;
         [Inject] HideFtuePrompt _hideFtue;
+        [Inject] FocusOn _focusOn;
 
         [Inject] NavigationContextModel _nav;
         [Inject] private GridInteractionStateModel _interaction;
@@ -98,6 +99,56 @@ namespace View.UI
                     _hideFtue.Dispatch();
                     break;
                 case QuestType.Upgrade:
+
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            cutoutScreenSpace = Rect.zero,
+                        }
+                    });
+
+                    buildingType = (BuildingType)questData.targetType;
+                    var building = _ctaRegister.Get(CtaTag.PlacedBuilding, buildingType);
+                    var buildingInfo = building.GetComponent<BuildingInfo>();
+                    _focusOn.Dispatch(buildingInfo.worldAnchor.position);
+
+                    yield return new WaitForSeconds(.3f);
+
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Select <color=green>{buildingType}</color>",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.PlacedBuilding, buildingType)
+                        }
+                    });
+                    
+                    yield return new WaitUntil(() => buildingInfo.controls.activeSelf);
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            cutoutScreenSpace = Rect.zero,
+                        }
+                    });
+                    yield return new WaitForSeconds(.2f);
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Click <color=green>Upgrade</color>",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.RadialActionUpgrade)
+                        }
+                    });
+                    yield return new WaitUntil(() => !buildingInfo.controls.activeSelf);
+                    
                     break;
                 case QuestType.Store:
                     break;
@@ -120,6 +171,8 @@ namespace View.UI
                 return Rect.zero;
             }
 
+            var canvas = FindRenderingCanvas(rectTransform);
+
             // Get the world corners of the RectTransform
             var corners = new Vector3[4];
             rectTransform.GetWorldCorners(corners);
@@ -131,7 +184,10 @@ namespace View.UI
             for (var i = 0; i < 4; i++)
             {
                 // For Overlay canvas, world corners are already in screen space
-                Vector2 screenPoint = corners[i];
+                Vector2 screenPoint =
+                    canvas.worldCamera == null
+                        ? corners[i]
+                        : canvas.worldCamera.WorldToScreenPoint(corners[i]);
 
                 // Find min/max for creating our bounding rect
                 min.x = Mathf.Min(min.x, screenPoint.x);
@@ -146,6 +202,26 @@ namespace View.UI
             return new Rect(min.x + width / 2, min.y + height / 2, width, height);
         }
 
+        public static Canvas FindRenderingCanvas(RectTransform rectTransform)
+        {
+            if (rectTransform == null)
+                return null;
+
+            // Start with the current transform and work upward
+            Transform current = rectTransform.transform;
+
+            // Walk up the hierarchy until we find a root canvas or run out of parents
+            while (current != null)
+            {
+                Canvas canvas = current.GetComponent<Canvas>();
+                if (canvas != null && canvas.isRootCanvas)
+                    return canvas;
+
+                current = current.parent;
+            }
+
+            return null;
+        }
 
         private void OnDestroy()
         {

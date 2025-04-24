@@ -26,7 +26,7 @@ namespace Model
 
         public void Remove(CtaTag tag, BuildingType? buildingType = null)
         {
-            _data.Remove(GetCompositeId(tag, buildingType));
+            // _data.Remove(GetCompositeId(tag, buildingType));
         }
 
         public Transform Get(CtaTag tag, BuildingType? buildingType = null)
