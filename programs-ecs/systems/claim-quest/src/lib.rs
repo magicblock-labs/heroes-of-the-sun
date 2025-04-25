@@ -23,6 +23,8 @@ pub mod claim_quest {
         // Mark quest as claimed
         settlement.quest_claim_status |= 1u64 << args.index;
 
+        //todo quest completion checks
+
         // Find the quest with the given index
         let quest_opt = QUESTS_CONFIG.iter().find(|q| q.id == args.index as u32);
 

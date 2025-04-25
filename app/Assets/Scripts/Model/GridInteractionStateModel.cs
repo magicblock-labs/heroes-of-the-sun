@@ -17,7 +17,7 @@ namespace Model
     }
 
     [Singleton]
-    public class GridInteractionStateModel
+    public class GridInteractionStateModel : InjectableObject
     {
         private GridInteractionState _state = GridInteractionState.Idle;
         public Signal Updated = new();
@@ -34,6 +34,9 @@ namespace Model
 
         public int SelectedBuildingIndex = -1;
         private float _lockInteractionUntil;
+        
+        
+        public bool LockOverride;
 
         public void StartPlacement(BuildingType type)
         {

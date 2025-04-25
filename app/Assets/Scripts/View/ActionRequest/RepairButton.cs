@@ -1,3 +1,4 @@
+using System;
 using Connectors;
 using Model;
 using UnityEngine;
@@ -21,12 +22,16 @@ namespace View.ActionRequest
 
         private int _index;
         private bool _canAfford;
+        private Action _callback;
 
-        public void SetData(int index, Settlement.Types.Building value)
+        public void SetData(int index, Settlement.Types.Building value, Action callback)
         {
             if (value == null)
                 return;
 
+
+            _callback = callback;
+            
             _index = index;
 
             gameObject.SetActive(value.Deterioration > 0);
@@ -55,6 +60,8 @@ namespace View.ActionRequest
 
         public async void Repair()
         {
+            _callback?.Invoke();
+
             _gridInteraction.LockInteraction();
 
             if (_canAfford)

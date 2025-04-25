@@ -29,7 +29,7 @@ namespace View.UI.Building
         private void Start()
         {
             if (_type.HasValue)
-                _ctaRegister.Add(transform, CtaTag.BuildMenuBuilding, _type);
+                _ctaRegister.Add(transform, CtaTag.BuildMenuBuilding, (int?)_type);
         }
 
         public void SetData(BuildingType value)
@@ -56,12 +56,6 @@ namespace View.UI.Building
         {
             if (_type.HasValue)
                 _gridInteraction.StartPlacement(_type.Value);
-        }
-
-        private void OnDestroy()
-        {
-            if (_type.HasValue)
-                _ctaRegister.Remove(CtaTag.BuildMenuBuilding, _type.Value);
         }
     }
 }

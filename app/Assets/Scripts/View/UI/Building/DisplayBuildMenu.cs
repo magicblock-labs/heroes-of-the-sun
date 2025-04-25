@@ -31,7 +31,7 @@ namespace View.UI.Building
 
         public void SetFilter(int value)
         {
-            _nav.SelectedFilter = (BuildingFilter)value;
+            _nav.BuildingFilter = (BuildingFilter)value;
             Redraw();
         }
 
@@ -40,7 +40,7 @@ namespace View.UI.Building
             foreach (Transform child in transform)
                 Destroy(child.gameObject);
 
-            foreach (var type in _config.BuildingTypeMapping.Where(b => b.Value == _nav.SelectedFilter)
+            foreach (var type in _config.BuildingTypeMapping.Where(b => b.Value == _nav.BuildingFilter)
                          .Select(b => b.Key))
             {
                 if (type is not BuildingType.TownHall)

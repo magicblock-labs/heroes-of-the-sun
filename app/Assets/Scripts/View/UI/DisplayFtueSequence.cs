@@ -80,7 +80,7 @@ namespace View.UI
                         }
                     });
 
-                    yield return new WaitUntil(() => _nav.SelectedFilter == buildingFilter);
+                    yield return new WaitUntil(() => _nav.BuildingFilter == buildingFilter);
 
                     yield return null;
                     _hideFtue.Dispatch();
@@ -110,7 +110,7 @@ namespace View.UI
                     });
 
                     buildingType = (BuildingType)questData.targetType;
-                    var building = _ctaRegister.Get(CtaTag.PlacedBuilding, buildingType);
+                    var building = _ctaRegister.Get(CtaTag.PlacedBuilding, (int?)buildingType);
                     var buildingInfo = building.GetComponent<BuildingInfo>();
                     _focusOn.Dispatch(buildingInfo.worldAnchor.position);
 
@@ -148,6 +148,7 @@ namespace View.UI
                         }
                     });
                     yield return new WaitUntil(() => !buildingInfo.controls.activeSelf);
+                    _hideFtue.Dispatch();
                     
                     break;
                 case QuestType.Store:
@@ -164,7 +165,7 @@ namespace View.UI
         private Rect GetScreenRect(CtaTag ctaTag, BuildingType? buildingType = null)
         {
             //get rect transform from register
-            var ctaTransform = _ctaRegister.Get(ctaTag, buildingType);
+            var ctaTransform = _ctaRegister.Get(ctaTag, (int?)buildingType);
             if (ctaTransform is not RectTransform rectTransform)
             {
                 Debug.LogError($"Failed to get rect transform for CtaTag: {ctaTag}[{buildingType}]");

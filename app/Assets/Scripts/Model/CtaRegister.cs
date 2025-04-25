@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
 
@@ -10,28 +9,24 @@ namespace Model
     {
         private readonly Dictionary<int, Transform> _data = new();
 
-        public void Add(Transform transform, CtaTag tag, BuildingType? buildingType = null)
+        public void Add(Transform transform, CtaTag tag, int? payload = null)
         {
-            _data[GetCompositeId(tag, buildingType)] = transform;
+            Debug.Log($"Add {tag} : {payload}");
+            _data[GetCompositeId(tag, payload)] = transform;
         }
 
-        private static int GetCompositeId(CtaTag tag, BuildingType? buildingType = null)
+        private static int GetCompositeId(CtaTag tag, int? payload = null)
         {
             var result = (int)tag;
-            if (buildingType.HasValue)
-                result |= ((int)buildingType + 1) << 8;
+            if (payload.HasValue)
+                result |= (payload.Value + 1) << 8;
 
             return result;
         }
 
-        public void Remove(CtaTag tag, BuildingType? buildingType = null)
+        public Transform Get(CtaTag tag, int? payload = null)
         {
-            // _data.Remove(GetCompositeId(tag, buildingType));
-        }
-
-        public Transform Get(CtaTag tag, BuildingType? buildingType = null)
-        {
-            return _data.GetValueOrDefault(GetCompositeId(tag, buildingType));
+            return _data.GetValueOrDefault(GetCompositeId(tag, payload));
         }
     }
 }

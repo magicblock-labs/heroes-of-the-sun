@@ -3,6 +3,7 @@ using UnityEngine;
 using Utils.Injection;
 using Utils.Signal;
 using View.UI.Building;
+using View.UI.Research;
 
 namespace Model
 {
@@ -23,6 +24,9 @@ namespace Model
             }
         }
 
-        public BuildingFilter SelectedFilter;
+        public BuildingFilter BuildingFilter;
+        public ResearchFilter ResearchFilter = ResearchFilter.None;
+        public SettlementModel.ResearchType SelectedResearch;
+
     }
 }

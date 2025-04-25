@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using Utils.Injection;
 using View.UI.Building;
+using View.UI.Research;
 
 namespace Model
 {
@@ -158,6 +159,27 @@ namespace Model
                 }
             }
         };
+
+        public Dictionary<SettlementModel.ResearchType, ResearchFilter> ResearchTypeMapping =
+            new()
+            {
+                { SettlementModel.ResearchType.BuildingSpeed, ResearchFilter.Building },
+                { SettlementModel.ResearchType.BuildingCost, ResearchFilter.Building },
+                { SettlementModel.ResearchType.DeteriorationCap, ResearchFilter.Building },
+                
+                { SettlementModel.ResearchType.StorageCapacity, ResearchFilter.Resource },
+                { SettlementModel.ResearchType.ResourceCollectionSpeed, ResearchFilter.Resource },
+                { SettlementModel.ResearchType.EnvironmentRegeneration, ResearchFilter.Resource },
+                { SettlementModel.ResearchType.Mining, ResearchFilter.Resource },
+                
+                { SettlementModel.ResearchType.ExtraUnit, ResearchFilter.Population },
+                { SettlementModel.ResearchType.DeathTimeout, ResearchFilter.Population },
+                { SettlementModel.ResearchType.Consumption, ResearchFilter.Population },
+                
+                { SettlementModel.ResearchType.MaxEnergyCap, ResearchFilter.Faith },
+                { SettlementModel.ResearchType.EnergyRegeneration, ResearchFilter.Faith },
+                { SettlementModel.ResearchType.FaithBonus, ResearchFilter.Faith },
+            };
 
         public Dictionary<BuildingType, BuildingFilter> BuildingTypeMapping =
             new()

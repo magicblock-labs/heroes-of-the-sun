@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Model;
 using Notifications;
 using TMPro;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace View.Ftue
         [Inject] HideFtuePrompt _hideFtuePrompt;
         
         [Inject] StopFtueSequence _stopFtueSequence;
+        [Inject] GridInteractionStateModel _gridInteraction;
 
         [SerializeField] private RectTransform uiRoot;
 
@@ -31,15 +33,6 @@ namespace View.Ftue
 
         private void Start()
         {
-            // if (_instance != null)
-            // {
-            //     Destroy(gameObject);
-            //     return;
-            // }
-            //
-            // _instance = this;
-            // DontDestroyOnLoad(gameObject);
-
             _showFtuePrompt.Add(OnShowFtuePrompts);
             _hideFtuePrompt.Add(OnHideFtuePrompt);
 
@@ -72,6 +65,7 @@ namespace View.Ftue
             promptContainer.gameObject.SetActive(true);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(promptContainer);
+            _gridInteraction.LockOverride = true;
         }
 
         private Rect TransformScreenRectToCanvas(Rect value)
@@ -81,11 +75,6 @@ namespace View.Ftue
         }
 
         private float ScaleFactor => 1 / uiRoot.lossyScale.x;
-
-        private Vector2 TransformScreenPointToCanvas(Vector2 value)
-        {
-            return value * ScaleFactor;
-        }
 
         private void Update()
         {
@@ -101,6 +90,7 @@ namespace View.Ftue
             promptContainer.gameObject.SetActive(false);
             blockerContainer.gameObject.SetActive(false);
             _prompts = null;
+            _gridInteraction.LockOverride = false;
         }
 
         public void Hide()

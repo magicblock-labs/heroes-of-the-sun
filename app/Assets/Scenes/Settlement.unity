@@ -783,7 +783,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 20, y: 0}
-  m_SizeDelta: {x: 159.26268, y: 75}
+  m_SizeDelta: {x: 166.02739, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &135174402
 MonoBehaviour:
@@ -1379,7 +1379,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 20, y: 0}
-  m_SizeDelta: {x: 92.90323, y: 75}
+  m_SizeDelta: {x: 96.9863, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &295435242
 MonoBehaviour:
@@ -1589,6 +1589,7 @@ GameObject:
   - component: {fileID: 344812130}
   - component: {fileID: 344812131}
   - component: {fileID: 344812132}
+  - component: {fileID: 344812133}
   m_Layer: 5
   m_Name: Buildings
   m_TagString: Untagged
@@ -1686,6 +1687,19 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 1
+--- !u!114 &344812133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344812129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65a169c88f12449db930408f99e2928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ctaTag: 40
 --- !u!1 &350323386
 GameObject:
   m_ObjectHideFlags: 0
@@ -2055,7 +2069,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 25, y: 2.5}
-  m_SizeDelta: {x: 162.58064, y: 75}
+  m_SizeDelta: {x: 169.31506, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &442896193
 MonoBehaviour:
@@ -2206,6 +2220,7 @@ GameObject:
   - component: {fileID: 493004618}
   - component: {fileID: 493004619}
   - component: {fileID: 493004620}
+  - component: {fileID: 493004621}
   m_Layer: 5
   m_Name: Resources
   m_TagString: Untagged
@@ -2303,6 +2318,19 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 0
+--- !u!114 &493004621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 493004617}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65a169c88f12449db930408f99e2928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ctaTag: 41
 --- !u!1 &497650345
 GameObject:
   m_ObjectHideFlags: 0
@@ -3034,7 +3062,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 20, y: 0}
-  m_SizeDelta: {x: 190.78342, y: 75}
+  m_SizeDelta: {x: 200.54794, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &642553172
 MonoBehaviour:
@@ -3478,7 +3506,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 15, y: 18}
-  m_SizeDelta: {x: 71.3364, y: 65}
+  m_SizeDelta: {x: 70.68493, y: 65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &799372863
 MonoBehaviour:
@@ -4349,6 +4377,7 @@ GameObject:
   - component: {fileID: 1210825424}
   - component: {fileID: 1210825425}
   - component: {fileID: 1210825426}
+  - component: {fileID: 1210825427}
   m_Layer: 5
   m_Name: Faith
   m_TagString: Untagged
@@ -4446,6 +4475,19 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 0
+--- !u!114 &1210825427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1210825423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65a169c88f12449db930408f99e2928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ctaTag: 43
 --- !u!1 &1241861658
 GameObject:
   m_ObjectHideFlags: 0
@@ -5539,7 +5581,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 20, y: 0}
-  m_SizeDelta: {x: 180.8295, y: 75}
+  m_SizeDelta: {x: 187.39726, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1451235715
 MonoBehaviour:
@@ -6756,6 +6798,7 @@ GameObject:
   - component: {fileID: 1849705310}
   - component: {fileID: 1849705311}
   - component: {fileID: 1849705312}
+  - component: {fileID: 1849705313}
   m_Layer: 5
   m_Name: Population
   m_TagString: Untagged
@@ -6853,6 +6896,19 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 0
+--- !u!114 &1849705313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1849705309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e65a169c88f12449db930408f99e2928, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ctaTag: 42
 --- !u!1 &1858907703
 GameObject:
   m_ObjectHideFlags: 0

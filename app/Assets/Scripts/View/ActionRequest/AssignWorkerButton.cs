@@ -15,11 +15,15 @@ namespace View.ActionRequest
         [Inject] private GridInteractionStateModel _gridInteraction;
 
         private int _index;
+        private Action _callback;
 
-        public void SetData(int index, Settlement.Types.Building value)
+        public void SetData(int index, Settlement.Types.Building value, Action callback)
         {
             if (value == null)
                 return;
+            
+            
+            _callback = callback;
 
             var needsWorkers = value.TurnsToBuild > 0 ||
                                value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector
@@ -31,6 +35,8 @@ namespace View.ActionRequest
 
         public async void AssignWorker()
         {
+            _callback?.Invoke();
+
             _gridInteraction.LockInteraction();
 
             var freeWorker = _settlement.GetFreeWorkerIndex();

@@ -2,6 +2,7 @@ using Connectors;
 using Model;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Utils.Injection;
 
 namespace View.UI.Building
@@ -34,17 +35,21 @@ namespace View.UI.Building
 
         private void LateUpdate()
         {
+            if (!Input.GetMouseButtonUp(0)) return;
+
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
             if (!_gridInteraction.CanInteract)
                 return;
 
             var mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
             var intersectRay = _collider.bounds.IntersectRay(mouseRay, out _);
 
-            if (Input.GetMouseButtonUp(0))
-                info.ShowExtendedControls(
-                    intersectRay
-                    && _gridInteraction.State == GridInteractionState.Idle
-                    && !_gridInteraction.SelectedBuildingType.HasValue);
+            info.ShowControls(
+                intersectRay
+                && _gridInteraction.State == GridInteractionState.Idle
+                && !_gridInteraction.SelectedBuildingType.HasValue);
         }
     }
 }

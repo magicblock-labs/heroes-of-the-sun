@@ -43,6 +43,9 @@ namespace View
             if (eventSystem.IsPointerOverGameObject())
                 return;
 
+            if (_gridInteraction.LockOverride)
+                return;
+
             if (Input.touchSupported && Application.platform != RuntimePlatform.WebGLPlayer)
                 HandleTouch();
             else

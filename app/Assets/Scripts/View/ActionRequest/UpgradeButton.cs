@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Connectors;
 using Model;
@@ -23,12 +24,15 @@ namespace View.ActionRequest
 
         private int _index;
         private bool _canAfford;
+        private Action _callback;
 
-        public void SetData(int index, Settlement.Types.Building value)
+        public void SetData(int index, Settlement.Types.Building value, Action callback)
         {
             if (value == null)
                 return;
 
+            _callback = callback;
+            
             var reachedTownHallLevel =
                 value.Id != BuildingType.TownHall && _settlement.Get().Buildings[0].Level <= value.Level;
             gameObject.SetActive(!reachedTownHallLevel);
@@ -54,6 +58,8 @@ namespace View.ActionRequest
 
         public void Upgrade()
         {
+            _callback?.Invoke();
+            
             _gridInteraction.LockInteraction();
 
             if (_canAfford)

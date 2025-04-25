@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Connectors;
@@ -33,7 +32,6 @@ namespace View.UI.Building
 
         private readonly Dictionary<RectTransform, Vector2> _actionPositions = new();
         private int _index;
-        private BuildingType? _type;
 
         protected override void Start()
         {
@@ -51,15 +49,14 @@ namespace View.UI.Building
             if (value == null)
                 return;
 
-            _ctaRegister.Add(transform, CtaTag.PlacedBuilding, value.Id);
+            _ctaRegister.Add(transform, CtaTag.PlacedBuilding, (int?)value.Id);
 
             _index = index;
-            _type = value.Id;
 
             _actionButtons ??= GetComponentsInChildren<IBuildingActionButton>();
 
             foreach (var btn in _actionButtons)
-                btn.SetData(index, value);
+                btn.SetData(index, value, HideControls);
 
             nameLabel.text = value.Id.ToString();
             if (levelLabel)
@@ -82,7 +79,12 @@ namespace View.UI.Building
             extractionStatus.SetCount(value.Extraction);
         }
 
-        public void ShowExtendedControls(bool value)
+        private void HideControls()
+        {
+            controls.SetActive(false);
+        }
+
+        public void ShowControls(bool value)
         {
             if (controls.activeSelf == value)
                 return;
@@ -95,12 +97,6 @@ namespace View.UI.Building
                 if (value && _actionPositions.TryGetValue(child, out var pos))
                     child.DOAnchorPos(pos, .1f);
             }
-        }
-
-        private void OnDestroy()
-        {
-            if (_type.HasValue)
-                _ctaRegister.Remove(CtaTag.PlacedBuilding, _type.Value);
         }
     }
 }
