@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Model;
+using Notifications;
+using Solana.Unity.Rpc.Models;
 using Solana.Unity.Wallet;
 using Utils.Injection;
 
@@ -13,7 +15,15 @@ namespace Connectors
     [Singleton]
     public class PlayerSettlementConnector : SettlementConnector
     {
+        [Inject] private StopFtueSequence _stopFtue;
         [Inject] private TokenConnector _token;
+
+        protected override UniTask<bool> ApplySystem(PublicKey systemAddress, object args, Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
+            AccountMeta[] accounts = null, bool ignoreSession = false)
+        {
+            _stopFtue.Dispatch();
+            return base.ApplySystem(systemAddress, args, extraEntities, useDataAddress, accounts, ignoreSession);
+        }
 
         public async UniTask<bool> Build(byte x, byte y, byte type, int worker_index)
         {
@@ -47,7 +57,7 @@ namespace Connectors
 
         public async UniTask<bool> ClaimTime()
         {
-            return await ApplySystem(new PublicKey("4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"), new { });
+            return await base.ApplySystem(new PublicKey("4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"), new { });
         }
 
         public async UniTask<bool> Research(int research_type)

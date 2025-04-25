@@ -22,18 +22,21 @@ public class QuestData
     public QuestType type;
     public int targetType;
     public int targetValue = 1;
-    
+
     public int rewardType;
     public ushort rewardValue;
+
+    // ReSharper disable once InconsistentNaming
+    public int? dependsOn;
 }
 
 public class DisplayQuest : InjectableBehaviour
 {
     [Inject] SettlementModel _settlement;
-    
+
     [Inject] StartFtueSequence _startFtueSequence;
-    
-    
+
+
     [SerializeField] private Image typeIcon;
     [SerializeField] private Sprite[] questTypeIcons;
     [SerializeField] private Text title;
@@ -41,12 +44,12 @@ public class DisplayQuest : InjectableBehaviour
 
     [SerializeField] private Image progressFill;
     [SerializeField] private Text progressLabel;
-    
+
     [SerializeField] private Button claimButton;
     [SerializeField] private Text claimText;
     [SerializeField] private Image claimResourceIcon;
     [SerializeField] private Sprite[] resourceIcons;
-    
+
     private QuestData _data;
 
     public bool SetData(QuestData data, uint progress)
@@ -62,7 +65,7 @@ public class DisplayQuest : InjectableBehaviour
             QuestType.Faith => $"Have faith of {data.targetValue}",
             _ => throw new ArgumentOutOfRangeException()
         };
-        
+
         var clampedProgress = Mathf.Clamp(progress, 0, data.targetValue);
         progressFill.fillAmount = clampedProgress / data.targetValue;
         progressLabel.text = $"{progress}/{data.targetValue}";

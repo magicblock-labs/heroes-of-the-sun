@@ -6,4 +6,6 @@ pub enum QuestClaimError {
     InvalidIndex,
     #[msg("Already Claimed")]
     AlreadyClaimed,
+    #[msg("Target Not Reached")]
+    TargetNotReached,
 }

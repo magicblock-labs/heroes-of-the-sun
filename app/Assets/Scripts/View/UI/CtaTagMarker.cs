@@ -7,6 +7,7 @@ public enum CtaTag : byte
 {
     None,
     HUDBuildMenu = 1,
+    HUDResearch,
     BuildSectionResource = 10,
     BuildSectionStorage,
     BuildSectionSpecial,

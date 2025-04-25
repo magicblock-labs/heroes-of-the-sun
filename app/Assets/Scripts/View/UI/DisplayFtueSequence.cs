@@ -4,8 +4,10 @@ using Model;
 using Notifications;
 using Settlement.Types;
 using UnityEngine;
+using Utils;
 using Utils.Injection;
 using View.UI.Building;
+using View.UI.Research;
 
 namespace View.UI
 {
@@ -91,7 +93,7 @@ namespace View.UI
                             blocking = true,
                             promptLocation = Vector2Int.up,
                             promptText = $"Select <color=green>{buildingType}</color>",
-                            cutoutScreenSpace = GetScreenRect(CtaTag.BuildMenuBuilding, buildingType)
+                            cutoutScreenSpace = GetScreenRect(CtaTag.BuildMenuBuilding, questData.targetType)
                         }
                     });
 
@@ -123,7 +125,7 @@ namespace View.UI
                             blocking = true,
                             promptLocation = Vector2Int.up,
                             promptText = $"Select <color=green>{buildingType}</color>",
-                            cutoutScreenSpace = GetScreenRect(CtaTag.PlacedBuilding, buildingType)
+                            cutoutScreenSpace = GetScreenRect(CtaTag.PlacedBuilding, questData.targetType)
                         }
                     });
                     
@@ -147,13 +149,112 @@ namespace View.UI
                             cutoutScreenSpace = GetScreenRect(CtaTag.RadialActionUpgrade)
                         }
                     });
-                    yield return new WaitUntil(() => !buildingInfo.controls.activeSelf);
-                    _hideFtue.Dispatch();
                     
                     break;
                 case QuestType.Store:
                     break;
                 case QuestType.Research:
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            cutoutScreenSpace = Rect.zero,
+                        }
+                    });
+
+                    building = _ctaRegister.Get(CtaTag.PlacedBuilding, (int?)BuildingType.Research);
+                    buildingInfo = building.GetComponent<BuildingInfo>();
+                    _focusOn.Dispatch(buildingInfo.worldAnchor.position);
+
+                    yield return new WaitForSeconds(.3f);
+
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Select <color=green>{BuildingType.Research}</color>",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.PlacedBuilding, (int)BuildingType.Research)
+                        }
+                    });
+                    
+                    yield return new WaitUntil(() => buildingInfo.controls.activeSelf);
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            cutoutScreenSpace = Rect.zero,
+                        }
+                    });
+                    yield return new WaitForSeconds(.2f);
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Click <color=green>Research</color>",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.RadialActionResearch)
+                        }
+                    });
+                    
+                    yield return new WaitUntil(() => _nav.IsResearchOpen);
+                    
+                    yield return null;
+                    yield return null;
+
+                    var questResearchType = (SettlementModel.ResearchType)questData.targetType;
+                    var researchFilter = _config.ResearchTypeMapping[questResearchType];
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Select <color=green>{researchFilter}</color>",
+                            cutoutScreenSpace = GetScreenRect(researchFilter switch
+                            {
+                                ResearchFilter.Building => CtaTag.ResearchTypeBuilding,
+                                ResearchFilter.Resource => CtaTag.ResearchTypeResource,
+                                ResearchFilter.Population => CtaTag.ResearchTypePopulation,
+                                ResearchFilter.Faith => CtaTag.ResearchTypeFaith,
+                                _ => throw new ArgumentOutOfRangeException()
+                            })
+                        }
+                    });
+                    
+                    
+                    
+                    yield return new WaitUntil(() => _nav.ResearchFilter == researchFilter);
+                    yield return null;
+                    yield return null;
+                    
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Select <color=green>{questResearchType.ToString().SplitCamelCase()}</color>",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.Research, questData.targetType)
+                        }
+                    });
+                    
+                    yield return new WaitUntil(() => _nav.SelectedResearch == questResearchType);
+                    
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = true,
+                            promptLocation = Vector2Int.up,
+                            promptText = $"Select <color=green>Research</color>",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.HUDResearch)
+                        }
+                    });
                     break;
                 case QuestType.Faith:
                     break;
@@ -162,13 +263,13 @@ namespace View.UI
             }
         }
 
-        private Rect GetScreenRect(CtaTag ctaTag, BuildingType? buildingType = null)
+        private Rect GetScreenRect(CtaTag ctaTag, int? payload = null)
         {
             //get rect transform from register
-            var ctaTransform = _ctaRegister.Get(ctaTag, (int?)buildingType);
+            var ctaTransform = _ctaRegister.Get(ctaTag, payload);
             if (ctaTransform is not RectTransform rectTransform)
             {
-                Debug.LogError($"Failed to get rect transform for CtaTag: {ctaTag}[{buildingType}]");
+                Debug.LogError($"Failed to get rect transform for CtaTag: {ctaTag}[{payload}]");
                 return Rect.zero;
             }
 

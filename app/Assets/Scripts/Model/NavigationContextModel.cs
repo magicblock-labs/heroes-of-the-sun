@@ -24,6 +24,7 @@ namespace Model
             }
         }
 
+        public bool IsResearchOpen;
         public BuildingFilter BuildingFilter;
         public ResearchFilter ResearchFilter = ResearchFilter.None;
         public SettlementModel.ResearchType SelectedResearch;

@@ -166,16 +166,16 @@ namespace Model
                 { SettlementModel.ResearchType.BuildingSpeed, ResearchFilter.Building },
                 { SettlementModel.ResearchType.BuildingCost, ResearchFilter.Building },
                 { SettlementModel.ResearchType.DeteriorationCap, ResearchFilter.Building },
-                
+
                 { SettlementModel.ResearchType.StorageCapacity, ResearchFilter.Resource },
                 { SettlementModel.ResearchType.ResourceCollectionSpeed, ResearchFilter.Resource },
                 { SettlementModel.ResearchType.EnvironmentRegeneration, ResearchFilter.Resource },
                 { SettlementModel.ResearchType.Mining, ResearchFilter.Resource },
-                
+
                 { SettlementModel.ResearchType.ExtraUnit, ResearchFilter.Population },
                 { SettlementModel.ResearchType.DeathTimeout, ResearchFilter.Population },
                 { SettlementModel.ResearchType.Consumption, ResearchFilter.Population },
-                
+
                 { SettlementModel.ResearchType.MaxEnergyCap, ResearchFilter.Faith },
                 { SettlementModel.ResearchType.EnergyRegeneration, ResearchFilter.Faith },
                 { SettlementModel.ResearchType.FaithBonus, ResearchFilter.Faith },
@@ -235,7 +235,8 @@ namespace Model
                 type = QuestType.Build,
                 targetType = (int)BuildingType.FoodStorage,
                 rewardType = (int)Resource.Wood,
-                rewardValue = 10
+                rewardValue = 10,
+                dependsOn = null // No dependency (starting quest)
             },
             new()
             {
@@ -243,7 +244,8 @@ namespace Model
                 type = QuestType.Build,
                 targetType = (int)BuildingType.FoodCollector,
                 rewardType = (int)Resource.Water,
-                rewardValue = 10
+                rewardValue = 10,
+                dependsOn = 0 // Depends on completing the first quest
             },
             new()
             {
@@ -251,7 +253,8 @@ namespace Model
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WaterStorage,
                 rewardType = (int)Resource.Water,
-                rewardValue = 10
+                rewardValue = 10,
+                dependsOn = 1 // Depends on completing the previous quest
             },
             new()
             {
@@ -259,9 +262,19 @@ namespace Model
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WaterCollector,
                 rewardType = (int)Resource.Water,
-                rewardValue = 10
+                rewardValue = 10,
+                dependsOn = 2 // Depends on completing the previous quest
             },
-
+            // New Research building quest
+            new()
+            {
+                id = 14, // Using a new ID at the end of the array
+                type = QuestType.Build,
+                targetType = (int)BuildingType.Research,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 15,
+                dependsOn = 3 // Depends on completing the previous build quest
+            },
             new()
             {
                 id = 4,
@@ -269,9 +282,9 @@ namespace Model
                 targetType = (int)BuildingType.TownHall,
                 targetValue = 2,
                 rewardType = (int)Resource.Wood,
-                rewardValue = 100
+                rewardValue = 100,
+                dependsOn = null // Starting upgrade quest
             },
-
             new()
             {
                 id = 5,
@@ -279,9 +292,9 @@ namespace Model
                 targetType = (int)BuildingType.WoodCollector,
                 targetValue = 2,
                 rewardType = (int)Resource.Water,
-                rewardValue = 20
+                rewardValue = 20,
+                dependsOn = 4 // Depends on completing the previous upgrade quest
             },
-
             new()
             {
                 id = 6,
@@ -289,9 +302,9 @@ namespace Model
                 targetType = (int)BuildingType.TownHall,
                 targetValue = 3,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 10
+                rewardValue = 10,
+                dependsOn = 5 // Depends on completing the previous upgrade quest
             },
-
             new()
             {
                 id = 7,
@@ -299,7 +312,8 @@ namespace Model
                 targetType = (int)Resource.Food,
                 targetValue = 30,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 5
+                rewardValue = 5,
+                dependsOn = null // Starting store quest
             },
             new()
             {
@@ -308,7 +322,8 @@ namespace Model
                 targetType = (int)Resource.Wood,
                 targetValue = 50,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 5
+                rewardValue = 5,
+                dependsOn = 7 // Depends on completing the previous store quest
             },
             new()
             {
@@ -317,7 +332,8 @@ namespace Model
                 targetType = (int)Resource.Stone,
                 targetValue = 30,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 20
+                rewardValue = 20,
+                dependsOn = 8 // Depends on completing the previous store quest
             },
             new()
             {
@@ -326,7 +342,8 @@ namespace Model
                 targetType = (int)SettlementModel.ResearchType.BuildingCost,
                 targetValue = 1,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 5
+                rewardValue = 5,
+                dependsOn = 14 // Depends on building the Research building
             },
             new()
             {
@@ -335,7 +352,8 @@ namespace Model
                 targetType = (int)SettlementModel.ResearchType.Consumption,
                 targetValue = 1,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 5
+                rewardValue = 5,
+                dependsOn = 10 // Depends on completing the previous research quest
             },
             new()
             {
@@ -343,7 +361,8 @@ namespace Model
                 type = QuestType.Faith,
                 targetValue = 30,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 15
+                rewardValue = 15,
+                dependsOn = null // Starting faith quest
             },
             new()
             {
@@ -351,7 +370,8 @@ namespace Model
                 type = QuestType.Faith,
                 targetValue = 60,
                 rewardType = (int)Resource.Stone,
-                rewardValue = 30
+                rewardValue = 30,
+                dependsOn = 12 // Depends on completing the previous faith quest
             },
         };
 

@@ -1,3 +1,5 @@
+using System;
+using Model;
 using Notifications;
 using UnityEngine;
 using Utils.Injection;
@@ -8,6 +10,7 @@ namespace View.UI
     {
         [Inject] private ShowWorkerSelection _showWorkerSelection;
         [Inject] private ShowResearch _showResearch;
+        [Inject] private NavigationContextModel _nav;
 
         [SerializeField] private GameObject workerSelectionPopup;
         [SerializeField] private GameObject researchPopup;
@@ -29,6 +32,11 @@ namespace View.UI
         private void ResearchRequested()
         {
             researchPopup.SetActive(true);
+        }
+
+        private void Update()
+        {
+            _nav.IsResearchOpen = researchPopup.activeSelf;
         }
 
         private void OnDestroy()
