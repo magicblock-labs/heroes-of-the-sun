@@ -367,16 +367,16 @@ pub const QUESTS_CONFIG: [QuestConfig; 15] = [
         target_value: 30,
         reward_type: Resource::Stone as u8,
         reward_value: 5,
-        depends_on: None, // Starting store quest
+        depends_on: Some(1), // MODIFIED: Now depends on building the Food Collector
     },
     QuestConfig {
         id: 8,
         quest_type: QuestType::Store,
-        target_type: Resource::Wood as u8,
+        target_type: Resource::Water as u8, // MODIFIED: Changed from Wood to Water
         target_value: 50,
         reward_type: Resource::Stone as u8,
         reward_value: 5,
-        depends_on: Some(7), // Depends on completing the previous store quest
+        depends_on: Some(3), // MODIFIED: Now depends on building the Water Collector
     },
     QuestConfig {
         id: 9,

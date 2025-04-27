@@ -236,7 +236,7 @@ namespace Model
                 targetType = (int)BuildingType.FoodStorage,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 10,
-                dependsOn = null // No dependency (starting quest)
+                dependsOn = null // No dependencies (starting quest)
             },
             new()
             {
@@ -268,7 +268,7 @@ namespace Model
             // New Research building quest
             new()
             {
-                id = 14, // Using a new ID at the end of the array
+                id = 14,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.Research,
                 rewardType = (int)Resource.Wood,
@@ -313,17 +313,17 @@ namespace Model
                 targetValue = 30,
                 rewardType = (int)Resource.Stone,
                 rewardValue = 5,
-                dependsOn = null // Starting store quest
+                dependsOn = 1 // MODIFIED: Now depends on building the Food Collector
             },
             new()
             {
                 id = 8,
                 type = QuestType.Store,
-                targetType = (int)Resource.Wood,
+                targetType = (int)Resource.Water, // MODIFIED: Changed from Wood to Water
                 targetValue = 50,
                 rewardType = (int)Resource.Stone,
                 rewardValue = 5,
-                dependsOn = 7 // Depends on completing the previous store quest
+                dependsOn = 3 // MODIFIED: Now depends on building the Water Collector
             },
             new()
             {
