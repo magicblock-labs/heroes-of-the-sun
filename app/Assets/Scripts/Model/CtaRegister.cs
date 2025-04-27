@@ -11,7 +11,6 @@ namespace Model
 
         public void Add(Transform transform, CtaTag tag, int? payload = null)
         {
-            Debug.Log($"Add {tag} : {payload}");
             _data[GetCompositeId(tag, payload)] = transform;
         }
 

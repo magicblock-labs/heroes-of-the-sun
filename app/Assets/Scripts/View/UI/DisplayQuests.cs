@@ -47,7 +47,7 @@ public class DisplayQuests : InjectableBehaviour
 
         var claimable = 0;
         var total = 0;
-        foreach (var (_, quest) in _configModel.GetFirstUnclaimedQuests(0))
+        foreach (var (_, quest) in _configModel.GetFirstUnclaimedQuests(_settlement.Get().QuestClaimStatus))
         {
             total++;
             if (Instantiate(questPrefab, questsContainer).SetData(quest, _settlement.GetQuestProgress(quest)))

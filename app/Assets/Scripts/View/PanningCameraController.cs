@@ -16,7 +16,7 @@ namespace View
         [SerializeField] private EventSystem eventSystem;
 
         private Camera _cam;
-        private Vector3 _lastPanPosition;
+        private Vector3? _lastPanPosition;
 
         private int _panFingerId; // Touch mode only
 
@@ -30,7 +30,9 @@ namespace View
         {
             var angles = transform.rotation.eulerAngles;
             var forwardOffset = transform.position.y * (float)Math.Sin((90 - angles.x) * Mathf.Deg2Rad);
-            var cameraOffset = new Vector3(Mathf.Cos(angles.y * Mathf.Deg2Rad), 0, Mathf.Sin(angles.y * Mathf.Deg2Rad)) * forwardOffset;
+            var cameraOffset =
+                new Vector3(Mathf.Cos(angles.y * Mathf.Deg2Rad), 0, Mathf.Sin(angles.y * Mathf.Deg2Rad)) *
+                forwardOffset;
 
             transform.DOMove(new Vector3(
                 position.x + cameraOffset.x,
@@ -82,13 +84,15 @@ namespace View
         {
             // On mouse down, capture it's position.
             // Otherwise, if the mouse is still down, pan the camera.
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0)){
                 _lastPanPosition = Input.mousePosition;
+            }
 
             if (
                 Input.GetMouseButton(0) &&
                 _gridInteraction.State is GridInteractionState.Idle &&
-                _lastPanPosition != Input.mousePosition)
+                _lastPanPosition != Input.mousePosition && 
+                _lastPanPosition != null)
             {
                 _gridInteraction.SetState(GridInteractionState.Panning);
             }
@@ -97,20 +101,26 @@ namespace View
             {
                 PanCamera(Input.mousePosition);
 
-                if (Input.GetMouseButtonUp(0)) _gridInteraction.SetState(GridInteractionState.Idle);
+                if (Input.GetMouseButtonUp(0))
+                {
+                    _lastPanPosition = null;
+                    _gridInteraction.SetState(GridInteractionState.Idle);
+                }
             }
         }
 
         private void PanCamera(Vector3 value)
         {
+            if (_lastPanPosition == null)
+                return;
+            
             var eulerAngles = transform.rotation.eulerAngles;
             var radRotation = eulerAngles * (float)Math.PI / 180f;
-
 
             //rewrite while we can resize (no need on device if no rotation enabled)
             var screenVector = new Vector2(Screen.width, Screen.height).normalized;
 
-            var diff = _cam.ScreenToViewportPoint(_lastPanPosition - value) * screenVector *
+            var diff = _cam.ScreenToViewportPoint(_lastPanPosition.Value - value) * screenVector *
                        (2 * _cam.orthographicSize * (1 / screenVector.y));
 
             // this math is a bit flaky, recheck

@@ -18,7 +18,8 @@ namespace Connectors
         [Inject] private StopFtueSequence _stopFtue;
         [Inject] private TokenConnector _token;
 
-        protected override UniTask<bool> ApplySystem(PublicKey systemAddress, object args, Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
+        protected override UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
+            Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
             AccountMeta[] accounts = null, bool ignoreSession = false)
         {
             _stopFtue.Dispatch();
@@ -83,30 +84,27 @@ namespace Connectors
         {
             //undelegate
             await Undelegate();
-            
+
             //2. apply
-            var result =  await ApplySystem(new PublicKey("Csna3V2jUMdQEQKUCxLsQEnYThAGPSWcPCxW9vea1S8d"),
+            var result = await ApplySystem(new PublicKey("Csna3V2jUMdQEQKUCxLsQEnYThAGPSWcPCxW9vea1S8d"),
                 new { tokens_for_food, tokens_for_water, tokens_for_wood, tokens_for_stone }, null, false,
                 _token.GetBurnExtraAccounts(), true);
 
             //re-delegate
             await Delegate();
-            
+
             //claim time (to copy latest state to ER)
             await ClaimTime();
-            
+
             return result;
         }
-        
-        public async UniTask<bool> ClaimQuest()
+
+        public async UniTask<bool> ClaimQuest(int index)
         {
-            //return await ApplySystem(new PublicKey("4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"), new { });
-            
-            
-            return true;
+            return await ApplySystem(new PublicKey("7nsn4z8U1nVCVHud9CLmYLy5ZHK2bSMge6u7YgmssdaA"), new { index });
         }
-        
-        
+
+
         public override UniTask CloneToRollup()
         {
             return ClaimTime();

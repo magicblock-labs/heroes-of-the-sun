@@ -1,4 +1,5 @@
 using System;
+using Connectors;
 using Model;
 using Notifications;
 using Settlement.Types;
@@ -33,6 +34,7 @@ public class QuestData
 public class DisplayQuest : InjectableBehaviour
 {
     [Inject] SettlementModel _settlement;
+    [Inject] PlayerSettlementConnector _connector;
 
     [Inject] StartFtueSequence _startFtueSequence;
 
@@ -84,6 +86,6 @@ public class DisplayQuest : InjectableBehaviour
 
     public void OnClaimClick()
     {
-        _settlement.ClaimQuestLocalSim(_data.id);
+        _ = _connector.ClaimQuest(_data.id);
     }
 }
