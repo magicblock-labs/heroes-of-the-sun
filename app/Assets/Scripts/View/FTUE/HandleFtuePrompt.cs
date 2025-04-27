@@ -14,7 +14,7 @@ namespace View.Ftue
     {
         [Inject] ShowFtuePrompt _showFtuePrompt;
         [Inject] HideFtuePrompt _hideFtuePrompt;
-        
+
         [Inject] StopFtueSequence _stopFtueSequence;
         [Inject] GridInteractionStateModel _gridInteraction;
 
@@ -60,18 +60,17 @@ namespace View.Ftue
             cutout.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, canvasRect.size.x);
             cutout.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, canvasRect.size.y);
 
-            
             promptText.text = value.promptText;
 
             var settings = promptText.GetGenerationSettings(promptText.rectTransform.rect.size);
-            
+
             var textGen = new TextGenerator();
             promptContainer.sizeDelta = new Vector2(
-                textGen.GetPreferredWidth(value.promptText, settings) * .7f + Padding,
-                textGen.GetPreferredHeight(value.promptText, settings) + Padding);
-            
+                textGen.GetPreferredWidth(value.promptText, settings) * 2f + Padding,
+                textGen.GetPreferredHeight(value.promptText, settings) * 2f + Padding);
+
             var offsetRect = promptContainer.rect.size + canvasRect.size + Vector2.one * Gap;
-            promptContainer.anchoredPosition = cutout.anchoredPosition+offsetRect / 2 * value.promptLocation;
+            promptContainer.anchoredPosition = cutout.anchoredPosition + offsetRect / 2 * value.promptLocation;
             promptContainer.gameObject.SetActive(true);
 
             _gridInteraction.LockOverride = true;

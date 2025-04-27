@@ -375,15 +375,18 @@ namespace Model
             },
         };
 
-        public Dictionary<QuestType, QuestData> GetFirstUnclaimedQuests(ulong claimStatus)
+        public List<QuestData> GetAvailableQuests(ulong claimStatus)
         {
-            var result = new Dictionary<QuestType, QuestData>();
+            var result = new List<QuestData>();
             foreach (var quest in Quests)
             {
                 if ((claimStatus & (1ul << quest.id)) > 0)
                     continue;
+                
+                if (quest.dependsOn.HasValue && (claimStatus & (1ul << quest.dependsOn.Value)) == 0)
+                    continue;
 
-                result.TryAdd(quest.type, quest);
+                result.Add( quest);
             }
 
             return result;
