@@ -66,8 +66,8 @@ namespace View.Ftue
 
             var textGen = new TextGenerator();
             promptContainer.sizeDelta = new Vector2(
-                textGen.GetPreferredWidth(value.promptText, settings) * 2f + Padding,
-                textGen.GetPreferredHeight(value.promptText, settings) * 2f + Padding);
+                textGen.GetPreferredWidth(value.promptText, settings) + Padding,
+                textGen.GetPreferredHeight(value.promptText, settings) + Padding);
 
             var offsetRect = promptContainer.rect.size + canvasRect.size + Vector2.one * Gap;
             promptContainer.anchoredPosition = cutout.anchoredPosition + offsetRect / 2 * value.promptLocation;
