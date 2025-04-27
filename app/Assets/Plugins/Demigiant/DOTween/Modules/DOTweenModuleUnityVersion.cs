@@ -11,7 +11,7 @@ using UnityEngine;
 //#endif
 
 #pragma warning disable 1591
-namespace Plugins.Demigiant.DOTween.Modules
+namespace DG.Tweening
 {
     /// <summary>
     /// Shortcuts/functions that are not strictly related to specific Modules

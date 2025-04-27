@@ -15,7 +15,7 @@ using Outline = UnityEngine.UI.Outline;
 using Text = UnityEngine.UI.Text;
 
 #pragma warning disable 1591
-namespace Plugins.Demigiant.DOTween.Modules
+namespace DG.Tweening
 {
 	public static class DOTweenModuleUI
     {

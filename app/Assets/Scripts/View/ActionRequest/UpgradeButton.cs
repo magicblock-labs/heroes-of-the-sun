@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Connectors;
 using Model;
@@ -13,7 +14,7 @@ namespace View.ActionRequest
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private ConfigModel _config;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         [SerializeField] private GameObject costWood;
         [SerializeField] private Text costWoodLabel;
@@ -23,12 +24,15 @@ namespace View.ActionRequest
 
         private int _index;
         private bool _canAfford;
+        private Action _callback;
 
-        public void SetData(int index, Settlement.Types.Building value)
+        public void SetData(int index, Settlement.Types.Building value, Action callback)
         {
             if (value == null)
                 return;
 
+            _callback = callback;
+            
             var reachedTownHallLevel =
                 value.Id != BuildingType.TownHall && _settlement.Get().Buildings[0].Level <= value.Level;
             gameObject.SetActive(!reachedTownHallLevel);
@@ -54,7 +58,9 @@ namespace View.ActionRequest
 
         public void Upgrade()
         {
-            _interaction.LockInteraction();
+            _callback?.Invoke();
+            
+            _gridInteraction.LockInteraction();
 
             if (_canAfford)
                 _ = _connector.Upgrade(_index, _settlement.GetFreeWorkerIndex());

@@ -28,6 +28,7 @@ namespace Connectors
     [Singleton]
     public abstract class BaseComponentConnector<T> : InjectableObject
     {
+        
         private WalletBase Wallet => _delegated
             ? Web3Utils.EphemeralWallet
             : Web3.Wallet;
@@ -327,10 +328,11 @@ namespace Connectors
 
         protected abstract T DeserialiseBytes(byte[] value);
 
-        protected async UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
+        protected async virtual UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
             Dictionary<PublicKey, PublicKey> extraEntities = null, bool useDataAddress = false,
             AccountMeta[] accounts = null, bool ignoreSession = false)
         {
+            
             var systemApplicationInstruction =
                 useDataAddress
                     ? GetSystemApplicationInstructionFromDataAddress(

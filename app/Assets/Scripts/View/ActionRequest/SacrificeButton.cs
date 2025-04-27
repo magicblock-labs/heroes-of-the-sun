@@ -1,3 +1,4 @@
+using System;
 using Connectors;
 using Model;
 using Utils.Injection;
@@ -9,12 +10,16 @@ namespace View.ActionRequest
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         private int _index;
+        private Action _callback;
 
-        public void SetData(int index, Settlement.Types.Building value)
+        public void SetData(int index, Settlement.Types.Building value, Action callback)
         {
+
+            _callback = callback;
+            
             if (value == null)
                 return;
 
@@ -23,7 +28,9 @@ namespace View.ActionRequest
 
         public async void Sacrifice()
         {
-            _interaction.LockInteraction();
+            _callback?.Invoke();
+            
+            _gridInteraction.LockInteraction();
 
             var workerIndex = _settlement.GetFreeWorkerIndex();
 

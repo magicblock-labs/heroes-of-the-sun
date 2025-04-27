@@ -1,7 +1,9 @@
+using System;
+
 namespace View.ActionRequest
 {
     public interface IBuildingActionButton
     {
-        void SetData(int index, Settlement.Types.Building value);
+        void SetData(int index, Settlement.Types.Building value, Action callback);
     }
 }

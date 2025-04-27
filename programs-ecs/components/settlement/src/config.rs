@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-use crate::{EnvironmentState, ResourceBalance};
+use crate::{Building, EnvironmentState, ResourceBalance};
 
 //this enum matches the BUILDINGS_CONFIG array indexes (so we don't need to use a map (BuildingType=>BuildingConfig))
 #[component_deserialize]
@@ -258,4 +258,211 @@ pub fn get_build_time(research: u32, tier: u8, level: u8) -> u8 {
                 * get_research_level(research, ResearchType::BuildingSpeed),
             base_cost,
         );
+}
+
+#[repr(u8)]
+pub enum QuestType {
+    Build,
+    Upgrade,
+    Store,
+    Research,
+    Faith,
+}
+
+#[repr(u8)]
+pub enum Resource {
+    Food,
+    Water,
+    Wood,
+    Stone,
+}
+
+pub struct QuestConfig {
+    pub id: u32,
+    pub quest_type: QuestType,
+    pub target_type: u8,
+    pub target_value: u8,
+    pub reward_type: u8,
+    pub reward_value: u16,
+    pub depends_on: Option<u32>, // Adding nullable dependency field
+}
+
+pub const QUESTS_CONFIG: [QuestConfig; 15] = [
+    QuestConfig {
+        id: 0,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::FoodStorage as u8,
+        target_value: 1,
+        reward_type: Resource::Wood as u8,
+        reward_value: 10,
+        depends_on: None, // No dependency (starting quest)
+    },
+    QuestConfig {
+        id: 1,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::FoodCollector as u8,
+        target_value: 1,
+        reward_type: Resource::Water as u8,
+        reward_value: 10,
+        depends_on: Some(0), // Depends on completing the first quest
+    },
+    QuestConfig {
+        id: 2,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::WaterStorage as u8,
+        target_value: 1,
+        reward_type: Resource::Water as u8,
+        reward_value: 10,
+        depends_on: Some(1), // Depends on completing the previous quest
+    },
+    QuestConfig {
+        id: 3,
+        quest_type: QuestType::Build,
+        target_type: BuildingType::WaterCollector as u8,
+        target_value: 1,
+        reward_type: Resource::Water as u8,
+        reward_value: 10,
+        depends_on: Some(2), // Depends on completing the previous quest
+    },
+    QuestConfig {
+        id: 14, // New Research building quest
+        quest_type: QuestType::Build,
+        target_type: BuildingType::Research as u8,
+        target_value: 1,
+        reward_type: Resource::Wood as u8,
+        reward_value: 15,
+        depends_on: Some(3), // Depends on completing the previous build quest
+    },
+    QuestConfig {
+        id: 4,
+        quest_type: QuestType::Upgrade,
+        target_type: BuildingType::TownHall as u8,
+        target_value: 2,
+        reward_type: Resource::Wood as u8,
+        reward_value: 100,
+        depends_on: None, // Starting upgrade quest
+    },
+    QuestConfig {
+        id: 5,
+        quest_type: QuestType::Upgrade,
+        target_type: BuildingType::WoodCollector as u8,
+        target_value: 2,
+        reward_type: Resource::Water as u8,
+        reward_value: 20,
+        depends_on: Some(4), // Depends on completing the previous upgrade quest
+    },
+    QuestConfig {
+        id: 6,
+        quest_type: QuestType::Upgrade,
+        target_type: BuildingType::TownHall as u8,
+        target_value: 3,
+        reward_type: Resource::Stone as u8,
+        reward_value: 10,
+        depends_on: Some(5), // Depends on completing the previous upgrade quest
+    },
+    QuestConfig {
+        id: 7,
+        quest_type: QuestType::Store,
+        target_type: Resource::Food as u8,
+        target_value: 30,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+        depends_on: Some(1), // MODIFIED: Now depends on building the Food Collector
+    },
+    QuestConfig {
+        id: 8,
+        quest_type: QuestType::Store,
+        target_type: Resource::Water as u8, // MODIFIED: Changed from Wood to Water
+        target_value: 50,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+        depends_on: Some(3), // MODIFIED: Now depends on building the Water Collector
+    },
+    QuestConfig {
+        id: 9,
+        quest_type: QuestType::Store,
+        target_type: Resource::Stone as u8,
+        target_value: 30,
+        reward_type: Resource::Stone as u8,
+        reward_value: 20,
+        depends_on: Some(8), // Depends on completing the previous store quest
+    },
+    QuestConfig {
+        id: 10,
+        quest_type: QuestType::Research,
+        target_type: ResearchType::BuildingCost as u8,
+        target_value: 1,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+        depends_on: Some(14), // Depends on building the Research building
+    },
+    QuestConfig {
+        id: 11,
+        quest_type: QuestType::Research,
+        target_type: ResearchType::Consumption as u8,
+        target_value: 1,
+        reward_type: Resource::Stone as u8,
+        reward_value: 5,
+        depends_on: Some(10), // Depends on completing the previous research quest
+    },
+    QuestConfig {
+        id: 12,
+        quest_type: QuestType::Faith,
+        target_type: 0,
+        target_value: 30,
+        reward_type: Resource::Stone as u8,
+        reward_value: 15,
+        depends_on: None, // Starting faith quest
+    },
+    QuestConfig {
+        id: 13,
+        quest_type: QuestType::Faith,
+        target_type: 0,
+        target_value: 60,
+        reward_type: Resource::Stone as u8,
+        reward_value: 30,
+        depends_on: Some(12), // Depends on completing the previous faith quest
+    },
+];
+
+pub fn get_quest_progress(
+    buildings: Vec<Building>,
+    treasury: ResourceBalance,
+    faith: u8,
+    research: u32,
+    quest: &QuestConfig,
+) -> u32 {
+    match quest.quest_type {
+        QuestType::Build => {
+            // Count buildings of the specified type
+            buildings
+                .iter()
+                .filter(|b| b.id as u8 == quest.target_type)
+                .count() as u32
+        }
+        QuestType::Upgrade => {
+            // Get the maximum level of buildings of the specified type
+            buildings
+                .iter()
+                .filter(|b| b.id as u8 == quest.target_type)
+                .map(|b| b.level)
+                .max()
+                .unwrap_or(0) as u32
+        }
+        QuestType::Store => {
+            // Return the appropriate resource amount from treasury
+            match quest.target_type {
+                t if t == Resource::Food as u8 => treasury.food as u32,
+                t if t == Resource::Wood as u8 => treasury.wood as u32,
+                t if t == Resource::Water as u8 => treasury.water as u32,
+                t if t == Resource::Stone as u8 => treasury.stone as u32,
+                _ => panic!("Invalid resource type in Store quest"),
+            }
+        }
+        QuestType::Research => get_research_level_u8(research, quest.target_type) as u32,
+        QuestType::Faith => {
+            // Return faith value
+            faith as u32
+        }
+    }
 }

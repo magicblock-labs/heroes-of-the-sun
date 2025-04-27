@@ -3,14 +3,26 @@ using Connectors;
 using Model;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 using Utils.Injection;
 
 namespace View.UI.Research
 {
+    public enum ResearchFilter
+    {
+        None = -1,
+        Building,
+        Resource,
+        Population,
+        Faith
+    }
+
     public class ResearchPopup : InjectableBehaviour
     {
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private SettlementModel _settlement;
+        [Inject] private ConfigModel _config;
+        [Inject] private NavigationContextModel _nav;
 
         [SerializeField] private Transform researchList;
         [SerializeField] private ResearchItem researchPrefab;
@@ -21,38 +33,6 @@ namespace View.UI.Research
         [SerializeField] private Text selectedResearchDescription;
         [SerializeField] private Image selectedResearchIcon;
         [SerializeField] private Text selectedResearchCost;
-
-        private readonly SettlementModel.ResearchType[][] _researchGroups =
-        {
-            new[]
-            {
-                SettlementModel.ResearchType.BuildingSpeed,
-                SettlementModel.ResearchType.BuildingCost,
-                SettlementModel.ResearchType.DeteriorationCap
-            },
-            new[]
-            {
-                SettlementModel.ResearchType.StorageCapacity,
-                SettlementModel.ResearchType.ResourceCollectionSpeed,
-                SettlementModel.ResearchType.EnvironmentRegeneration,
-                SettlementModel.ResearchType.Mining
-            },
-            new[]
-            {
-                SettlementModel.ResearchType.ExtraUnit,
-                SettlementModel.ResearchType.DeathTimeout,
-                SettlementModel.ResearchType.Consumption
-            },
-            new[]
-            {
-                SettlementModel.ResearchType.MaxEnergyCap,
-                SettlementModel.ResearchType.EnergyRegeneration,
-                SettlementModel.ResearchType.FaithBonus
-            }
-        };
-
-        private int _selectedTab = -1;
-        private SettlementModel.ResearchType _selectedResearch;
 
         private void Start()
         {
@@ -68,36 +48,38 @@ namespace View.UI.Research
         private void Redraw()
         {
             var selectedToggle = tabs.ActiveToggles().First();
-            var tabIndex = selectedToggle.transform.GetSiblingIndex();
+            var tabIndex = (ResearchFilter)selectedToggle.transform.GetSiblingIndex();
 
-            if (_selectedTab == tabIndex)
+            if (_nav.ResearchFilter == tabIndex)
                 return;
 
-            _selectedTab = tabIndex;
+            _nav.ResearchFilter = tabIndex;
 
             foreach (Transform child in researchList)
                 Destroy(child.gameObject);
 
-            foreach (var type in _researchGroups[_selectedTab])
-            {
-                Instantiate(researchPrefab, researchList).SetData(type, OnResearchSelected);
-            }
+            var filteredResearch = _config.ResearchTypeMapping
+                .Where(x => x.Value == _nav.ResearchFilter)
+                .Select(x => x.Key).ToList();
 
-            OnResearchSelected(_researchGroups[_selectedTab][0]);
+            foreach (var type in filteredResearch)
+                Instantiate(researchPrefab, researchList).SetData(type, OnResearchSelected);
+
+            OnResearchSelected(filteredResearch.First());
         }
 
         void OnResearchSelected(SettlementModel.ResearchType type)
         {
-            _selectedResearch = type;
-            selectedResearchTitle.text = type.ToString();
-            selectedResearchDescription.text = $"{type}  description";
+            _nav.SelectedResearch = type;
+            selectedResearchTitle.text = type.ToString().SplitCamelCase();
+            selectedResearchDescription.text = $"{type}  description".SplitCamelCase();
             selectedResearchIcon.sprite = Resources.Load<Sprite>(type.ToString());
             selectedResearchCost.text = $"x{_settlement.GetResearchCost(type)}";
         }
 
         public async void OnSubmit()
         {
-            await _connector.Research((int)_selectedResearch);
+            await _connector.Research((int)_nav.SelectedResearch);
         }
     }
 }

@@ -2,6 +2,7 @@ using Connectors;
 using Model;
 using Unity.AI.Navigation;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Utils.Injection;
 
 namespace View.UI.Building
@@ -11,7 +12,7 @@ namespace View.UI.Building
         [SerializeField] private BuildingProgress progress;
         [SerializeField] private BuildingInfo info;
 
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
         [Inject] private PlayerSettlementConnector _connector;
 
         private Camera _camera;
@@ -34,17 +35,21 @@ namespace View.UI.Building
 
         private void LateUpdate()
         {
-            if (!_interaction.CanInteract)
+            if (!Input.GetMouseButtonUp(0)) return;
+
+            if (EventSystem.current.IsPointerOverGameObject())
+                return;
+
+            if (!_gridInteraction.CanInteract)
                 return;
 
             var mouseRay = _camera.ScreenPointToRay(Input.mousePosition);
             var intersectRay = _collider.bounds.IntersectRay(mouseRay, out _);
 
-            if (Input.GetMouseButtonUp(0))
-                info.ShowExtendedControls(
-                    intersectRay
-                    && _interaction.State == InteractionState.Idle
-                    && !_interaction.SelectedBuildingType.HasValue);
+            info.ShowControls(
+                intersectRay
+                && _gridInteraction.State == GridInteractionState.Idle
+                && !_gridInteraction.SelectedBuildingType.HasValue);
         }
     }
 }

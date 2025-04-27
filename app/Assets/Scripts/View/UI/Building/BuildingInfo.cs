@@ -3,7 +3,7 @@ using System.Linq;
 using Connectors;
 using Model;
 using Notifications;
-using Plugins.Demigiant.DOTween.Modules;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using Utils.Injection;
@@ -16,8 +16,9 @@ namespace View.UI.Building
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
         [Inject] private ShowWorkerSelection _showWorkerSelection;
+        [Inject] private CtaRegister _ctaRegister;
 
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text levelLabel;
@@ -27,7 +28,7 @@ namespace View.UI.Building
         [SerializeField] private ExtractionStatus extractionStatus;
 
         private IBuildingActionButton[] _actionButtons;
-        [SerializeField] private GameObject controls;
+        [SerializeField] public GameObject controls;
 
         private readonly Dictionary<RectTransform, Vector2> _actionPositions = new();
         private int _index;
@@ -48,12 +49,14 @@ namespace View.UI.Building
             if (value == null)
                 return;
 
+            _ctaRegister.Add(transform, CtaTag.PlacedBuilding, (int?)value.Id);
+
             _index = index;
 
             _actionButtons ??= GetComponentsInChildren<IBuildingActionButton>();
 
             foreach (var btn in _actionButtons)
-                btn.SetData(index, value);
+                btn.SetData(index, value, HideControls);
 
             nameLabel.text = value.Id.ToString();
             if (levelLabel)
@@ -76,7 +79,12 @@ namespace View.UI.Building
             extractionStatus.SetCount(value.Extraction);
         }
 
-        public void ShowExtendedControls(bool value)
+        private void HideControls()
+        {
+            controls.SetActive(false);
+        }
+
+        public void ShowControls(bool value)
         {
             if (controls.activeSelf == value)
                 return;

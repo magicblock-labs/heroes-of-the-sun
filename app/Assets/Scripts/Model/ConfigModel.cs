@@ -1,7 +1,11 @@
+using System.Collections;
 using System.Collections.Generic;
 using Settlement.Types;
+using UnityEditor;
 using UnityEngine;
 using Utils.Injection;
+using View.UI.Building;
+using View.UI.Research;
 
 namespace Model
 {
@@ -156,6 +160,42 @@ namespace Model
             }
         };
 
+        public Dictionary<SettlementModel.ResearchType, ResearchFilter> ResearchTypeMapping =
+            new()
+            {
+                { SettlementModel.ResearchType.BuildingSpeed, ResearchFilter.Building },
+                { SettlementModel.ResearchType.BuildingCost, ResearchFilter.Building },
+                { SettlementModel.ResearchType.DeteriorationCap, ResearchFilter.Building },
+
+                { SettlementModel.ResearchType.StorageCapacity, ResearchFilter.Resource },
+                { SettlementModel.ResearchType.ResourceCollectionSpeed, ResearchFilter.Resource },
+                { SettlementModel.ResearchType.EnvironmentRegeneration, ResearchFilter.Resource },
+                { SettlementModel.ResearchType.Mining, ResearchFilter.Resource },
+
+                { SettlementModel.ResearchType.ExtraUnit, ResearchFilter.Population },
+                { SettlementModel.ResearchType.DeathTimeout, ResearchFilter.Population },
+                { SettlementModel.ResearchType.Consumption, ResearchFilter.Population },
+
+                { SettlementModel.ResearchType.MaxEnergyCap, ResearchFilter.Faith },
+                { SettlementModel.ResearchType.EnergyRegeneration, ResearchFilter.Faith },
+                { SettlementModel.ResearchType.FaithBonus, ResearchFilter.Faith },
+            };
+
+        public Dictionary<BuildingType, BuildingFilter> BuildingTypeMapping =
+            new()
+            {
+                { BuildingType.FoodCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.WaterCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.WoodCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.StoneCollector, BuildingFilter.ResourceCollection },
+                { BuildingType.FoodStorage, BuildingFilter.Storage },
+                { BuildingType.WaterStorage, BuildingFilter.Storage },
+                { BuildingType.WoodStorage, BuildingFilter.Storage },
+                { BuildingType.StoneStorage, BuildingFilter.Storage },
+                { BuildingType.Altar, BuildingFilter.Special },
+                { BuildingType.Research, BuildingFilter.Special },
+            };
+
         public const int BASE_DETERIORATION_CAP = 50;
         public const int DETERIORATION_CAP_RESEARCH_MULTIPLIER = 5;
 
@@ -183,6 +223,171 @@ namespace Model
                     for (var j = building.Y; j < building.Y + config.height; j++)
                         result[i, j] = 1;
                 }
+
+            return result;
+        }
+
+        public static QuestData[] Quests =
+        {
+            new()
+            {
+                id = 0,
+                type = QuestType.Build,
+                targetType = (int)BuildingType.FoodStorage,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 10,
+                dependsOn = null // No dependencies (starting quest)
+            },
+            new()
+            {
+                id = 1,
+                type = QuestType.Build,
+                targetType = (int)BuildingType.FoodCollector,
+                rewardType = (int)Resource.Water,
+                rewardValue = 10,
+                dependsOn = 0 // Depends on completing the first quest
+            },
+            new()
+            {
+                id = 2,
+                type = QuestType.Build,
+                targetType = (int)BuildingType.WaterStorage,
+                rewardType = (int)Resource.Water,
+                rewardValue = 10,
+                dependsOn = 1 // Depends on completing the previous quest
+            },
+            new()
+            {
+                id = 3,
+                type = QuestType.Build,
+                targetType = (int)BuildingType.WaterCollector,
+                rewardType = (int)Resource.Water,
+                rewardValue = 10,
+                dependsOn = 2 // Depends on completing the previous quest
+            },
+            // New Research building quest
+            new()
+            {
+                id = 14,
+                type = QuestType.Build,
+                targetType = (int)BuildingType.Research,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 15,
+                dependsOn = 3 // Depends on completing the previous build quest
+            },
+            new()
+            {
+                id = 4,
+                type = QuestType.Upgrade,
+                targetType = (int)BuildingType.TownHall,
+                targetValue = 2,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 100,
+                dependsOn = null // Starting upgrade quest
+            },
+            new()
+            {
+                id = 5,
+                type = QuestType.Upgrade,
+                targetType = (int)BuildingType.WoodCollector,
+                targetValue = 2,
+                rewardType = (int)Resource.Water,
+                rewardValue = 20,
+                dependsOn = 4 // Depends on completing the previous upgrade quest
+            },
+            new()
+            {
+                id = 6,
+                type = QuestType.Upgrade,
+                targetType = (int)BuildingType.TownHall,
+                targetValue = 3,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 10,
+                dependsOn = 5 // Depends on completing the previous upgrade quest
+            },
+            new()
+            {
+                id = 7,
+                type = QuestType.Store,
+                targetType = (int)Resource.Food,
+                targetValue = 30,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5,
+                dependsOn = 1 // MODIFIED: Now depends on building the Food Collector
+            },
+            new()
+            {
+                id = 8,
+                type = QuestType.Store,
+                targetType = (int)Resource.Water, // MODIFIED: Changed from Wood to Water
+                targetValue = 50,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5,
+                dependsOn = 3 // MODIFIED: Now depends on building the Water Collector
+            },
+            new()
+            {
+                id = 9,
+                type = QuestType.Store,
+                targetType = (int)Resource.Stone,
+                targetValue = 30,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 20,
+                dependsOn = 8 // Depends on completing the previous store quest
+            },
+            new()
+            {
+                id = 10,
+                type = QuestType.Research,
+                targetType = (int)SettlementModel.ResearchType.BuildingCost,
+                targetValue = 1,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5,
+                dependsOn = 14 // Depends on building the Research building
+            },
+            new()
+            {
+                id = 11,
+                type = QuestType.Research,
+                targetType = (int)SettlementModel.ResearchType.Consumption,
+                targetValue = 1,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 5,
+                dependsOn = 10 // Depends on completing the previous research quest
+            },
+            new()
+            {
+                id = 12,
+                type = QuestType.Faith,
+                targetValue = 30,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 15,
+                dependsOn = null // Starting faith quest
+            },
+            new()
+            {
+                id = 13,
+                type = QuestType.Faith,
+                targetValue = 60,
+                rewardType = (int)Resource.Stone,
+                rewardValue = 30,
+                dependsOn = 12 // Depends on completing the previous faith quest
+            },
+        };
+
+        public List<QuestData> GetAvailableQuests(ulong claimStatus)
+        {
+            var result = new List<QuestData>();
+            foreach (var quest in Quests)
+            {
+                if ((claimStatus & (1ul << quest.id)) > 0)
+                    continue;
+                
+                if (quest.dependsOn.HasValue && (claimStatus & (1ul << quest.dependsOn.Value)) == 0)
+                    continue;
+
+                result.Add( quest);
+            }
 
             return result;
         }

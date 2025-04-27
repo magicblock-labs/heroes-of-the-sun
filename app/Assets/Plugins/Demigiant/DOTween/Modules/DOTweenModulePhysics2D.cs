@@ -10,7 +10,7 @@ using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
 #pragma warning disable 1591
-namespace Plugins.Demigiant.DOTween.Modules
+namespace DG.Tweening
 {
 	public static class DOTweenModulePhysics2D
     {

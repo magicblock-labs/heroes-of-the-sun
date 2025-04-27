@@ -12,7 +12,7 @@ namespace View.UI
     {
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         [SerializeField] private WorkerAssignmentEntry workerAssignmentEntry;
         [SerializeField] private UnityEvent close;
@@ -53,9 +53,9 @@ namespace View.UI
         {
             close?.Invoke();
 
-            if (_interaction.SelectedBuildingIndex < 0) return;
-            _interaction.LockInteraction();
-            await _connector.AssignWorker(index, _interaction.SelectedBuildingIndex);
+            if (_gridInteraction.SelectedBuildingIndex < 0) return;
+            _gridInteraction.LockInteraction();
+            await _connector.AssignWorker(index, _gridInteraction.SelectedBuildingIndex);
         }
     }
 }

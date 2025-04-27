@@ -1,5 +1,7 @@
 using System;
+using DG.Tweening;
 using Model;
+using Notifications;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Utils.Injection;
@@ -8,23 +10,42 @@ namespace View
 {
     public class PanningCameraController : InjectableBehaviour
     {
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
+        [Inject] FocusOn _focusOn;
 
         [SerializeField] private EventSystem eventSystem;
 
         private Camera _cam;
-        private Vector3 _lastPanPosition;
+        private Vector3? _lastPanPosition;
 
         private int _panFingerId; // Touch mode only
 
         private void Start()
         {
             _cam = GetComponent<Camera>();
+            _focusOn.Add(OnFocus);
+        }
+
+        private void OnFocus(Vector3 position)
+        {
+            var angles = transform.rotation.eulerAngles;
+            var forwardOffset = transform.position.y * (float)Math.Sin((90 - angles.x) * Mathf.Deg2Rad);
+            var cameraOffset =
+                new Vector3(Mathf.Cos(angles.y * Mathf.Deg2Rad), 0, Mathf.Sin(angles.y * Mathf.Deg2Rad)) *
+                forwardOffset;
+
+            transform.DOMove(new Vector3(
+                position.x + cameraOffset.x,
+                transform.position.y,
+                position.z + cameraOffset.z), .2f);
         }
 
         private void Update()
         {
             if (eventSystem.IsPointerOverGameObject())
+                return;
+
+            if (_gridInteraction.LockOverride)
                 return;
 
             if (Input.touchSupported && Application.platform != RuntimePlatform.WebGLPlayer)
@@ -47,13 +68,13 @@ namespace View
                         _panFingerId = touch.fingerId;
                     }
                     else if (touch.fingerId == _panFingerId && touch.phase == TouchPhase.Moved &&
-                             _interaction.State is InteractionState.Idle or InteractionState.Panning)
+                             _gridInteraction.State is GridInteractionState.Idle or GridInteractionState.Panning)
                     {
-                        _interaction.SetState(InteractionState.Panning);
+                        _gridInteraction.SetState(GridInteractionState.Panning);
                         PanCamera(touch.position);
                     }
-                    else if (_interaction.State == InteractionState.Panning)
-                        _interaction.SetState(InteractionState.Idle);
+                    else if (_gridInteraction.State == GridInteractionState.Panning)
+                        _gridInteraction.SetState(GridInteractionState.Idle);
 
                     break;
             }
@@ -63,35 +84,43 @@ namespace View
         {
             // On mouse down, capture it's position.
             // Otherwise, if the mouse is still down, pan the camera.
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0)){
                 _lastPanPosition = Input.mousePosition;
+            }
 
             if (
                 Input.GetMouseButton(0) &&
-                _interaction.State is InteractionState.Idle &&
-                _lastPanPosition != Input.mousePosition)
+                _gridInteraction.State is GridInteractionState.Idle &&
+                _lastPanPosition != Input.mousePosition && 
+                _lastPanPosition != null)
             {
-                _interaction.SetState(InteractionState.Panning);
+                _gridInteraction.SetState(GridInteractionState.Panning);
             }
 
-            if (_interaction.State == InteractionState.Panning)
+            if (_gridInteraction.State == GridInteractionState.Panning)
             {
                 PanCamera(Input.mousePosition);
 
-                if (Input.GetMouseButtonUp(0)) _interaction.SetState(InteractionState.Idle);
+                if (Input.GetMouseButtonUp(0))
+                {
+                    _lastPanPosition = null;
+                    _gridInteraction.SetState(GridInteractionState.Idle);
+                }
             }
         }
 
         private void PanCamera(Vector3 value)
         {
+            if (_lastPanPosition == null)
+                return;
+            
             var eulerAngles = transform.rotation.eulerAngles;
             var radRotation = eulerAngles * (float)Math.PI / 180f;
-
 
             //rewrite while we can resize (no need on device if no rotation enabled)
             var screenVector = new Vector2(Screen.width, Screen.height).normalized;
 
-            var diff = _cam.ScreenToViewportPoint(_lastPanPosition - value) * screenVector *
+            var diff = _cam.ScreenToViewportPoint(_lastPanPosition.Value - value) * screenVector *
                        (2 * _cam.orthographicSize * (1 / screenVector.y));
 
             // this math is a bit flaky, recheck
@@ -112,7 +141,8 @@ namespace View
 
         private void OnDestroy()
         {
-            _interaction.SetState(InteractionState.Idle);
+            _gridInteraction.SetState(GridInteractionState.Idle);
+            _focusOn.Remove(OnFocus);
         }
     }
 }

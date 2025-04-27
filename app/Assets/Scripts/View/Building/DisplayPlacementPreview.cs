@@ -8,7 +8,7 @@ namespace View.Building
     [RequireComponent(typeof(BoxCollider))]
     public class DisplayPlacementPreview : InjectableBehaviour
     {
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
         [Inject] private SettlementModel _settlement;
         [Inject] private ConfigModel _config;
 
@@ -29,17 +29,17 @@ namespace View.Building
             _collider = GetComponent<BoxCollider>();
             _collider.size = new Vector3(_config.Width, 1, _config.Height) * ConfigModel.CellSize;
             _collider.center = _collider.size / 2;
-            _interaction.Updated.Add(OnModeUpdated);
+            _gridInteraction.Updated.Add(OnModeUpdated);
             yield return new WaitForSeconds(1);
         }
 
         private void OnModeUpdated()
         {
-            if (_interaction.SelectedBuildingType.HasValue)
+            if (_gridInteraction.SelectedBuildingType.HasValue)
             {
                 LazyInit();
 
-                _selectedBuildingConfig = _config.Buildings[_interaction.SelectedBuildingType.Value];
+                _selectedBuildingConfig = _config.Buildings[_gridInteraction.SelectedBuildingType.Value];
                 _preview.SetBuildingPrefab(_selectedBuildingConfig);
 
                 if (!_preview.gameObject.activeSelf)
@@ -88,17 +88,17 @@ namespace View.Building
 
         private void Update()
         {
-            if (_interaction.SelectedBuildingType.HasValue)
+            if (_gridInteraction.SelectedBuildingType.HasValue)
             {
                 var mouseRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 
                 if (_selectedBuildingConfig == null)
-                    _selectedBuildingConfig = _config.Buildings[_interaction.SelectedBuildingType.Value];
+                    _selectedBuildingConfig = _config.Buildings[_gridInteraction.SelectedBuildingType.Value];
 
                 var buildingDimensions =
                     new Vector3(_selectedBuildingConfig.width, 0, _selectedBuildingConfig.height);
 
-                if (_interaction.State == InteractionState.Dragging)
+                if (_gridInteraction.State == GridInteractionState.Dragging)
                 {
                     if (!_collider.bounds.IntersectRay(mouseRay, out var distance)) return;
 
@@ -109,7 +109,7 @@ namespace View.Building
                 }
 
                 _preview.transform.localPosition =
-                    (new Vector3(_interaction.CellPosX, 0, _interaction.CellPosZ) + buildingDimensions / 2) *
+                    (new Vector3(_gridInteraction.CellPosX, 0, _gridInteraction.CellPosZ) + buildingDimensions / 2) *
                     ConfigModel.CellSize;
             }
         }
@@ -127,17 +127,17 @@ namespace View.Building
 
         private void ApplyCellPoint(int cellPosX, int cellPosZ, Vector3 buildingDimensions)
         {
-            _interaction.SetPlacementLocation(
+            _gridInteraction.SetPlacementLocation(
                 cellPosX,
                 cellPosZ,
                 _settlement.IsValidLocation(cellPosX, cellPosZ, buildingDimensions));
 
-            var previewMaterial = _interaction.ValidPlacement ? available : blocked;
+            var previewMaterial = _gridInteraction.ValidPlacement ? available : blocked;
 
             if (!_preview.gameObject.activeSelf) //maybe lets add an explicit flag
                 return;
 
-            _preview.SetMaterialOverride(_interaction.ValidPlacement ? cell : blocked);
+            _preview.SetMaterialOverride(_gridInteraction.ValidPlacement ? cell : blocked);
 
             for (var i = 0; i < _cells.GetLength(0); i++)
             for (var j = 0; j < _cells.GetLength(1); j++)
@@ -174,7 +174,7 @@ namespace View.Building
 
         private void OnDestroy()
         {
-            _interaction.Updated.Remove(OnModeUpdated);
+            _gridInteraction.Updated.Remove(OnModeUpdated);
         }
     }
 }

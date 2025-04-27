@@ -11,7 +11,7 @@ namespace View.Exploration
     {
         [Inject] private HeroConnector _connector;
         [Inject] private SmartObjectModel _smartObjects;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         private float _mouseDownTime;
         private EventSystem _eventSystem;
@@ -28,7 +28,7 @@ namespace View.Exploration
 
         private void Update()
         {
-            if (_interaction.State != InteractionState.Idle)
+            if (_gridInteraction.State != GridInteractionState.Idle)
                 return;
 
             if (_eventSystem.IsPointerOverGameObject())

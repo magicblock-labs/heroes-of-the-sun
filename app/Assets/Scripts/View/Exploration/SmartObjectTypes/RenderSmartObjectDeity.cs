@@ -19,7 +19,7 @@ namespace View.Exploration.SmartObjectTypes
         [Inject] private SmartObjectDeityConnector _connector;
         [Inject] private RequestInteractionWithSmartObject _interact;
         [Inject] private DialogInteractionStateModel _dialogInteractionState;
-        [Inject] private InteractionStateModel _interactionState;
+        [Inject] private GridInteractionStateModel _gridInteractionState;
         [Inject] private TokenConnector _token;
 
         private SmartObjectDeity _data;
@@ -43,7 +43,7 @@ namespace View.Exploration.SmartObjectTypes
             if (_connector.EntityPda != value) return;
 
             _dialogInteractionState.SubmitAnswer(0, value);
-            _interactionState.SetState(InteractionState.Dialog);
+            _gridInteractionState.SetState(GridInteractionState.Dialog);
         }
 
         public async Task SetEntity(string value)

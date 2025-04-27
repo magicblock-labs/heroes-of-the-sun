@@ -8,11 +8,11 @@ namespace View.ActionRequest
     {
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private SettlementModel _model;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
 
         public async void Wait()
         {
-            _interaction.LockInteraction();
+            _gridInteraction.LockInteraction();
 
             if (_model.HasData && _model.Get().TimeUnits > 0)
                 await _connector.Wait(1);

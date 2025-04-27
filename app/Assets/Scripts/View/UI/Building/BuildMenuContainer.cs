@@ -6,43 +6,47 @@ namespace View.UI.Building
 {
     public class BuildMenuContainer : InjectableBehaviour
     {
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
+        [Inject] private NavigationContextModel _nav;
 
         [SerializeField] private GameObject cta;
         [SerializeField] private GameObject menu;
 
         private void Start()
         {
-            _interaction.Updated.Add(OnInteractionUpdated);
-            ShowMenu(false);
+            _gridInteraction.Updated.Add(OnInteractionUpdated);
+            _nav.Updated.Add(OnNavigationUpdated);
+            _nav.IsBuildMenuOpen = false;
         }
 
         private void OnInteractionUpdated()
         {
-            if (_interaction.SelectedBuildingType.HasValue)
-                ShowMenu(false);
+            if (_gridInteraction.SelectedBuildingType.HasValue)
+                _nav.IsBuildMenuOpen = false;
+        }
+        
+        private void OnNavigationUpdated()
+        {
+            cta.SetActive(!_nav.IsBuildMenuOpen);
+            menu.SetActive(_nav.IsBuildMenuOpen);
         }
 
         public void OnCloseClick()
         {
-            ShowMenu(false);
+            _nav.IsBuildMenuOpen = false;
         }
 
         public void OnCtaClick()
         {
-            _interaction.FinishPlacement();
-            ShowMenu(true);
-        }
-
-        private void ShowMenu(bool value)
-        {
-            cta.SetActive(!value);
-            menu.SetActive(value);
+            _gridInteraction.FinishPlacement();
+            _nav.IsBuildMenuOpen = true;
         }
 
         private void OnDestroy()
         {
-            _interaction.Updated.Remove(OnInteractionUpdated);
+            _nav.IsBuildMenuOpen = false;
+            _gridInteraction.Updated.Remove(OnInteractionUpdated);
+            _nav.Updated.Add(OnNavigationUpdated);
         }
     }
 }

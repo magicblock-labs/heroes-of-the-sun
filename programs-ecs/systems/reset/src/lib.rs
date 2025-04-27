@@ -34,6 +34,7 @@ pub mod reset {
         ctx.accounts.settlement.faith = config::INITIAL_FAITH;
         ctx.accounts.settlement.last_time_claim = now;
         ctx.accounts.settlement.research = 0;
+        ctx.accounts.settlement.quest_claim_status = 0;
         Ok(ctx.accounts)
     }
 

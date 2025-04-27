@@ -11,7 +11,8 @@ namespace View.UI.Building
     {
         [Inject] private ConfigModel _config;
         [Inject] private SettlementModel _model;
-        [Inject] private InteractionStateModel _interaction;
+        [Inject] private GridInteractionStateModel _gridInteraction;
+        [Inject] private CtaRegister _ctaRegister;
 
         [SerializeField] private BuildingSnapshot snapshot;
         [SerializeField] private Text nameLabel;
@@ -23,7 +24,13 @@ namespace View.UI.Building
         [SerializeField] private Text costStoneLabel;
 
         private Action<BuildingType> _selectedCallback;
-        private BuildingType _type;
+        private BuildingType? _type;
+
+        private void Start()
+        {
+            if (_type.HasValue)
+                _ctaRegister.Add(transform, CtaTag.BuildMenuBuilding, (int?)_type);
+        }
 
         public void SetData(BuildingType value)
         {
@@ -47,7 +54,8 @@ namespace View.UI.Building
 
         public void OnClick()
         {
-            _interaction.StartPlacement(_type);
+            if (_type.HasValue)
+                _gridInteraction.StartPlacement(_type.Value);
         }
     }
 }

@@ -8,22 +8,22 @@ namespace View.UI.Dialogue
 {
     public class DialogueTrigger : InjectableBehaviour
     {
-        [Inject] private InteractionStateModel _interactionState;
+        [Inject] private GridInteractionStateModel _gridInteractionState;
         [Inject] private DialogInteractionStateModel _dialogInteraction;
 
         [SerializeField] private DialogueUI ui;
 
         private void Start()
         {
-            _interactionState.Updated.Add(OnInteractionStateUpdated);
+            _gridInteractionState.Updated.Add(OnInteractionStateUpdated);
             _dialogInteraction.ChatUpdated.Add(OnChatNodeUpdated);
             OnInteractionStateUpdated();
         }
 
         private void OnInteractionStateUpdated()
         {
-            ui.gameObject.SetActive(_interactionState.State == InteractionState.Dialog);
-            if (_interactionState.State != InteractionState.Dialog) return;
+            ui.gameObject.SetActive(_gridInteractionState.State == GridInteractionState.Dialog);
+            if (_gridInteractionState.State != GridInteractionState.Dialog) return;
 
             ui.answerSelected.RemoveAllListeners();
             ui.answerSelected.AddListener(OnAnswerSelected);
@@ -33,7 +33,7 @@ namespace View.UI.Dialogue
 
         private void OnChatNodeUpdated()
         {
-            if (_interactionState.State != InteractionState.Dialog) return;
+            if (_gridInteractionState.State != GridInteractionState.Dialog) return;
             
             var currentChatNode = _dialogInteraction.GetCurrentChat();
             if (currentChatNode == null)
@@ -58,13 +58,13 @@ namespace View.UI.Dialogue
             if (ui != null)
                 ui.answerSelected.RemoveAllListeners();
 
-            if (_interactionState.State == InteractionState.Dialog)
-                _interactionState.SetState(InteractionState.Idle);
+            if (_gridInteractionState.State == GridInteractionState.Dialog)
+                _gridInteractionState.SetState(GridInteractionState.Idle);
         }
 
         private void OnDestroy()
         {
-            _interactionState.Updated.Remove(OnInteractionStateUpdated);
+            _gridInteractionState.Updated.Remove(OnInteractionStateUpdated);
             _dialogInteraction.ChatUpdated.Remove(OnChatNodeUpdated);
         }
     }
