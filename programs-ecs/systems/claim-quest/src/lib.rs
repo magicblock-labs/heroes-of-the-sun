@@ -39,6 +39,8 @@ pub mod claim_quest {
                 quest,
             );
 
+            msg!("progress!: {}", progress);
+
             if (progress < quest.target_value as u32) {
                 return err!(errors::QuestClaimError::TargetNotReached);
             }

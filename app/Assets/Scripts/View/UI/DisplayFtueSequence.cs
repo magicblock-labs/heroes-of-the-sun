@@ -53,7 +53,7 @@ namespace View.UI
                         {
                             blocking = true,
                             promptLocation = Vector2Int.right,
-                            promptText = "Open Build Menu",
+                            promptText = "Open <color=green>Build Menu</color>",
                             cutoutScreenSpace = GetScreenRect(CtaTag.HUDBuildMenu)
                         }
                     });
@@ -152,6 +152,16 @@ namespace View.UI
                     
                     break;
                 case QuestType.Store:
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = false,
+                            promptLocation = Vector2Int.down,
+                            promptText = "If a workers are assigned to a <i>resource collection</i> building,\nthey would collect given resources every <color=green>turn</color>, up to the storage capacity",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.HUDTreasury)
+                        }
+                    });
                     break;
                 case QuestType.Research:
                     _showFtue.Dispatch(new[]
@@ -257,6 +267,16 @@ namespace View.UI
                     });
                     break;
                 case QuestType.Faith:
+                    _showFtue.Dispatch(new[]
+                    {
+                        new FtuePrompt
+                        {
+                            blocking = false,
+                            promptLocation = Vector2Int.left,
+                            promptText = "Your <color=green>Faith</color>\ndepends on food and water stock pile,\nand boosts turns regen and cap",
+                            cutoutScreenSpace = GetScreenRect(CtaTag.HUDFaith)
+                        }
+                    });
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
