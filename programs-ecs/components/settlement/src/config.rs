@@ -217,7 +217,7 @@ pub fn get_research_cost(_research_type: u8, level: u8) -> u16 {
 }
 
 pub fn get_regeneration_rate(research: u32) -> u16 {
-    return 3 + get_research_level(research, ResearchType::EnvironmentRegeneration) as u16;
+    return 10 * (1 + get_research_level(research, ResearchType::EnvironmentRegeneration) as u16);
 }
 
 fn calculate_cost(research: u32, tier: u8, level: u8, level_offset: u8, multiplier: f32) -> u16 {
