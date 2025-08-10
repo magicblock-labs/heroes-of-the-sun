@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Utils.Signal
 {
@@ -82,6 +83,40 @@ namespace Utils.Signal
         public void Dispatch(T1 p1, T2 p2)
         {
             for (var i = 0; i < _callbacks.Count; i++) _callbacks[i].Invoke(p1, p2);
+        }
+
+        // Use this for initialization
+        public void Add(Callback callback)
+        {
+            _callbacks.Add(callback);
+        }
+
+        // Update is called once per frame
+        public void Remove(Callback callback)
+        {
+            _callbacks.Remove(callback);
+        }
+
+        public void Clear()
+        {
+            _callbacks.Clear();
+        }
+    }
+    
+    public class Signal<T1, T2, T3>
+    {
+        public delegate void Callback(T1 p1, T2 p2, T3 p3);
+
+        private readonly List<Callback> _callbacks;
+
+        public Signal()
+        {
+            _callbacks = new List<Callback>();
+        }
+
+        public void Dispatch(T1 p1, T2 p2, T3 p3)
+        {
+            for (var i = 0; i < _callbacks.Count; i++) _callbacks[i].Invoke(p1, p2, p3);
         }
 
         // Use this for initialization

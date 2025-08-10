@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Connectors;
@@ -19,6 +20,8 @@ namespace View.UI.Building
         [Inject] private GridInteractionStateModel _gridInteraction;
         [Inject] private ShowWorkerSelection _showWorkerSelection;
         [Inject] private CtaRegister _ctaRegister;
+        [Inject] private ResourceDiffNotification _resourceDiff;
+        [Inject] private NextTurnNotification _nextTurn;
 
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text levelLabel;
@@ -32,6 +35,7 @@ namespace View.UI.Building
 
         private readonly Dictionary<RectTransform, Vector2> _actionPositions = new();
         private int _index;
+        private Settlement.Types.Building _building;
 
         protected override void Start()
         {
@@ -42,6 +46,8 @@ namespace View.UI.Building
 
             foreach (RectTransform child in controls.transform)
                 _actionPositions[child] = child.anchoredPosition;
+
+            _nextTurn.Add(OnNextTurn);
         }
 
         public void SetData(int index, Settlement.Types.Building value)
@@ -49,34 +55,69 @@ namespace View.UI.Building
             if (value == null)
                 return;
 
-            _ctaRegister.Add(transform, CtaTag.PlacedBuilding, (int?)value.Id);
+
+            _building = value;
+
+            _ctaRegister.Add(transform, CtaTag.PlacedBuilding, (int?)_building.Id);
 
             _index = index;
 
             _actionButtons ??= GetComponentsInChildren<IBuildingActionButton>();
 
             foreach (var btn in _actionButtons)
-                btn.SetData(index, value, HideControls);
+                btn.SetData(index, _building, HideControls);
 
-            nameLabel.text = value.Id.ToString();
+            nameLabel.text = _building.Id.ToString();
             if (levelLabel)
-                levelLabel.text = value.Level.ToString();
+                levelLabel.text = _building.Level.ToString();
 
             var maxDeterioration = _settlement.GetMaxDeterioration();
-            deteriorationStatus.gameObject.SetActive(value.Deterioration > maxDeterioration / 2);
-            deteriorationStatus.SetStatus(value.Deterioration, (int)maxDeterioration);
+            deteriorationStatus.gameObject.SetActive(_building.Deterioration > maxDeterioration / 2);
+            deteriorationStatus.SetStatus(_building.Deterioration, (int)maxDeterioration);
 
-            var needsWorkers = value.TurnsToBuild > 0 ||
-                               value.Id is BuildingType.WoodCollector or BuildingType.FoodCollector
+            var needsWorkers = _building.TurnsToBuild > 0 ||
+                               _building.Id is BuildingType.WoodCollector or BuildingType.FoodCollector
                                    or BuildingType.StoneCollector;
             workerStatus.gameObject.SetActive(needsWorkers);
             if (needsWorkers)
                 workerStatus.SetCount(_settlement.Get().WorkerAssignment.Count(w => w == _index));
 
             extractionStatus.gameObject.SetActive(
-                value.Id is BuildingType.StoneCollector
-                && value.TurnsToBuild == 0);
-            extractionStatus.SetCount(value.Extraction);
+                _building.Id is BuildingType.StoneCollector
+                && _building.TurnsToBuild == 0);
+            extractionStatus.SetCount(_building.Extraction);
+        }
+
+        private void OnNextTurn()
+        {
+            if (_building.TurnsToBuild > 0)
+                return;
+
+            var workers = _settlement.Get().WorkerAssignment.Count(w => w == _index);
+
+            var diff = _building.Id switch
+            {
+                BuildingType.FoodCollector => new ResourceDiff()
+                {
+                    Food = (int)Math.Pow(2, _building.Level) * workers
+                },
+                BuildingType.WoodCollector => new ResourceDiff()
+                {
+                    Wood = (int)Math.Pow(2, _building.Level) * workers
+                },
+                BuildingType.WaterCollector => new ResourceDiff()
+                {
+                    Water = (int)Math.Pow(2, _building.Level) * workers
+                },
+                BuildingType.StoneCollector => new ResourceDiff()
+                {
+                    Stone = Math.Min(_building.Extraction, (int)Math.Pow(2, _building.Level) * workers)
+                },
+                _ => null
+            };
+
+            if (diff != null)
+                _resourceDiff.Dispatch(diff, 0, transform.position + Vector3.up * 3);
         }
 
         private void HideControls()
@@ -97,6 +138,11 @@ namespace View.UI.Building
                 if (value && _actionPositions.TryGetValue(child, out var pos))
                     child.DOAnchorPos(pos, .1f);
             }
+        }
+
+        private void OnDestroy()
+        {
+            _nextTurn.Remove(OnNextTurn);
         }
     }
 }

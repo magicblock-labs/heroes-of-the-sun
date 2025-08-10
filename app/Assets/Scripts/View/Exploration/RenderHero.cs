@@ -17,6 +17,7 @@ namespace View.Exploration
         [Inject] private HeroConnector _connector;
         [Inject] private PlayerSettlementConnector _settlement;
         [Inject] private LootDistributionConnector _lootConnector;
+        [Inject] private ResourceDiffNotification _resourceDiff;
 
         [Inject] private PathfindingModel _pathfinding;
         [Inject] private PlayerHeroModel _playerHero;
@@ -165,11 +166,13 @@ namespace View.Exploration
             _initialised = true;
         }
 
-        private void TryInteractWithMap()
+        private async void TryInteractWithMap()
         {
-            if (_loot.HasLootAt(_position, out var lootIndex))
+            if (_loot.HasLootAt(_position, out var lootIndex)){
 
-                _ = _lootConnector.Claim(lootIndex);
+                await _lootConnector.Claim(lootIndex);
+                _resourceDiff.Dispatch(null, 1, transform.position);
+            }
 
 
             else if (_smartObjects.HasSmartObjectNextTo(_position, out var entity))

@@ -97,7 +97,7 @@ namespace View.UI
 
         public void OpenImage()
         {
-#if UNITY_EDITOR
+#if false// UNITY_EDITOR
 
             var path = EditorUtility.OpenFilePanel("Select PNG Image", "", "png");
 

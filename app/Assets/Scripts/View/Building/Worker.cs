@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Linq;
 using Model;
+using Notifications;
+using Settlement.Types;
 using UnityEngine;
 using UnityEngine.AI;
 using Utils.Injection;
@@ -12,6 +14,8 @@ namespace View.Building
     {
         [Inject] private SettlementModel _model;
         [Inject] private ResourceLocationModel _locations;
+        [Inject] private NextTurnNotification _nextTurn;
+        [Inject] private ResourceDiffNotification _resourceDiff;
 
         private int _index;
 
@@ -27,6 +31,17 @@ namespace View.Building
         {
             _agent = GetComponent<NavMeshAgent>();
             _anim = GetComponent<Animator>();
+
+            _nextTurn.Add(OnNextTurn);
+        }
+
+        private void OnNextTurn()
+        {
+            _resourceDiff.Dispatch(new ResourceDiff
+            {
+                Water = -1,
+                Food = -1,
+            }, 0, transform.position + Vector3.up * 3);
         }
 
 

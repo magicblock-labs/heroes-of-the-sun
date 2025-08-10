@@ -20,6 +20,7 @@ namespace Connectors
     {
         [Inject] private StopFtueSequence _stopFtue;
         [Inject] private TokenConnector _token;
+        [Inject] private NextTurnNotification _nextTurn;
 
         protected override UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
             Dictionary<PublicKey, PublicKey> extraEntities = null,
@@ -37,8 +38,13 @@ namespace Connectors
 
         public async UniTask<bool> Wait(int time)
         {
-            return await ApplySystem(new PublicKey("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4"),
+            var applySystem = await ApplySystem(new PublicKey("9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4"),
                 new { time });
+
+            if (applySystem)
+                _nextTurn.Dispatch();
+            
+            return applySystem;
         }
 
         public async UniTask<bool> AssignWorker(int worker_index, int building_index)

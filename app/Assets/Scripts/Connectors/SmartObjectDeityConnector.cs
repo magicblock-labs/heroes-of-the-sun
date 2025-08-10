@@ -131,7 +131,6 @@ namespace Connectors
             {
                 if (log.Contains("Agent Reply: "))
                 {
-                    Debug.Log(log);
                     var startIndex = log.IndexOf("{");
                     var lastIndexOf = log.LastIndexOf("}");
                     var parsed  = log.Substring(startIndex, lastIndexOf - startIndex + 1);
