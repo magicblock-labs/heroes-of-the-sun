@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Connectors;
 using Model;
+using Smartobjecttokenlauncher.Accounts;
 using Solana.Unity.Wallet;
 using UnityEngine;
 using Utils.Injection;
@@ -34,45 +35,51 @@ namespace View.Exploration
         [SerializeField] private ComponentRenderer[] renderers;
         private GameObject _renderer;
 
+        private const string SmartObjectComponentAddress = nameof(SmartObjectComponentAddress);
 
         public async Task SetDataAddress(string value)
         {
             _connector.SetDataAddress(value);
             var data = await _connector.LoadData();
 
-            var componentFound = await TryInitSmartObject(data.Entity, _tokenLauncher);
+            var cachedComponentAddress = PlayerPrefs.GetString($"{SmartObjectComponentAddress}:{data.Entity}", null);
+            PublicKey componentAddress = null;
+            if (!string.IsNullOrEmpty(cachedComponentAddress))
+                componentAddress = new PublicKey(cachedComponentAddress);
 
-            if (!componentFound)
-                componentFound = await TryInitSmartObject(data.Entity, _deity);
-
-
-            //no match
-            if (!componentFound)
+            else
             {
-                Destroy(gameObject);
-                return;
+                componentAddress = await TryInitSmartObject(data.Entity, _deity);
+
+                if (componentAddress == null)
+                    componentAddress = await TryInitSmartObject(data.Entity, _tokenLauncher);
+
+                //no match
+                if (componentAddress == null)
+                {
+                    Destroy(gameObject);
+                    return;
+                }
             }
 
+            var smartObjectRenderer = renderers.FirstOrDefault(r => r.componentAddress == componentAddress);
+            if (smartObjectRenderer == null)
+                return;
+
+            _renderer = smartObjectRenderer.prefab;
+            Instantiate(_renderer, transform);
 
             OnDataUpdate(data);
-            foreach (var smartObject in gameObject.GetComponentsInChildren<ISmartObject>())
-                await smartObject.SetEntity(data.Entity);
+            await gameObject.GetComponentInChildren<ISmartObject>().SetEntity(data.Entity);
+            PlayerPrefs.SetString($"{SmartObjectComponentAddress}:{data.Entity}", componentAddress);
             await _connector.Subscribe(OnDataUpdate);
         }
 
-        private async Task<bool> TryInitSmartObject<T>(PublicKey entity, BaseComponentConnector<T> connector)
+        private static async Task<PublicKey> TryInitSmartObject<T>(PublicKey entity, BaseComponentConnector<T> connector)
         {
             await connector.SetEntityPda(entity, false);
             var smartObjectData = await connector.LoadData();
-            if (smartObjectData == null)
-                return false;
-            var smartObjectRenderer =
-                renderers.FirstOrDefault(r => r.componentAddress == connector.GetComponentProgramAddress());
-            if (smartObjectRenderer == null)
-                return false;
-            _renderer = smartObjectRenderer.prefab;
-            Instantiate(_renderer, transform);
-            return true;
+            return smartObjectData == null ? null : connector.GetComponentProgramAddress();
         }
 
         private void OnDataUpdate(SmartObjectLocation.Accounts.SmartObjectLocation value)

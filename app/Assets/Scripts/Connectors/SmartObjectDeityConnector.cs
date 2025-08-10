@@ -44,6 +44,8 @@ namespace Connectors
 
         protected override SmartObjectDeity.Accounts.SmartObjectDeity DeserialiseBytes(byte[] value)
         {
+            var encoded = System.Convert.ToBase64String(value);
+            PlayerPrefs.SetString(DataAddress, encoded);
             return SmartObjectDeity.Accounts.SmartObjectDeity.Deserialize(value);
         }
 

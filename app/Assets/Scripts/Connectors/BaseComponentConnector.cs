@@ -57,6 +57,7 @@ namespace Connectors
         protected SubscriptionState _sub;
         private bool _delegated;
         private Action<T> _callback;
+        private const string DataAddressCache = nameof(DataAddressCache);
 
         public abstract PublicKey GetComponentProgramAddress();
 
@@ -222,6 +223,9 @@ namespace Connectors
 
         private async UniTask AcquireComponentDataAddress(bool forceCreateEntity, bool publicComponent = true)
         {
+            if (_dataAddress != null)
+                return;
+
             var walletBase = Web3Utils.SessionToken == null //|| true
                 ? Web3.Wallet
                 : Web3Utils.SessionWallet;
@@ -230,7 +234,9 @@ namespace Connectors
 
             var payer = walletBase.Account;
 
-            if (_dataAddress == null)
+            _dataAddress =
+                PlayerPrefs.GetString($"{DataAddressCache}:{_entityPda}{GetComponentProgramAddress()}", null);
+            if (string.IsNullOrEmpty(_dataAddress))
             {
                 var entityState = await RpcClient.GetAccountInfoAsync(_entityPda, Commitment.Processed);
                 if (entityState.Result.Value == null)
@@ -298,6 +304,7 @@ namespace Connectors
                 }
 
                 _dataAddress = dataAddress;
+                PlayerPrefs.SetString($"{DataAddressCache}:{_entityPda}{GetComponentProgramAddress()}", dataAddress);
             }
         }
 
@@ -450,7 +457,8 @@ namespace Connectors
 
                 if (tx.Result.Meta.Error != null)
                 {
-                    var errorMessage = $"Failed At: {RpcClient.NodeAddress.AbsoluteUri} \n{JsonConvert.SerializeObject(tx.Result.Meta.Error)}";
+                    var errorMessage =
+                        $"Failed At: {RpcClient.NodeAddress.AbsoluteUri} \n{JsonConvert.SerializeObject(tx.Result.Meta.Error)}";
 
                     Debug.LogError(errorMessage);
                     return false;
