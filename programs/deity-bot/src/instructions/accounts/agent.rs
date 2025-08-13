@@ -23,6 +23,6 @@ impl Default for Agent {
 
 impl Agent {
     pub fn seed() -> &'static [u8] {
-        b"hots_agent"
+        b"hots_agent_v5"
     }
 }

@@ -70,7 +70,7 @@ namespace View.Exploration
             if (own)
             {
                 _playerHero.Set(_data);
-                gameObject.AddComponent<PointAndClickMovement>().SetDataAddress(_connector.DataAddress);
+                gameObject.AddComponent<OwnHeroController>().SetDataAddress(_connector.DataAddress);
 
                 backpack.gameObject.SetActive(true);
             }
@@ -159,6 +159,7 @@ namespace View.Exploration
                 _position = new Vector2Int(_data.X, _data.Y);
                 transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
 
+                //move to wonherocontroller?
                 if (_initialised && _data.Owner == _player.DataAddress)
                     TryInteractWithMap();
             }

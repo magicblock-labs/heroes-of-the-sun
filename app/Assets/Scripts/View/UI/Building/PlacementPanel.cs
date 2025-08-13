@@ -1,6 +1,7 @@
 using Connectors;
 using Model;
 using Notifications;
+using UnityEngine;
 using Utils.Injection;
 
 namespace View.UI.Building
@@ -11,6 +12,7 @@ namespace View.UI.Building
         [Inject] private SettlementModel _settlement;
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private ConfigModel _config;
+        [Inject] private ResourceDiffNotification _resourceDiff;
 
         [Inject] private ShowWorkerSelection _showWorkerSelection;
 
@@ -39,6 +41,15 @@ namespace View.UI.Building
                     (byte)_gridInteraction.CellPosZ,
                     (byte)_gridInteraction.SelectedBuildingType,
                     freeWorkerIndex);
+
+                var cost = _settlement.GetConstructionCost(
+                    _config.Buildings[_gridInteraction.SelectedBuildingType.Value].costTier, 0, 1);
+
+                _resourceDiff.Dispatch(new ResourceDiff()
+                {
+                    Wood = -cost.Wood,
+                    Stone = -cost.Stone,
+                }, 0, transform.position + Vector3.up * 3);
 
                 if (freeWorkerIndex == -1)
                     _showWorkerSelection.Dispatch();

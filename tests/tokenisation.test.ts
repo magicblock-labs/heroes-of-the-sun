@@ -19,10 +19,10 @@ describe("Test suite for: tokenized gold source and sink", () => {
     const locationAllocator = new LocationAllocatorWrapper();
 
 
-    it("creates a token", async () => {
-        await world.getWorldPda()
-        // await token.createToken();//
-    });
+    // it("creates a token", async () => {
+    // await world.getWorldPda()
+    // await token.createToken();//
+    // });
 
     // it("Initializes (with a default town hall) if needed", async () => {
     //     await settlement.init(await world.getWorldPda(), 5, 2);

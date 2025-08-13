@@ -17,7 +17,7 @@ namespace View.Exploration
         {
             if (_target == null)
             {
-                var hero = FindFirstObjectByType<PointAndClickMovement>();
+                var hero = FindFirstObjectByType<OwnHeroController>();
                 if (hero != null)
                     _target = hero.transform;
             }

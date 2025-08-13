@@ -1,6 +1,8 @@
 using System;
 using Connectors;
 using Model;
+using Notifications;
+using Settlement.Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
@@ -13,6 +15,7 @@ namespace View.ActionRequest
         [Inject] private PlayerSettlementConnector _connector;
         [Inject] private ConfigModel _config;
         [Inject] private GridInteractionStateModel _gridInteraction;
+        [Inject] private ResourceDiffNotification _resourceDiff;
 
         [SerializeField] private GameObject costWood;
         [SerializeField] private Text costWoodLabel;
@@ -23,6 +26,7 @@ namespace View.ActionRequest
         private int _index;
         private bool _canAfford;
         private Action _callback;
+        private ResourceBalance _cost;
 
         public void SetData(int index, Settlement.Types.Building value, Action callback)
         {
@@ -31,7 +35,7 @@ namespace View.ActionRequest
 
 
             _callback = callback;
-            
+
             _index = index;
 
             gameObject.SetActive(value.Deterioration > 0);
@@ -42,20 +46,20 @@ namespace View.ActionRequest
             var relativeDeterioration = value.Deterioration / _settlement.GetMaxDeterioration();
 
             var treasury = _settlement.Get().Treasury;
-            var cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level + 1,
+            _cost = _settlement.GetConstructionCost(_config.Buildings[value.Id].costTier, value.Level + 1,
                 relativeDeterioration);
 
             _canAfford = true;
 
-            costWood.SetActive(cost.Wood > 0);
-            costWoodLabel.text = cost.Wood.ToString();
-            costWoodLabel.color = cost.Wood <= treasury.Wood ? Color.white : Color.red;
-            _canAfford &= cost.Wood <= treasury.Wood;
+            costWood.SetActive(_cost.Wood > 0);
+            costWoodLabel.text = _cost.Wood.ToString();
+            costWoodLabel.color = _cost.Wood <= treasury.Wood ? Color.white : Color.red;
+            _canAfford &= _cost.Wood <= treasury.Wood;
 
-            costStone.SetActive(cost.Stone > 0);
-            costStoneLabel.text = cost.Stone.ToString();
-            costStoneLabel.color = cost.Stone <= treasury.Stone ? Color.white : Color.red;
-            _canAfford &= cost.Wood <= treasury.Wood;
+            costStone.SetActive(_cost.Stone > 0);
+            costStoneLabel.text = _cost.Stone.ToString();
+            costStoneLabel.color = _cost.Stone <= treasury.Stone ? Color.white : Color.red;
+            _canAfford &= _cost.Stone <= treasury.Stone;
         }
 
         public async void Repair()
@@ -65,7 +69,15 @@ namespace View.ActionRequest
             _gridInteraction.LockInteraction();
 
             if (_canAfford)
+            {
                 await _connector.Repair(_index);
+
+                _resourceDiff.Dispatch(new ResourceDiff()
+                {
+                    Wood = -_cost.Wood,
+                    Stone = -_cost.Stone,
+                }, 0, transform.position + Vector3.up * 3);
+            }
         }
     }
 }

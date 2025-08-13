@@ -25,6 +25,9 @@ namespace Connectors
     {
         public string reply;
         public string[] options;
+        public int trust;
+        public int happiness;
+        public int amount;
     }
     
     
@@ -64,7 +67,7 @@ namespace Connectors
             var streamingClient = await GetStreamingClient();
             PublicKey.TryFindProgramAddress(new[]
             {
-                Encoding.UTF8.GetBytes("hots_agent")
+                Encoding.UTF8.GetBytes("hots_agent_v5")
                 
             }, AgentProgramId, out var agentAddress, out _);
 
