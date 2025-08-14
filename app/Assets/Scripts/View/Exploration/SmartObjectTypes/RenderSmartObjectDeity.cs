@@ -6,6 +6,7 @@ using Hero.Program;
 using Model;
 using Notifications;
 using Solana.Unity.Wallet;
+using UnityEngine;
 using Utils;
 using Utils.Injection;
 using World.Program;
@@ -56,6 +57,9 @@ namespace View.Exploration.SmartObjectTypes
                 return;
             }
 
+            PlayerPrefs.SetString($"{RenderSmartObject.CachePrefix}:{value}",
+                _connector.GetComponentProgramAddress());
+            
             OnDataUpdate(smartObjectDeity);
             await _connector.Subscribe(OnDataUpdate);
         }

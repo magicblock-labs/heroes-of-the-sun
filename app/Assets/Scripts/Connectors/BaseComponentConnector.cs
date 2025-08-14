@@ -33,8 +33,8 @@ namespace Connectors
             : Web3.Wallet;
 
         protected IRpcClient RpcClient => _delegated
-            ? Web3Utils.EphemeralWallet.ActiveRpcClient
-            : Web3.Wallet.ActiveRpcClient;
+            ? Web3Utils.EphemeralWallet?.ActiveRpcClient
+            : Web3.Wallet?.ActiveRpcClient;
 
         private static readonly PublicKey DelegationProgram = new("DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh");
 

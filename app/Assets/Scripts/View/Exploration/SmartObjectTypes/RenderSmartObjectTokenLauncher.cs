@@ -125,8 +125,11 @@ namespace View.Exploration.SmartObjectTypes
                 var mintAccount = await Web3.Rpc.GetAccountInfoAsync(_data.Mint, Commitment.Processed);
                 var mintData = mintAccount.Result?.Value?.Data[0];
 
-                if (mintData == null)
+                if (mintData == null){
+                    if (gameObject)
+                        Destroy(gameObject);
                     return;
+                }
 
                 var mintBytes = Convert.FromBase64String(mintData);
                 var mint = TokenMint.Deserialize(mintBytes);
@@ -135,6 +138,9 @@ namespace View.Exploration.SmartObjectTypes
                 var supply = mint.Supply;
                 var price = TokenConnector.CalculateTokenPrice(supply);
                 Debug.Log($"[TokenLauncher] Current token price (bonding curve): {price}");
+                
+                PlayerPrefs.SetString($"{RenderSmartObject.CachePrefix}:{_connector.EntityPda}",
+                    _connector.GetComponentProgramAddress());
 
                 tokenInfo.gameObject.SetActive(true);
                 tokenInfo.SetData(metadata, _data.Recipe, price);

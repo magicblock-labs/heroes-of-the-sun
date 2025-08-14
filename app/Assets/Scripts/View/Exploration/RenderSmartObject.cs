@@ -33,53 +33,38 @@ namespace View.Exploration
         [Inject] private SmartObjectTokenLauncherConnector _tokenLauncher;
 
         [SerializeField] private ComponentRenderer[] renderers;
-        private GameObject _renderer;
 
-        private const string SmartObjectComponentAddress = nameof(SmartObjectComponentAddress);
+        public const string CachePrefix = nameof(CachePrefix);
 
         public async Task SetDataAddress(string value)
         {
             _connector.SetDataAddress(value);
             var data = await _connector.LoadData();
 
-            var cachedComponentAddress = PlayerPrefs.GetString($"{SmartObjectComponentAddress}:{data.Entity}", null);
-            PublicKey componentAddress = null;
-            if (!string.IsNullOrEmpty(cachedComponentAddress))
-                componentAddress = new PublicKey(cachedComponentAddress);
+            var cachedComponentAddress = PlayerPrefs.GetString($"{CachePrefix}:{data.Entity}", null);
+            if (!string.IsNullOrEmpty(cachedComponentAddress)){
+                var componentAddress = new PublicKey(cachedComponentAddress);
+                var smartObjectRenderer = renderers.FirstOrDefault(r => r.componentAddress == componentAddress);
+                if (smartObjectRenderer == null)
+                    return;
+
+                Instantiate(smartObjectRenderer.prefab, transform);
+            }
 
             else
             {
-                componentAddress = await TryInitSmartObject(data.Entity, _deity);
-
-                if (componentAddress == null)
-                    componentAddress = await TryInitSmartObject(data.Entity, _tokenLauncher);
-
-                //no match
-                if (componentAddress == null)
+                foreach (var smartObjectRenderer in renderers)
                 {
-                    Destroy(gameObject);
-                    return;
+                    Instantiate(smartObjectRenderer.prefab, transform);
                 }
             }
 
-            var smartObjectRenderer = renderers.FirstOrDefault(r => r.componentAddress == componentAddress);
-            if (smartObjectRenderer == null)
-                return;
-
-            _renderer = smartObjectRenderer.prefab;
-            Instantiate(_renderer, transform);
+           
 
             OnDataUpdate(data);
-            await gameObject.GetComponentInChildren<ISmartObject>().SetEntity(data.Entity);
-            PlayerPrefs.SetString($"{SmartObjectComponentAddress}:{data.Entity}", componentAddress);
+            foreach (var smartObjectInstance in gameObject.GetComponentsInChildren<ISmartObject>())
+                await smartObjectInstance.SetEntity(data.Entity);
             await _connector.Subscribe(OnDataUpdate);
-        }
-
-        private static async Task<PublicKey> TryInitSmartObject<T>(PublicKey entity, BaseComponentConnector<T> connector)
-        {
-            await connector.SetEntityPda(entity, false);
-            var smartObjectData = await connector.LoadData();
-            return smartObjectData == null ? null : connector.GetComponentProgramAddress();
         }
 
         private void OnDataUpdate(SmartObjectLocation.Accounts.SmartObjectLocation value)
@@ -106,7 +91,8 @@ namespace View.Exploration
 
         public void UpdateData()
         {
-            _renderer.GetComponent<ISmartObject>().UpdateData();
+            foreach (var smartObjectInstance in gameObject.GetComponentsInChildren<ISmartObject>())
+                smartObjectInstance.UpdateData();
         }
     }
 }
