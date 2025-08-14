@@ -17,10 +17,9 @@ public class DisplayResourceDiffs : InjectableBehaviour
         _camera = Camera.main;
     }
 
-    private void OnResourceDiff(ResourceDiff resources, float gold, Vector3 pos)
+    private void OnResourceDiff(ResourceDiff resources, float gold, Transform anchor)
     {
-        var screenPos = _camera.WorldToScreenPoint(pos);
-        Instantiate(prefab, transform).SetData(resources, gold, screenPos);
+        Instantiate(prefab, transform).SetData(resources, gold, anchor);
     }
 
     void OnDestroy()

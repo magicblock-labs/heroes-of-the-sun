@@ -41,7 +41,7 @@ namespace View.Building
             {
                 Water = -1,
                 Food = -1,
-            }, 0, transform.position + Vector3.up * 3);
+            }, 0, transform);
         }
 
 

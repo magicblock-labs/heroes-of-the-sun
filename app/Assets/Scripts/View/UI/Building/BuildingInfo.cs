@@ -22,6 +22,7 @@ namespace View.UI.Building
         [Inject] private CtaRegister _ctaRegister;
         [Inject] private ResourceDiffNotification _resourceDiff;
         [Inject] private NextTurnNotification _nextTurn;
+        [Inject] private ConfigModel _config;
 
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text levelLabel;
@@ -54,7 +55,6 @@ namespace View.UI.Building
         {
             if (value == null)
                 return;
-
 
             _building = value;
 
@@ -107,7 +107,7 @@ namespace View.UI.Building
                 },
                 BuildingType.WaterCollector => new ResourceDiff()
                 {
-                    Water = (int)Math.Pow(2, _building.Level) * workers
+                    Water = (int)Math.Pow(2, _building.Level)
                 },
                 BuildingType.StoneCollector => new ResourceDiff()
                 {
@@ -117,7 +117,7 @@ namespace View.UI.Building
             };
 
             if (diff != null)
-                _resourceDiff.Dispatch(diff, 0, transform.position + Vector3.up * 3);
+                _resourceDiff.Dispatch(diff, 0, worldAnchor);
         }
 
         private void HideControls()

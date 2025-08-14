@@ -172,7 +172,7 @@ namespace View.Exploration
             if (_loot.HasLootAt(_position, out var lootIndex)){
 
                 await _lootConnector.Claim(lootIndex);
-                _resourceDiff.Dispatch(null, 1, transform.position);
+                _resourceDiff.Dispatch(null, 1, transform);
             }
 
 

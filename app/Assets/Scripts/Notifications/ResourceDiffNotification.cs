@@ -14,7 +14,7 @@ namespace Notifications
     }
     
     [Singleton]
-    public class ResourceDiffNotification:Signal<ResourceDiff, float, Vector3>
+    public class ResourceDiffNotification:Signal<ResourceDiff, float, Transform>
     {
         
     }

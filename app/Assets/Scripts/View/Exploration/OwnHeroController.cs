@@ -29,7 +29,7 @@ namespace View.Exploration
         private void OnChatNodeUpdated()
         {
             if (_dialogInteraction.GetCurrentChat().amount > 0)
-                _resourceDiff.Dispatch(null, _dialogInteraction.GetCurrentChat().amount, transform.position);
+                _resourceDiff.Dispatch(null, _dialogInteraction.GetCurrentChat().amount, transform);
         }
 
         private bool IsPointerOverUI()

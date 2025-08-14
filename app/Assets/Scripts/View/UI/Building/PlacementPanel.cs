@@ -35,21 +35,21 @@ namespace View.UI.Building
 
                 if (freeWorkerIndex == -1)
                     _gridInteraction.SelectedBuildingIndex = _settlement.Get().Buildings.Length;
-
-                await _connector.Build(
-                    (byte)_gridInteraction.CellPosX,
-                    (byte)_gridInteraction.CellPosZ,
-                    (byte)_gridInteraction.SelectedBuildingType,
-                    freeWorkerIndex);
-
+                
                 var cost = _settlement.GetConstructionCost(
-                    _config.Buildings[_gridInteraction.SelectedBuildingType.Value].costTier, 0, 1);
+                    _config.Buildings[_gridInteraction.SelectedBuildingType.Value].costTier, 1, 1);
 
                 _resourceDiff.Dispatch(new ResourceDiff()
                 {
                     Wood = -cost.Wood,
                     Stone = -cost.Stone,
-                }, 0, transform.position + Vector3.up * 3);
+                }, 0, worldAnchor);
+                
+                await _connector.Build(
+                    (byte)_gridInteraction.CellPosX,
+                    (byte)_gridInteraction.CellPosZ,
+                    (byte)_gridInteraction.SelectedBuildingType,
+                    freeWorkerIndex);
 
                 if (freeWorkerIndex == -1)
                     _showWorkerSelection.Dispatch();

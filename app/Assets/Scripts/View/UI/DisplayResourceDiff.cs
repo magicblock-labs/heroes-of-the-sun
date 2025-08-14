@@ -4,8 +4,9 @@ using Settlement.Types;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using View.UI.Building;
 
-public class DisplayResourceDiff : MonoBehaviour
+public class DisplayResourceDiff : AnchoredUIPanel
 {
     [SerializeField] private GameObject goldCointainer;
     [SerializeField] private Text goldLabel;
@@ -21,10 +22,12 @@ public class DisplayResourceDiff : MonoBehaviour
 
     [SerializeField] private GameObject stoneIcon;
     [SerializeField] private Text stoneLabel;
-    private RectTransform _rect;
+    [SerializeField] private RectTransform rect;
 
-    public void SetData(ResourceDiff resource, float gold, Vector3 pos)
+    public void SetData(ResourceDiff resource, float gold, Transform anchor)
     {
+        worldAnchor = anchor;
+
         goldCointainer.SetActive(gold != 0);
         goldLabel.text = $"{gold:F2}";
         goldLabel.color = gold > 0 ? Color.green : Color.red;
@@ -48,12 +51,7 @@ public class DisplayResourceDiff : MonoBehaviour
             stoneLabel.color = resource.Stone > 0 ? Color.green : Color.red;
         }
 
-        if (!_rect)
-            _rect = GetComponent<RectTransform>();
-
-        _rect.position = pos;
-        _rect.gameObject.SetActive(true);
-        _rect.DOAnchorPosY(_rect.anchoredPosition.y + 30, 1).OnComplete(() => { Destroy(gameObject); }
-        );
+        rect.anchoredPosition = Vector3.up * 50;
+        rect.DOAnchorPosY(rect.anchoredPosition.y + 30, 1).OnComplete(() => { Destroy(gameObject); });
     }
 }

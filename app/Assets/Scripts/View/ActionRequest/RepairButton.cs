@@ -6,6 +6,7 @@ using Settlement.Types;
 using UnityEngine;
 using UnityEngine.UI;
 using Utils.Injection;
+using View.UI.Building;
 
 namespace View.ActionRequest
 {
@@ -64,20 +65,18 @@ namespace View.ActionRequest
 
         public async void Repair()
         {
-            _callback?.Invoke();
+            if (!_canAfford) return;
 
+            _callback?.Invoke();
             _gridInteraction.LockInteraction();
 
-            if (_canAfford)
+            _resourceDiff.Dispatch(new ResourceDiff()
             {
-                await _connector.Repair(_index);
-
-                _resourceDiff.Dispatch(new ResourceDiff()
-                {
-                    Wood = -_cost.Wood,
-                    Stone = -_cost.Stone,
-                }, 0, transform.position + Vector3.up * 3);
-            }
+                Wood = -_cost.Wood,
+                Stone = -_cost.Stone,
+            }, 0, transform.GetComponentInParent<AnchoredUIPanel>().worldAnchor);
+                
+            await _connector.Repair(_index);
         }
     }
 }
