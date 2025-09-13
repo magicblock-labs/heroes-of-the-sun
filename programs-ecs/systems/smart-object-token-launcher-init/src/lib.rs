@@ -21,6 +21,12 @@ pub mod smart_object_token_launcher_init {
         ctx: Context<Components>,
         args: SmartObjectTokenLauncherInitArgs,
     ) -> Result<Components> {
+        let launcher = &mut ctx.accounts.smart_object_token_launcher;
+
+        if launcher.mint != Pubkey::default() {
+            return err!(errors::SmartObjectTokenLauncherInitError::AlreadyInitialized);
+        }
+
         msg!("Creating metadata account");
 
         // Extract and clone all necessary accounts upfront
@@ -131,12 +137,6 @@ pub mod smart_object_token_launcher_init {
             AuthorityType::MintTokens,
             Some(interaction_pda), // the PDA derived with ProgramB::id()
         )?;
-
-        let launcher = &mut ctx.accounts.smart_object_token_launcher;
-
-        if launcher.mint != Pubkey::default() {
-            return err!(errors::SmartObjectTokenLauncherInitError::AlreadyInitialized);
-        }
 
         launcher.mint = mint_account_key;
         msg!("mint_account_key {}", mint_account_key);

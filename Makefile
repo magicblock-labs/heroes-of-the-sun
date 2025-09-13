@@ -54,4 +54,26 @@ idl:
 	-exec bolt idl init -f target/idl/wait.json 9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4 --provider.cluster d
 	-exec bolt idl init -f target/idl/move_hero.json 6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv --provider.cluster d
 	-exec bolt idl init -f target/idl/smartobjecttokenlauncher.json 8va4yKEBACkT49C9wo94gS8ZaTdUrq2ipLgZvSNxWbd3 --provider.cluster d
-	
+
+approve:
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 7nsn4z8U1nVCVHud9CLmYLy5ZHK2bSMge6u7YgmssdaA --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4 --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL Csna3V2jUMdQEQKUCxLsQEnYThAGPSWcPCxW9vea1S8d --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 76wsz7SjNtvoFK8aUvojEyfjep5pMSaHQihGVxcjc1EA --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 97qK4zBtZbSGT1mSw5mn12hfHgz4jV4C7cLmwSzH2eua --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 64Uk4oF6mNyviUdK2xHXE3VMCtbCMDgRr1DMJk777DJZ --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 2QPK685TLL7jUG4RYuWXZjv3gw88kUPYw7Aye63cTTjB --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL C2H1sb7ZVpgEZFWqXujRK3rx5C2543GNN251wmgfbhUH --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 6JwZJNAtkciXVGenFSoa99VBNcxyb2W8mvzcMK1vTWKs --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 3VEXJoAZkYxDXigSWso8FnJY8z6C6inpPxU798vqc9um --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2 --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL BExuAEwcKxKeqHSN8C1WetUAd6Tm71cZEiP8EBSrH55T --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL fkiWK1Wn6ouGcHb3icX4XGKynef5MpsTQ478ZMdgB1g --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL DUW1KczxcpeTEY7j9nkvcuAdWGNWoadTeDBKN5Z9xhst --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL 5xPJt6GDcmGphNAs6qU3hWAvzLwXuSqhTco6RtoAR9aY --provider.cluster d
+	-exec bolt approve-system H4it5GRk6S2f7sZ9eDm178QhAoFiTby4AzMFBvG5quYL AdrPpoYr67ZcDZsQxsPgeosE3sQbZxercbUn8i1dcvap --provider.cluster d

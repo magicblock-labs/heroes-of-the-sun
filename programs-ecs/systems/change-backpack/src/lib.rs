@@ -19,6 +19,8 @@ pub mod change_backpack {
             return err!(errors::BackpackError::OwnerMismatch);
         }
 
+        //todo: tbc do we want to be near settlement for exchange?
+
         //check positive balance
 
         if args.food < 0 {

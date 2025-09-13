@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using Connectors;
@@ -39,9 +40,7 @@ namespace Utils
     public class Bootstrap : InjectableBehaviour
     {
         private const string PwdPrefKey = nameof(PwdPrefKey);
-        public const string SelectedWalletTypeKey = nameof(SelectedWalletTypeKey);
         [SerializeField] private TMP_Text label;
-        [SerializeField] private GameObject loginSelector;
         [SerializeField] private GameObject loaderContainer;
         [SerializeField] private Image loader;
         [SerializeField] private Graphic[] final;
@@ -59,68 +58,76 @@ namespace Utils
         private float _progress;
         private PublicKey _sessionToken;
 
+        private CancellationTokenSource _initCts;
+        private bool _signedIn;
 
-        private IEnumerator Start()
+
+        private void OnEnable()
         {
-            loginSelector.SetActive(false);
-            loaderContainer.SetActive(false);
-            yield return null;
-
-            label.text = "Sign In..";
-
-            _ = InitAsync();
+            ResetVisuals();
+            RestartInitIfNotSignedIn();
         }
 
-        async Task InitAsync()
+        private void OnDisable()
         {
-            await InitialiseAnalytics();
+            CleanupBeforeRestart();
+        }
 
-#if UNITY_EDITOR
-            var type = WalletType.InGame;
-#else
-            var type = WalletType.Adapter;
-#endif
-            switch (type)
+        private void RestartInitIfNotSignedIn()
+        {
+            if (_signedIn) return;
+            _initCts = new CancellationTokenSource();
+            _ = InitAsync(_initCts.Token);
+        }
+
+        private void CleanupBeforeRestart()
+        {
+            _initCts?.Cancel();
+            _initCts?.Dispose();
+            _initCts = null;
+
+            Web3.OnLogin -= HandleSignIn;
+
+            StopAllCoroutines();
+            ResetVisuals();
+        }
+
+        private void ResetVisuals()
+        {
+            _progress = 0f;
+            if (loader != null) loader.fillAmount = 0f;
+            if (loaderContainer != null) loaderContainer.SetActive(false);
+            if (label != null) label.text = "Sign In..";
+            if (final != null)
             {
-                case WalletType.Adapter:
-                    LoginWalletAdapter();
-                    break;
-                case WalletType.Web3Auth:
-                    LoginWeb3Auth();
-                    break;
-                case WalletType.InGame:
-                    // ReSharper disable once MethodHasAsyncOverload
-                    //there is no async overload lol
-
-                    LoginInGameWallet();
-                    break;
-
-                case WalletType.None:
-                default:
-                    loginSelector.SetActive(true);
-                    break;
+                foreach (var g in final)
+                    if (g != null)
+                        g.color = new Color(1, 1, 1, 0f);
             }
         }
 
-        public void LoginWalletAdapter()
+        async Task InitAsync(CancellationToken ct)
         {
-            PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Adapter);
-            Web3.OnLogin += HandleSignIn;
-            _ = Web3.Instance.LoginWalletAdapter();
-        }
+            if (_signedIn || ct.IsCancellationRequested) return;
 
-        public void LoginWeb3Auth()
-        {
-            PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.Web3Auth);
-            Web3.OnLogin += HandleSignIn;
-            _ = Web3.Instance.LoginWeb3Auth(Provider.GOOGLE);
-        }
+            try
+            {
+                await InitialiseAnalytics();
+                if (_signedIn || ct.IsCancellationRequested) return;
 
-        public void LoginInGameWallet()
-        {
-            PlayerPrefs.SetInt(SelectedWalletTypeKey, (int)WalletType.InGame);
-            Web3.OnLogin += HandleSignIn;
-            _ = LoginInGameWalletAsync();
+                Web3.OnLogin += HandleSignIn;
+
+#if UNITY_EDITOR
+                _ = LoginInGameWalletAsync();
+#else
+                _ = Web3.Instance.LoginWalletAdapter();
+#endif
+            }
+            finally
+            {
+                if (ct.IsCancellationRequested)
+                    Web3.OnLogin -= HandleSignIn;
+            }
         }
 
         public async Task LoginInGameWalletAsync()
@@ -183,12 +190,24 @@ namespace Utils
 
         private async void HandleSignIn(Account account)
         {
+            if (_signedIn) return;
+            _signedIn = true;
+
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
 
             Web3.OnLogin -= HandleSignIn;
 
-            Destroy(loginSelector);
+            try
+            {
+                _initCts?.Cancel();
+                _initCts?.Dispose();
+                _initCts = null;
+            }
+            catch
+            {
+            }
+
             loaderContainer.SetActive(true);
 
             AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
@@ -198,7 +217,7 @@ namespace Utils
 
             Debug.Log("Initialize Session..");
             await CreateNewSession();
-            
+
             _progress = .1f;
 
             var accountBump = PlayerPrefs.GetInt("ACC_BUMP", 0);
@@ -215,8 +234,7 @@ namespace Utils
                 label.text = $"Fetching new location for Settlements.. ";
                 //otherwise - get state of allocator
                 await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
-
-
+                
                 _progress = .3f;
 
                 label.text = $"Creating new Settlement...";
@@ -245,21 +263,19 @@ namespace Utils
             _progress = .5f;
 
             label.text = $"Loading Settlement Data...";
-            //todo make connectors subscribe and dont keep bootstrap alive
+            //todo make connectors subscribe and don't keep bootstrap alive
             _settlementModel.Set(await _settlement.LoadData());
 
             if (await _settlement.Delegate())
                 await _settlement.CloneToRollup();
-
-
+            
             _progress = .6f;
 
             //load loot
             label.text = $"Loading Loot Data...";
             await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
             _lootModel.Set(await _loot.LoadData());
-
-
+            
             _progress = .7f;
 
             await _loot.Subscribe(_lootModel.Set);
@@ -352,7 +368,7 @@ namespace Utils
             return sessionToken;
         }
 
-        private static bool IsSessionValid(long buffer = 60 * 60) //make sure its valid for at least 1h ahead
+        private static bool IsSessionValid(long buffer = 60 * 60) //make sure it's valid for at least 1h ahead
         {
             return Web3Utils.SessionValidUntil > DateTimeOffset.UtcNow.ToUnixTimeSeconds() + buffer;
         }
