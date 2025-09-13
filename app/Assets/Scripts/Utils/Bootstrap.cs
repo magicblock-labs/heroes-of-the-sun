@@ -44,6 +44,7 @@ namespace Utils
         [SerializeField] private GameObject loaderContainer;
         [SerializeField] private Image loader;
         [SerializeField] private Graphic[] final;
+        [SerializeField] private GameObject disclaimerPanel;
 
         [Inject] private PlayerConnector _player;
         [Inject] private TokenConnector _token;
@@ -59,17 +60,24 @@ namespace Utils
         private PublicKey _sessionToken;
 
         private CancellationTokenSource _initCts;
+        private CancellationTokenSource _lifecycleCts;
         private bool _signedIn;
+        private bool _disclaimerAccepted;
 
 
         private void OnEnable()
         {
+            _lifecycleCts = new CancellationTokenSource();
             ResetVisuals();
             RestartInitIfNotSignedIn();
         }
 
         private void OnDisable()
         {
+            _lifecycleCts?.Cancel();
+            _lifecycleCts?.Dispose();
+            _lifecycleCts = null;
+
             CleanupBeforeRestart();
         }
 
@@ -94,6 +102,8 @@ namespace Utils
 
         private void ResetVisuals()
         {
+            if (disclaimerPanel != null) disclaimerPanel.SetActive(false);
+            
             _progress = 0f;
             if (loader != null) loader.fillAmount = 0f;
             if (loaderContainer != null) loaderContainer.SetActive(false);
@@ -373,10 +383,27 @@ namespace Utils
             return Web3Utils.SessionValidUntil > DateTimeOffset.UtcNow.ToUnixTimeSeconds() + buffer;
         }
 
+        public void DisclaimerAccept()
+        {
+            _disclaimerAccepted = true;
+            if (disclaimerPanel != null) disclaimerPanel.SetActive(false);
+        }
+        
+        public void DisclaimerExit()
+        {
+            Application.Quit();
+        }
+        
         private async Task CreateNewSession()
         {
             if (await UpdateSessionValid())
                 return;
+
+            if (!_disclaimerAccepted && disclaimerPanel != null)
+            {
+                disclaimerPanel.SetActive(true);
+                await WaitForDisclaimerAccepted(_lifecycleCts != null ? _lifecycleCts.Token : CancellationToken.None);
+            }
 
             if (Web3Utils.SessionToken != null)
                 await Web3Utils.SessionWallet.CloseSession();
@@ -388,7 +415,7 @@ namespace Utils
                 RecentBlockHash = await Web3.BlockHash(Commitment.Confirmed, false)
             };
 
-            var sessionIx = Web3Utils.SessionWallet.CreateSessionIX(true, GetSessionKeysEndTime(), 1000000000);
+            var sessionIx = Web3Utils.SessionWallet.CreateSessionIX(true, GetSessionKeysEndTime(), 100000000);
             transaction.Add(sessionIx);
             transaction.PartialSign(new[] { Web3.Account, Web3Utils.SessionWallet.Account });
 
@@ -403,6 +430,14 @@ namespace Utils
         private long GetSessionKeysEndTime()
         {
             return DateTimeOffset.UtcNow.AddDays(6).ToUnixTimeSeconds();
+        }
+
+        private async Task WaitForDisclaimerAccepted(CancellationToken ct)
+        {
+            while (!_disclaimerAccepted && (ct == CancellationToken.None || !ct.IsCancellationRequested))
+            {
+                await Task.Yield();
+            }
         }
     }
 }
