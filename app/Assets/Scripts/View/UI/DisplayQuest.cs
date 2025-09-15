@@ -74,7 +74,7 @@ public class DisplayQuest : InjectableBehaviour
         progressFill.fillAmount = clampedProgress / data.targetValue;
         progressLabel.text = $"{progress}/{data.targetValue}";
 
-        claimButton.interactable = true;//progress >= data.targetValue;
+        claimButton.interactable = progress >= data.targetValue;
         claimText.text = $"Claim x{data.rewardValue}";
         claimResourceIcon.sprite = resourceIcons[data.rewardType % 4];
 
@@ -88,7 +88,7 @@ public class DisplayQuest : InjectableBehaviour
 
     public void OnClaimClick()
     {
-        // _ = _connector.ClaimQuest(_data.id);
+        _ = _connector.ClaimQuest(_data.id);
         var diffValue = new ResourceDiff();
 
         switch (_data.rewardType)

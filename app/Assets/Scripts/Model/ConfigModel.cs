@@ -38,6 +38,7 @@ namespace Model
         public const int STONE_STORAGE_PER_LEVEL = 15;
         public const int GOLD_STORAGE_PER_LEVEL = 5;
 
+        
 
         public const float STORAGE_CAPACITY_RESEARCH_MULTIPLIER = 0.1f;
 
@@ -203,6 +204,14 @@ namespace Model
         public int Height => _buildConfig.height;
         public Dictionary<BuildingType, BuildingConfig> Buildings => _buildConfig.buildings;
 
+        public static StorageCapacity InitialTreasury = new()
+        {
+            Food = 20,
+            Water = 20,
+            Wood = 40,
+            Stone = 10,
+        };
+
         public static Vector3 GetWorldCellPosition(int x, int y)
         {
             return new Vector3(
@@ -233,7 +242,7 @@ namespace Model
             {
                 id = 0,
                 type = QuestType.Build,
-                targetType = (int)BuildingType.FoodStorage,
+                targetType = (int)BuildingType.WaterCollector,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 10,
                 dependsOn = null // No dependencies (starting quest)
@@ -283,7 +292,7 @@ namespace Model
                 targetValue = 2,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 100,
-                dependsOn = null // Starting upgrade quest
+                dependsOn = 1 // Starting upgrade quest
             },
             new()
             {

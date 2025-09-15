@@ -34,9 +34,9 @@ pub const INITIAL_FAITH: u8 = 50;
 pub const CHUNK_SIZE: u8 = 24;
 
 pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
-    water: 40,
-    food: 80,
-    wood: 200,
+    water: 20,
+    food: 20,
+    wood: 40,
     stone: 10,
 };
 
