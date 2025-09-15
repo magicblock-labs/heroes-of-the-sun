@@ -37,6 +37,7 @@ public class DisplayQuest : InjectableBehaviour
     [Inject] PlayerSettlementConnector _connector;
 
     [Inject] StartFtueSequence _startFtueSequence;
+    [Inject] ResourceDiffNotification _resourceDiff;
 
 
     [SerializeField] private Image typeIcon;
@@ -51,6 +52,7 @@ public class DisplayQuest : InjectableBehaviour
     [SerializeField] private Text claimText;
     [SerializeField] private Image claimResourceIcon;
     [SerializeField] private Sprite[] resourceIcons;
+    [SerializeField] private Transform rewardAnchor;
 
     private QuestData _data;
 
@@ -72,7 +74,7 @@ public class DisplayQuest : InjectableBehaviour
         progressFill.fillAmount = clampedProgress / data.targetValue;
         progressLabel.text = $"{progress}/{data.targetValue}";
 
-        claimButton.interactable = progress >= data.targetValue;
+        claimButton.interactable = true;//progress >= data.targetValue;
         claimText.text = $"Claim x{data.rewardValue}";
         claimResourceIcon.sprite = resourceIcons[data.rewardType % 4];
 
@@ -86,6 +88,25 @@ public class DisplayQuest : InjectableBehaviour
 
     public void OnClaimClick()
     {
-        _ = _connector.ClaimQuest(_data.id);
+        // _ = _connector.ClaimQuest(_data.id);
+        var diffValue = new ResourceDiff();
+
+        switch (_data.rewardType)
+        {
+            case (int)Resource.Food:
+                diffValue.Food += _data.rewardValue;
+                break;
+            case (int)Resource.Wood:
+                diffValue.Wood += _data.rewardValue;
+                break;
+            case (int)Resource.Water:
+                diffValue.Water += _data.rewardValue;
+                break;
+            case (int)Resource.Stone:
+                diffValue.Stone += _data.rewardValue;
+                break;
+        }
+
+        _resourceDiff.Dispatch(diffValue, 0, rewardAnchor);
     }
 }

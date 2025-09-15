@@ -7,7 +7,19 @@ namespace View.UI.Building
     public abstract class AnchoredUIPanel : InjectableBehaviour
     {
         [SerializeField] public Transform worldAnchor;
+
         private Camera _camera;
+
+        protected Camera Camera
+        {
+            get
+            {
+                if (_camera == null)
+                    _camera = Camera.main;
+
+                return _camera;
+            }
+        }
 
         protected virtual void Start()
         {
@@ -23,11 +35,8 @@ namespace View.UI.Building
                 parent = transform.parent;
             }
 
-            if (_camera == null)
-                _camera = Camera.main;
-
             if (canvas != null)
-                canvas.worldCamera = _camera;
+                canvas.worldCamera = Camera;
         }
 
         void OnEnable()
@@ -40,13 +49,18 @@ namespace View.UI.Building
             RenderPipelineManager.beginCameraRendering -= OnBeginCameraRendering;
         }
 
-        private void OnBeginCameraRendering(ScriptableRenderContext context, Camera camera)
+        private void OnBeginCameraRendering(ScriptableRenderContext context, Camera _)
         {
             if (worldAnchor == null)
                 return;
 
-            transform.position = worldAnchor.position + _camera.transform.forward * -10;
-            transform.localScale = Vector3.one * 25f / _camera.orthographicSize;
+            ApplyPos(worldAnchor.position);
+        }
+
+        protected void ApplyPos(Vector3 value)
+        {
+            transform.position = value + Camera.transform.forward * -10;
+            transform.localScale = Vector3.one * 25f / Camera.orthographicSize;
         }
     }
 }
