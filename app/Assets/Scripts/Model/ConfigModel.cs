@@ -243,6 +243,7 @@ namespace Model
                 id = 0,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WaterCollector,
+                targetValue = 1,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 10,
                 dependsOn = null // No dependencies (starting quest)
@@ -252,6 +253,7 @@ namespace Model
                 id = 1,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.FoodCollector,
+                targetValue = 1,
                 rewardType = (int)Resource.Water,
                 rewardValue = 10,
                 dependsOn = 0 // Depends on completing the first quest
@@ -261,6 +263,7 @@ namespace Model
                 id = 2,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WaterStorage,
+                targetValue = 1,
                 rewardType = (int)Resource.Water,
                 rewardValue = 10,
                 dependsOn = 1 // Depends on completing the previous quest
@@ -270,6 +273,7 @@ namespace Model
                 id = 3,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WoodCollector,
+                targetValue = 1,
                 rewardType = (int)Resource.Water,
                 rewardValue = 10,
                 dependsOn = 4 // Depends on upgrading Town Hall
@@ -282,7 +286,7 @@ namespace Model
                 targetValue = 2,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 100,
-                dependsOn = 1 // Starting upgrade quest
+                dependsOn = 1 // Gated after building Food Collector
             },
             new()
             {
@@ -378,6 +382,7 @@ namespace Model
                 id = 14,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.Research,
+                targetValue = 1,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 15,
                 dependsOn = 3 // Depends on completing the previous build quest
