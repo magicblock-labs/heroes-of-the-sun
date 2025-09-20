@@ -269,20 +269,10 @@ namespace Model
             {
                 id = 3,
                 type = QuestType.Build,
-                targetType = (int)BuildingType.WaterCollector,
+                targetType = (int)BuildingType.WoodCollector,
                 rewardType = (int)Resource.Water,
                 rewardValue = 10,
-                dependsOn = 2 // Depends on completing the previous quest
-            },
-            // New Research building quest
-            new()
-            {
-                id = 14,
-                type = QuestType.Build,
-                targetType = (int)BuildingType.Research,
-                rewardType = (int)Resource.Wood,
-                rewardValue = 15,
-                dependsOn = 3 // Depends on completing the previous build quest
+                dependsOn = 4 // Depends on upgrading Town Hall
             },
             new()
             {
@@ -302,7 +292,7 @@ namespace Model
                 targetValue = 2,
                 rewardType = (int)Resource.Water,
                 rewardValue = 20,
-                dependsOn = 4 // Depends on completing the previous upgrade quest
+                dependsOn = 3 // Depends on building the Wood Collector
             },
             new()
             {
@@ -332,7 +322,7 @@ namespace Model
                 targetValue = 50,
                 rewardType = (int)Resource.Stone,
                 rewardValue = 5,
-                dependsOn = 3 // MODIFIED: Now depends on building the Water Collector
+                dependsOn = 0 // Depends on building the Water Collector (id 0)
             },
             new()
             {
@@ -381,6 +371,16 @@ namespace Model
                 rewardType = (int)Resource.Stone,
                 rewardValue = 30,
                 dependsOn = 12 // Depends on completing the previous faith quest
+            },
+            // New Research building quest
+            new()
+            {
+                id = 14,
+                type = QuestType.Build,
+                targetType = (int)BuildingType.Research,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 15,
+                dependsOn = 3 // Depends on completing the previous build quest
             },
         };
 
