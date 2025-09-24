@@ -879,6 +879,7 @@ MonoBehaviour:
   deteriorationStatus: {fileID: 7837360773052411750}
   workerStatus: {fileID: 4353850989366321247}
   extractionStatus: {fileID: 7475631897968040737}
+  uiSfx: {fileID: 8300000, guid: 92f3c515d69bb401796ca7ecf47f1e33, type: 3}
   controls: {fileID: 3930604375848416389}
 --- !u!1 &1638681218126367708
 GameObject:

@@ -465,6 +465,9 @@ namespace Connectors
                 }
             }
 
+            var signerWallet = Web3Utils.SessionToken == null || signWithWallet ? Wallet : Web3Utils.SessionWallet;
+            Debug.Log($"Balance: {await signerWallet.GetBalance()}");
+
             return true;
         }
 

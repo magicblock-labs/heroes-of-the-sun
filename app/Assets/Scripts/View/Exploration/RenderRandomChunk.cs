@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Model;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -21,6 +22,30 @@ namespace View.Exploration
         [SerializeField] private MeshFilter waterMesh;
         [Inject] private PathfindingModel _pathfinder;
 
+        // === Chunked visibility (no-GC per frame) ===
+        private const int ChunkSize = 16;                       // tiles per chunk edge
+        private const int InitialVisibleCapacity = 4096;        // tweak as needed
+
+        private struct Chunk
+        {
+            public Vector3 center;           // world-space center
+            public Vector3 halfExtents;      // world-space half extents (x,z from chunk size; y from min..max tile heights)
+            public List<int> meshIdx;        // per-instance mesh index
+            public List<Vector3> pos;        // per-instance world position
+        }
+
+        private Dictionary<Vector2Int, Chunk> _chunks;          // chunk grid
+        private bool _chunksBuilt;
+
+        // Reusable visible buffers (no ToArray per frame)
+        private int[] _visibleMeshIdx;
+        private Vector3[] _visiblePos;
+        private int _visibleCount;
+
+        // Reusable math helpers
+        private static readonly Vector3 WorldRight = Vector3.right;
+        private static readonly Vector3 WorldUp = Vector3.up;
+        private static readonly Vector3 WorldForward = Vector3.forward;
 
         const int BatchSize = 1023; // Unity hard cap
         private Matrix4x4[][] _batchBuffers; // [meshIndex][0..1022]
@@ -55,6 +80,13 @@ namespace View.Exploration
                 _batchBuffers[i] = new Matrix4x4[BatchSize]; // reused forever
 
             _mpb = new MaterialPropertyBlock(); // reuse
+            _cam = Camera.main;
+
+            _visibleMeshIdx = new int[InitialVisibleCapacity];
+            _visiblePos = new Vector3[InitialVisibleCapacity];
+            _visibleCount = 0;
+            _chunks = new Dictionary<Vector2Int, Chunk>(256);
+            _chunksBuilt = false;
         }
 
         public void Create(Vector2Int offset, int size, Vector2 scale, bool instant)
@@ -66,6 +98,8 @@ namespace View.Exploration
             GenerateWaterMesh(size, size * ConfigModel.CellSize);
 
             StartCoroutine(GenerateTiles(offset, size, scale, instant));
+
+            _chunksBuilt = false; // tiles changed; rebuild chunks when ready
         }
 
         private void GenerateWaterMesh(int subdivisions, int scale)
@@ -109,8 +143,8 @@ namespace View.Exploration
 
         private IEnumerator GenerateTiles(Vector2Int offset, int size, Vector2 scale, bool instant)
         {
-            var tileMap = new Dictionary<int, List<Vector3>>();
-            
+            _tileMap = new Dictionary<int, List<Vector3>>();
+
             for (var x = 0; x < size; x++)
             for (var y = 0; y < size; y++)
             {
@@ -123,7 +157,7 @@ namespace View.Exploration
                     offset,
                     position);
 
-                
+
                 var yPos = (int)(perlinNoiseSample * tileMeshes.Length * 4) - 6.5f;
 
                 _pathfinder.AddPoint(tile.Location, yPos);
@@ -133,46 +167,218 @@ namespace View.Exploration
                 tile.transform.localScale = Vector3.one * 2;
                 tile.transform.localPosition = ConfigModel.GetWorldCellPosition(position.x, position.y) +
                                                Vector3.up * yPos;
-                
-                if (!tileMap.ContainsKey(tileIndex))
-                    tileMap.Add(tileIndex, new List<Vector3>());
-                
-                tileMap[tileIndex].Add(ConfigModel.GetWorldCellPosition(position.x + offset.x, position.y + offset.y) + Vector3.up * yPos);
+
+                if (!_tileMap.ContainsKey(tileIndex))
+                    _tileMap.Add(tileIndex, new List<Vector3>());
+
+                _tileMap[tileIndex].Add(ConfigModel.GetWorldCellPosition(position.x + offset.x, position.y + offset.y) +
+                                        Vector3.up * yPos);
 
                 //edge fall
                 if (x == 0 || y == 0 || x == size - 1 || y == size - 1)
                 {
                     for (var i = 1; i < yPos; i++)
-                        tileMap[tileIndex].Add(ConfigModel.GetWorldCellPosition(position.x + offset.x, position.y + offset.y) + Vector3.up * (yPos - i));
-
+                        _tileMap[tileIndex]
+                            .Add(ConfigModel.GetWorldCellPosition(position.x + offset.x, position.y + offset.y) +
+                                 Vector3.up * (yPos - i));
                 }
-                
+
                 if (!instant)
                     yield return null;
             }
 
-            var tileIndexes = new List<int>();
-            var positions = new List<Vector3>();
-            foreach (var (tileIndex, tilePositions) in tileMap)
+            BuildChunksFromTileMap();
+            UpdateBatchData();
+        }
+
+        // Partition flat _tileMap (meshIndex -> positions) into spatial chunks to avoid full scans each frame
+        private void BuildChunksFromTileMap()
+        {
+            _chunks.Clear();
+
+            // Derive chunk world size from ConfigModel.CellSize
+            float cell = ConfigModel.CellSize;
+            float chunkWorld = ChunkSize * cell;
+
+            // temp per-chunk min/max Y to compute vertical extents
+            var minY = new Dictionary<Vector2Int, float>(128);
+            var maxY = new Dictionary<Vector2Int, float>(128);
+
+            foreach (var (tileIndex, tilePositions) in _tileMap)
             {
-                foreach (var position in tilePositions)
+                for (int i = 0; i < tilePositions.Count; i++)
                 {
-                    tileIndexes.Add(tileIndex);
-                    positions.Add(position);
+                    Vector3 p = tilePositions[i];
+                    int cx = Mathf.FloorToInt(p.x / chunkWorld);
+                    int cz = Mathf.FloorToInt(p.z / chunkWorld);
+                    var key = new Vector2Int(cx, cz);
+
+                    if (!_chunks.TryGetValue(key, out var chunk))
+                    {
+                        chunk = new Chunk
+                        {
+                            meshIdx = new List<int>(256),
+                            pos = new List<Vector3>(256)
+                        };
+                        _chunks.Add(key, chunk);
+                        minY[key] = p.y;
+                        maxY[key] = p.y;
+                    }
+                    else
+                    {
+                        if (p.y < minY[key]) minY[key] = p.y;
+                        if (p.y > maxY[key]) maxY[key] = p.y;
+                    }
+
+                    _chunks[key].meshIdx.Add(tileIndex);
+                    _chunks[key].pos.Add(p);
                 }
             }
-            
-            _count = tileIndexes.Count;
-            _tileIndexes = tileIndexes.ToArray();
-            _positions = positions.ToArray();
+
+            // finalize bounds for each chunk (snapshot keys to avoid modifying during enumeration)
+            var keys = new List<Vector2Int>(_chunks.Keys);
+            for (int i = 0; i < keys.Count; i++)
+            {
+                var key = keys[i];
+                var c = _chunks[key];
+                float y0 = minY[key];
+                float y1 = maxY[key];
+                float ex = chunkWorld * 0.5f;
+                float ez = chunkWorld * 0.5f;
+                float ey = Mathf.Max(0.5f, (y1 - y0) * 0.5f);
+
+                // world-space center of this chunk footprint (XZ), Y at middle of min..max
+                Vector3 center = new Vector3((key.x + 0.5f) * chunkWorld, y0 + ey, (key.y + 0.5f) * chunkWorld);
+
+                c.center = center;
+                c.halfExtents = new Vector3(ex, ey, ez);
+                _chunks[key] = c; // write back struct
+            }
+
+            _chunksBuilt = true;
+        }
+
+        private void UpdateBatchData()
+        {
+            if (_tileMap == null) return;
+
+            // Rebuild chunks once after generation if needed
+            if (!_chunksBuilt)
+            {
+                BuildChunksFromTileMap();
+            }
+
+            _visibleCount = 0; // reset write cursor
+
+            // Camera half extents in local camera space
+            float halfH = _cam.orthographicSize;
+            float halfW = _cam.orthographicSize * _cam.aspect;
+            float zNear = _cam.nearClipPlane;
+            float zFar = _cam.farClipPlane;
+
+            // Iterate only intersecting chunks
+            foreach (var kv in _chunks)
+            {
+                var c = kv.Value;
+                if (!ChunkIntersectsCameraBox(_cam, c.center, c.halfExtents, halfW, halfH, zNear, zFar))
+                    continue;
+
+                // Narrow phase: per-instance test using fast ortho check
+                var m = c.meshIdx;
+                var p = c.pos;
+                int n = p.Count;
+                for (int i = 0; i < n; i++)
+                {
+                    Vector3 wp = p[i];
+                    if (!IsInOrthoCamBox(_cam, wp))
+                        continue;
+
+                    // ensure capacity
+                    if (_visibleCount >= _visiblePos.Length)
+                    {
+                        GrowVisibleBuffers(_visibleCount << 1);
+                    }
+
+                    _visiblePos[_visibleCount] = wp;
+                    _visibleMeshIdx[_visibleCount] = m[i];
+                    _visibleCount++;
+                }
+            }
+
+            _count = _visibleCount;
+            _tileIndexes = _visibleMeshIdx; // expose buffers directly (no copies)
+            _positions = _visiblePos;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void GrowVisibleBuffers(int newCapacity)
+        {
+            int cap = Mathf.Max(newCapacity, _visiblePos.Length * 2);
+            Array.Resize(ref _visiblePos, cap);
+            Array.Resize(ref _visibleMeshIdx, cap);
+        }
+
+        // Conservative and GC-free test of chunk OBB vs camera-aligned ortho box.
+        // Projects the world-aligned chunk extents onto the camera axes and checks interval overlap.
+        private static bool ChunkIntersectsCameraBox(Camera cam, Vector3 center, Vector3 halfExtents,
+                                                     float camHalfW, float camHalfH, float zNear, float zFar)
+        {
+            // Transform chunk center to camera local space
+            Vector3 lc = cam.transform.InverseTransformPoint(center);
+
+            // Project world-aligned extents onto camera axes (absolute dot products)
+            Vector3 rAxisX = cam.transform.right;
+            Vector3 rAxisY = cam.transform.up;
+            Vector3 rAxisZ = cam.transform.forward;
+
+            // Chunk is axis-aligned in world (x,y,z). Its half extents in world are hx, hy, hz.
+            float hx = halfExtents.x, hy = halfExtents.y, hz = halfExtents.z;
+
+            float rx = Mathf.Abs(Vector3.Dot(rAxisX, WorldRight)) * hx +
+                       Mathf.Abs(Vector3.Dot(rAxisX, WorldUp))    * hy +
+                       Mathf.Abs(Vector3.Dot(rAxisX, WorldForward)) * hz;
+
+            float ry = Mathf.Abs(Vector3.Dot(rAxisY, WorldRight)) * hx +
+                       Mathf.Abs(Vector3.Dot(rAxisY, WorldUp))    * hy +
+                       Mathf.Abs(Vector3.Dot(rAxisY, WorldForward)) * hz;
+
+            float rz = Mathf.Abs(Vector3.Dot(rAxisZ, WorldRight)) * hx +
+                       Mathf.Abs(Vector3.Dot(rAxisZ, WorldUp))    * hy +
+                       Mathf.Abs(Vector3.Dot(rAxisZ, WorldForward)) * hz;
+
+            // Interval overlap tests in camera local space
+            if (lc.x + rx < -camHalfW || lc.x - rx > camHalfW) return false;
+            if (lc.y + ry < -camHalfH || lc.y - ry > camHalfH) return false;
+            if (lc.z + rz < zNear     || lc.z - rz > zFar)     return false;
+            return true;
+        }
+
+        // Returns true if a world position is inside the ortho camera's box (with optional padding in world units).
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsInOrthoCamBox(Camera cam, Vector3 worldPos, float paddingX = 0f, float paddingY = 0f)
+        {
+            // Move point into the camera's local space (camera at origin, looking +Z).
+            Vector3 p = cam.transform.InverseTransformPoint(worldPos);
+
+            float halfH = cam.orthographicSize + paddingY;
+            float halfW = cam.orthographicSize * cam.aspect + paddingX;
+
+            // x/y within the orthographic rectangle, z within clip range
+            return p.x >= -halfW && p.x <= halfW &&
+                   p.y >= -halfH && p.y <= halfH &&
+                   p.z >= cam.nearClipPlane && p.z <= cam.farClipPlane;
         }
 
         private int _count;
         private int[] _tileIndexes;
         private Vector3[] _positions;
+        private Camera _cam;
+        private Dictionary<int, List<Vector3>> _tileMap;
 
         private void Update()
         {
+            UpdateBatchData();
+
             Render(_positions, _tileIndexes, _count);
         }
 
@@ -225,12 +431,11 @@ namespace View.Exploration
         [System.Diagnostics.DebuggerStepThrough]
         private void DrawBatch(int meshIndex, int count)
         {
-            // Note: we pass the preallocated array and a 'count' (no copies, no allocs).
             Graphics.DrawMeshInstanced(
                 tileMeshes[meshIndex], 0, instancedMat,
                 _batchBuffers[meshIndex], count, _mpb,
                 ShadowCastingMode.Off, /*receiveShadows*/ false,
-                0, /*camera*/ null, LightProbeUsage.Off, /*lppv*/ null);
+                0, /*layer*/ _cam, LightProbeUsage.Off, /*lppv*/ null);
         }
     }
 }

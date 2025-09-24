@@ -291,6 +291,7 @@ GameObject:
   - component: {fileID: 6261317026329202192}
   - component: {fileID: 5993321678156342413}
   - component: {fileID: 1732297101349905868}
+  - component: {fileID: 7522901942497830553}
   m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
@@ -414,6 +415,20 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &7522901942497830553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2241711770998781264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07591ffa5746141daba136d38162912e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickSound: {fileID: 8300000, guid: f9390048cef5143fab5373e6dd3c429e, type: 3}
+  uiFlipSound: {fileID: 8300000, guid: 92f3c515d69bb401796ca7ecf47f1e33, type: 3}
 --- !u!1 &2934409581760934357
 GameObject:
   m_ObjectHideFlags: 0
