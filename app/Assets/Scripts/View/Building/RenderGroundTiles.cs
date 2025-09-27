@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Model;
 using Unity.AI.Navigation;
 using UnityEngine;
+using Utils;
 using Utils.Injection;
 
 namespace View.Building
@@ -18,7 +19,7 @@ namespace View.Building
         private byte[,] _renderedData;
         private Dictionary<Vector2Int, GameObject> _renderedTiles = new();
 
-        public void SetData(global::Settlement.Accounts.Settlement value)
+        public void SetData(Settlement.Accounts.Settlement value, Vector2Int offset)
         {
             var occupiedData = _config.GetCellsData(value);
             var rebuildNavmesh = false;

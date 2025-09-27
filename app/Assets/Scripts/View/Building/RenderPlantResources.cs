@@ -25,7 +25,7 @@ namespace View.Building
         [SerializeField] private float scaleFactor = 0.95f;
 
 
-        public void SetData(global::Settlement.Accounts.Settlement value)
+        public void SetData(Settlement.Accounts.Settlement value, Vector2Int offset)
         {
             if (value == null)
                 return;

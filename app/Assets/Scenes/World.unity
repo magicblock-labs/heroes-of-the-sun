@@ -9706,6 +9706,7 @@ MonoBehaviour:
   progressContainer: {fileID: 1781414821}
   progressLabel: {fileID: 464064912}
   progressBar: {fileID: 1274804786}
+  ipfsUploadEndpoint: https://hrvvq2ssxclravkxmildzmzszy0wtyrf.lambda-url.eu-west-2.on.aws/
 --- !u!1 &1544298189
 GameObject:
   m_ObjectHideFlags: 0
@@ -9925,6 +9926,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: HUD_Minimap
+      objectReference: {fileID: 0}
+    - target: {fileID: 7987147990857639744, guid: e8e93e76c9db7499089b7a7cd15ca82f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -31,7 +31,7 @@ namespace View.Exploration
                 try
                 {
                     gameObject.name = $"Settlement@{location.x}x{location.y}";
-                    Instantiate(settlementPrefab, transform).Create(data);
+                    Instantiate(settlementPrefab, transform).Create(data, location * chunkSize);
                 }
                 catch (Exception e)
                 {

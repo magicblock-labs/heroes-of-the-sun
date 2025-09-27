@@ -1,4 +1,5 @@
 using Model;
+using UnityEngine;
 using Utils.Injection;
 
 namespace View.Building
@@ -20,7 +21,7 @@ namespace View.Building
                 return;
 
             foreach (var settlementDataRenderer in GetComponentsInChildren<IDisplaySettlementData>())
-                settlementDataRenderer.SetData(_model.Get());
+                settlementDataRenderer.SetData(_model.Get(), new Vector2Int());
         }
 
         private void OnDestroy()
