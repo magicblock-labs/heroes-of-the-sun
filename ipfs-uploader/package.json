@@ -1,0 +1,15 @@
+{
+    "name": "hots-ipfs-uploader",
+    "version": "1.0.0",
+    "type": "module",
+    "dependencies": {
+        "@aws-sdk/client-secrets-manager": "^3.621.0",
+        "busboy": "^1.6.0",
+        "undici": "^6.19.8"
+    },
+    "devDependencies": {
+        "@types/aws-lambda": "^8.10.138",
+        "@types/busboy": "^1.5.4",
+        "typescript": "^5.6.3"
+    }
+}
