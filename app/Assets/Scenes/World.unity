@@ -9922,15 +9922,40 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5357595095507693871, guid: e8e93e76c9db7499089b7a7cd15ca82f,
+        type: 3}
+      propertyPath: colors.Array.data[1].b
+      value: 0.30411178
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357595095507693871, guid: e8e93e76c9db7499089b7a7cd15ca82f,
+        type: 3}
+      propertyPath: colors.Array.data[1].g
+      value: 0.8635413
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357595095507693871, guid: e8e93e76c9db7499089b7a7cd15ca82f,
+        type: 3}
+      propertyPath: colors.Array.data[1].r
+      value: 0.9622642
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357595095507693871, guid: e8e93e76c9db7499089b7a7cd15ca82f,
+        type: 3}
+      propertyPath: colors.Array.data[2].b
+      value: 0.123398006
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357595095507693871, guid: e8e93e76c9db7499089b7a7cd15ca82f,
+        type: 3}
+      propertyPath: colors.Array.data[2].g
+      value: 0.4433962
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357595095507693871, guid: e8e93e76c9db7499089b7a7cd15ca82f,
+        type: 3}
+      propertyPath: colors.Array.data[2].r
+      value: 0.33615357
+      objectReference: {fileID: 0}
     - target: {fileID: 7987147990857639744, guid: e8e93e76c9db7499089b7a7cd15ca82f,
         type: 3}
       propertyPath: m_Name
       value: HUD_Minimap
-      objectReference: {fileID: 0}
-    - target: {fileID: 7987147990857639744, guid: e8e93e76c9db7499089b7a7cd15ca82f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

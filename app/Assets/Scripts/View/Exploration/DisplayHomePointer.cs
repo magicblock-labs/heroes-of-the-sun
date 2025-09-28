@@ -7,37 +7,30 @@ namespace View.Exploration
 {
     public class DisplayHomePointer : InjectableBehaviour
     {
+        [Inject] private PlayerHeroModel _playerHero;
         [Inject] private PlayerModel _playerModel;
 
-        [SerializeField] private RectTransform _homePointer;
-        [SerializeField] private TMP_Text _distanceLabel;
+        [SerializeField] private RectTransform homePointer;
+        [SerializeField] private TMP_Text distanceLabel;
+        
+        private Vector2 _settlementPosition;
 
-        [SerializeField] private Camera _minimapCamera;
-
-        private Vector3 _settlementPosition;
-        private Transform _heroTransform;
-
-        void Start()
+        private void Start()
         {
             var settlement = _playerModel.Get().Settlements[0];
-            _settlementPosition = new Vector3(settlement.X * 96 - 1, 0, settlement.Y * 96 - 1);
+            _settlementPosition = new Vector2(settlement.X, settlement.Y);
         }
 
         void Update()
         {
-            if (_heroTransform == null)
-            {
-                var hero = FindFirstObjectByType<OwnHeroController>();
-                if (hero != null)
-                    _heroTransform = hero.transform;
-                else
-                    return;
-            }
+            if (_playerHero?.Get() == null)
+                return;
+            
+            var heroPosition = new Vector2(_playerHero.Get().X, Mathf.Abs(_playerHero.Get().Y)); 
 
-            var viewportPos = _minimapCamera.WorldToViewportPoint(_settlementPosition);
-            _distanceLabel.text = $"{(_heroTransform.position - _settlementPosition).magnitude:0}m";
+            distanceLabel.text = $"{((heroPosition - _settlementPosition) * ConfigModel.CellSize).magnitude:0}m";
 
-            _homePointer.anchoredPosition = new Vector2(Mathf.Clamp(viewportPos.x, 0, 1), Mathf.Clamp(viewportPos.y, 0, 1)) * 256;
+            //_homePointer.anchoredPosition = new Vector2(Mathf.Clamp(viewportPos.x, 0, 1), Mathf.Clamp(viewportPos.y, 0, 1)) * 256;
         }
     }
 }
