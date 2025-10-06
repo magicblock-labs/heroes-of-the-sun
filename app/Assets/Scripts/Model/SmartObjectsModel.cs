@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Settlement.Types;
@@ -35,6 +36,11 @@ namespace Model
         public void Set(Vector2Int location, PublicKey entity)
         {
             _data[location] = entity;
+        }
+
+        public IEnumerable<Vector2Int> GetLocations()
+        {
+            return _data.Keys;
         }
     }
 }

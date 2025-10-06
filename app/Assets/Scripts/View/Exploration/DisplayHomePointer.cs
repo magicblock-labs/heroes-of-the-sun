@@ -11,26 +11,36 @@ namespace View.Exploration
         [Inject] private PlayerModel _playerModel;
 
         [SerializeField] private RectTransform homePointer;
+        [SerializeField] private RectTransform playerPointer;
         [SerializeField] private TMP_Text distanceLabel;
-        
+
         private Vector2 _settlementPosition;
 
         private void Start()
         {
             var settlement = _playerModel.Get().Settlements[0];
-            _settlementPosition = new Vector2(settlement.X, settlement.Y);
+            _settlementPosition = new Vector2(settlement.X * 96 - 1, settlement.Y * 96 - 1);
         }
 
         void Update()
         {
             if (_playerHero?.Get() == null)
                 return;
+
+            var heroPosition = _playerHero.ImmediatePosition;
+
+            var diff = _settlementPosition - heroPosition;
+            var diffUnits = diff * ConfigModel.CellSize;
             
-            var heroPosition = new Vector2(_playerHero.Get().X, Mathf.Abs(_playerHero.Get().Y)); 
+            distanceLabel.text = $"{diffUnits.magnitude:0}m";
 
-            distanceLabel.text = $"{((heroPosition - _settlementPosition) * ConfigModel.CellSize).magnitude:0}m";
-
-            //_homePointer.anchoredPosition = new Vector2(Mathf.Clamp(viewportPos.x, 0, 1), Mathf.Clamp(viewportPos.y, 0, 1)) * 256;
+            var maxDimension = Mathf.Max(diffUnits.x, diffUnits.y);
+            var overflow = maxDimension / 128;
+            if (overflow > 1)
+                diffUnits /= overflow;
+            
+            homePointer.anchoredPosition = diffUnits;
+            playerPointer.rotation = Quaternion.AngleAxis(-_playerHero.ImmediateRotation, Vector3.forward);
         }
     }
 }

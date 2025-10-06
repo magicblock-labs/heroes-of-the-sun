@@ -39,6 +39,7 @@ public class DisplayQuest : InjectableBehaviour
 
     [Inject] StartFtueSequence _startFtueSequence;
     [Inject] ResourceDiffNotification _resourceDiff;
+    [Inject] private PlayAudioClip _play;
 
 
     [SerializeField] private Image typeIcon;
@@ -54,6 +55,7 @@ public class DisplayQuest : InjectableBehaviour
     [SerializeField] private Image claimResourceIcon;
     [SerializeField] private Sprite[] resourceIcons;
     [SerializeField] private Transform rewardAnchor;
+    [SerializeField] private AudioClip clip;
 
     private QuestData _data;
     private uint _progress;
@@ -124,5 +126,7 @@ public class DisplayQuest : InjectableBehaviour
         }
 
         _resourceDiff.Dispatch(diffValue, 0, rewardAnchor);
+        _play.Dispatch(clip);
+        
     }
 }

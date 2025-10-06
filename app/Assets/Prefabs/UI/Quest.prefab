@@ -666,6 +666,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 82153fd063a284d30b4e26598a98c956, type: 3}
   - {fileID: 21300000, guid: cd0e9ae015cdb4c378948d4f1462e426, type: 3}
   rewardAnchor: {fileID: 8702456223024003480}
+  clip: {fileID: 8300000, guid: 6139ceea053f94b4ab03f32e8045971e, type: 3}
 --- !u!1 &7511076066663207902
 GameObject:
   m_ObjectHideFlags: 0

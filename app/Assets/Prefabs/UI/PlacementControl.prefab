@@ -629,6 +629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   worldAnchor: {fileID: 0}
+  buildClip: {fileID: 8300000, guid: 29964761558b24e51b21ce37fcc0bc77, type: 3}
 --- !u!114 &8452737308183928854
 MonoBehaviour:
   m_ObjectHideFlags: 0

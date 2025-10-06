@@ -1,8 +1,6 @@
 using System.Collections;
 using Model;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 using Utils.Injection;
 
@@ -17,9 +15,9 @@ namespace View.Exploration
 
         [SerializeField] private RawImage _target;
 
-        private const int TextureSize = 256; // final texture resolution
-        private const int SampleSpan = 128; // number of samples per axis (-64..63)
+        private const int TextureSize = 128; // final texture resolution
         private const int PixelsPerSample = 2; // 2x2 pixels per sample
+        private const int SampleSpan = TextureSize/PixelsPerSample; // number of samples per axis (-64..63)
 
         private Texture2D _minimapTexture;
         private Color32[] _pixels;
@@ -51,21 +49,26 @@ namespace View.Exploration
             if (_playerHero?.Get() == null)
                 return;
             
-            var heroPosition = new Vector2(_playerHero.Get().X, Mathf.Abs(_playerHero.Get().Y));
+            var heroPosition = _playerHero.ImmediatePosition;
 
             var halfSampleSpan = SampleSpan / 2;
             for (var x = -halfSampleSpan; x < halfSampleSpan; x++)
             for (var y = -halfSampleSpan; y < halfSampleSpan; y++)
             {
-                var sample = _pathfinding.GetY(new Vector2Int(x + (int)(heroPosition.x/ConfigModel.CellSize), y + (int)(heroPosition.y/ConfigModel.CellSize)));
 
-                var colorIndex = Mathf.Min(
-                    (int)((sample + 6.5f) / 4f),
-                    colors.Length - 1
-                );
+                var colorIndex = 2;
+                var samplePos = new Vector2Int((x + (int)(heroPosition.x)), (y + (int)(heroPosition.y)));
+                if (_pathfinding.Has(samplePos))
+                {
+                    var sample = _pathfinding.GetY(samplePos);
+                    colorIndex = Mathf.Min(
+                        (int)((sample + 6.5f) / 4f),
+                        colors.Length - 1
+                    );
+
+                }
 
                 // Map color index to color and paint a 2x2 block in the buffer.
-                // Convert loop-space (-64..63) into texture-space (0..255) with 2x2 pixels per sample.
                 colorIndex = Mathf.Clamp(colorIndex, 0, colors.Length - 1);
                 var col = (Color32)colors[colorIndex];
 

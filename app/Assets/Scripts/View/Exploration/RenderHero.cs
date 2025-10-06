@@ -27,6 +27,8 @@ namespace View.Exploration
 
         [SerializeField] private TMP_Text keyLabel;
         [SerializeField] private DisplayBackpack backpack;
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip stepSFX;
 
         private LineRenderer _line;
 
@@ -39,6 +41,7 @@ namespace View.Exploration
 
         private Hero.Accounts.Hero _data;
         private Vector2Int _position;
+        private bool _own;
 
         public string DataAddress => _connector.DataAddress;
 
@@ -62,12 +65,13 @@ namespace View.Exploration
 
         private async Task Init(bool own)
         {
+            _own = own;
             _data = await _connector.LoadData();
             keyLabel.text = _data.Owner.ToString()[..4];
 
             await _connector.Subscribe(OnDataUpdate);
 
-            if (own)
+            if (_own)
             {
                 _playerHero.Set(_data);
                 gameObject.AddComponent<OwnHeroController>().SetDataAddress(_connector.DataAddress);
@@ -111,6 +115,10 @@ namespace View.Exploration
             if (Vector3.Angle(diff, transform.forward) > 90) // || diff.magnitude < .1f)
             {
                 _position = _path[0];
+
+                if (_own)
+                    _playerHero.ImmediatePosition = _position;
+                
                 _path.RemoveAt(0);
                 MoveToNextPoint();
 
@@ -124,6 +132,13 @@ namespace View.Exploration
 
             transform.forward = diff;
             transform.position += diff.normalized * (Time.deltaTime * 5f);
+            
+            if (_own)
+            {
+                _playerHero.ImmediatePosition = _position;
+                _playerHero.ImmediateRotation = transform.rotation.eulerAngles.y;
+            }
+            
             if (_line.positionCount > 0)
                 _line.SetPosition(0, transform.position);
         }
@@ -180,6 +195,11 @@ namespace View.Exploration
             {
                 _interact.Dispatch(entity);
             }
+        }
+
+        public void OnStepAnimation()
+        {
+            audioSource.PlayOneShot(stepSFX);
         }
 
         private void OnDestroy()

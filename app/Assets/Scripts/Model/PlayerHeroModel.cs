@@ -1,3 +1,4 @@
+using UnityEngine;
 using Utils.Injection;
 using Utils.Signal;
 
@@ -7,6 +8,9 @@ namespace Model
     public class PlayerHeroModel
     {
         public Signal Updated = new();
+
+        public Vector2Int ImmediatePosition;
+        public float ImmediateRotation;
         
         private Hero.Accounts.Hero _data;
         public bool HasData => _data != null;
