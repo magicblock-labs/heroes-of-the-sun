@@ -56,6 +56,7 @@ namespace Utils
         [Inject] private PlayerModel _playerModel;
         [Inject] private SettlementModel _settlementModel;
         [Inject] private LootModel _lootModel;
+
         private float _progress;
         private PublicKey _sessionToken;
 
@@ -63,13 +64,15 @@ namespace Utils
         private CancellationTokenSource _lifecycleCts;
         private bool _signedIn;
         private bool _disclaimerAccepted;
-
+        private bool _sessionInitialized;
+        private bool _loginInProgress;
+        private bool _resuming;
 
         private void OnEnable()
         {
             _lifecycleCts = new CancellationTokenSource();
             ResetVisuals();
-            RestartInitIfNotSignedIn();
+            RestartInitIfNotReady();
         }
 
         private void OnDisable()
@@ -81,9 +84,9 @@ namespace Utils
             CleanupBeforeRestart();
         }
 
-        private void RestartInitIfNotSignedIn()
+        private void RestartInitIfNotReady()
         {
-            if (_signedIn) return;
+            if (_sessionInitialized) return;
             _initCts = new CancellationTokenSource();
             _ = InitAsync(_initCts.Token);
         }
@@ -103,7 +106,7 @@ namespace Utils
         private void ResetVisuals()
         {
             if (disclaimerPanel != null) disclaimerPanel.SetActive(false);
-            
+
             _progress = 0f;
             if (loader != null) loader.fillAmount = 0f;
             if (loaderContainer != null) loaderContainer.SetActive(false);
@@ -118,12 +121,12 @@ namespace Utils
 
         async Task InitAsync(CancellationToken ct)
         {
-            if (_signedIn || ct.IsCancellationRequested) return;
+            if (_sessionInitialized || ct.IsCancellationRequested) return;
 
             try
             {
                 await InitialiseAnalytics();
-                if (_signedIn || ct.IsCancellationRequested) return;
+                if (_sessionInitialized || ct.IsCancellationRequested) return;
 
                 Web3.OnLogin += HandleSignIn;
 
@@ -197,11 +200,69 @@ namespace Utils
             }
         }
 
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (!hasFocus) return;
+            // Avoid re-entrancy and only attempt resume once we're fully initialized
+            if (_resuming || !_sessionInitialized) return;
+            _ = OnResumeAsync();
+        }
+
+        private async Task OnResumeAsync()
+        {
+            _resuming = true;
+            try
+            {
+                // 1) Ensure the short-lived session is valid on foreground
+                try
+                {
+                    if (!IsSessionValid())
+                    {
+                        Debug.Log("[Resume] Session invalid, recreating...");
+                        await CreateNewSession();
+                    }
+                    else
+                    {
+                        Debug.Log("[Resume] Session still valid.");
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("[Resume] Session validation/creation failed: " + e);
+                }
+
+                // 2) Re-subscribe to live streams in case transport was reset while backgrounded
+                try
+                {
+                    await _loot.Subscribe(_lootModel.Set);
+                    await _settlement.Subscribe(_settlementModel.Set);
+                    await _token.Subscribe(null);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("[Resume] Resubscribe failed: " + e);
+                }
+
+                // 3) Re-sync time to counter sleep/clock drift
+                try
+                {
+                    await Web3Utils.SyncTime();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("[Resume] SyncTime failed: " + e);
+                }
+            }
+            finally
+            {
+                _resuming = false;
+            }
+        }
 
         private async void HandleSignIn(Account account)
         {
-            if (_signedIn) return;
-            _signedIn = true;
+            if (_loginInProgress || _sessionInitialized) return;
+            _loginInProgress = true;
 
             Debug.Log("HandleSignIn:");
             Debug.Log(account.PublicKey);
@@ -210,130 +271,143 @@ namespace Utils
 
             try
             {
-                _initCts?.Cancel();
-                _initCts?.Dispose();
-                _initCts = null;
-            }
-            catch
-            {
-            }
+                try
+                {
+                    _initCts?.Cancel();
+                    _initCts?.Dispose();
+                    _initCts = null;
+                }
+                catch
+                {
+                }
 
-            loaderContainer.SetActive(true);
+                loaderContainer.SetActive(true);
 
-            AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
-            {
-                { "PublicKey", account.PublicKey.ToString() },
-            });
+                AnalyticsService.Instance.RecordEvent(new CustomEvent("SignIn")
+                {
+                    { "PublicKey", account.PublicKey.ToString() },
+                });
 
-            Debug.Log("Initialize Session..");
-            await CreateNewSession();
+                Debug.Log("Initialize Session..");
+                await CreateNewSession();
 
-            _progress = .1f;
-
-            var accountBump = PlayerPrefs.GetInt("ACC_BUMP", 0);
-            label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. {accountBump}";
-            await _player.SetSeed($"{accountBump}{Web3.Account.PublicKey.Key}"[..20]);
-            _playerModel.Set(await _player.LoadData());
-
-            _progress = .2f;
-
-            //check if settlement exists
-            var settlements = _playerModel.Get().Settlements;
-            if (settlements.Length == 0)
-            {
-                label.text = $"Fetching new location for Settlements.. ";
-                //otherwise - get state of allocator
-                await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
+                // mark the app as fully initialized only after session is ready
+                _sessionInitialized = true;
                 
-                _progress = .3f;
+                _progress = .1f;
 
-                label.text = $"Creating new Settlement...";
-
-                await _settlement.SetSeed(await _allocator.GetNextUnallocatedLocation());
-                await _settlement.LoadData();
-
-                label.text = $"Assigning Settlement to the Player...";
-                //assign settlement in player
-                await _player.AssignSettlement(
-                    new Dictionary<PublicKey, PublicKey>
-                    {
-                        { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
-                        { new PublicKey(_allocator.EntityPda), _allocator.GetComponentProgramAddress() },
-                    });
-
-
-                _progress = .4f;
-
+                var accountBump = PlayerPrefs.GetInt("ACC_BUMP", 0);
+                label.text = $"[{Web3.Account.PublicKey}] Loading Player Data.. {accountBump}";
+                await _player.SetSeed($"{accountBump}{Web3.Account.PublicKey.Key}"[..20]);
                 _playerModel.Set(await _player.LoadData());
-            }
-            else
-                await _settlement.SetSeed($"{settlements[0].X}_{settlements[0].Y}");
+
+                _progress = .2f;
+
+                //check if settlement exists
+                var settlements = _playerModel.Get().Settlements;
+                if (settlements.Length == 0)
+                {
+                    label.text = $"Fetching new location for Settlements.. ";
+                    //otherwise - get state of allocator
+                    await _allocator.SetSeed(LocationAllocatorConnector.DefaultSeed);
+
+                    _progress = .3f;
+
+                    label.text = $"Creating new Settlement...";
+
+                    await _settlement.SetSeed(await _allocator.GetNextUnallocatedLocation());
+                    await _settlement.LoadData();
+
+                    label.text = $"Assigning Settlement to the Player...";
+                    //assign settlement in player
+                    await _player.AssignSettlement(
+                        new Dictionary<PublicKey, PublicKey>
+                        {
+                            { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
+                            { new PublicKey(_allocator.EntityPda), _allocator.GetComponentProgramAddress() },
+                        });
 
 
-            _progress = .5f;
+                    _progress = .4f;
 
-            label.text = $"Loading Settlement Data...";
-            //todo make connectors subscribe and don't keep bootstrap alive
-            _settlementModel.Set(await _settlement.LoadData());
-
-            if (await _settlement.Delegate())
-                await _settlement.CloneToRollup();
-            
-            _progress = .6f;
-
-            //load loot
-            label.text = $"Loading Loot Data...";
-            await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
-            _lootModel.Set(await _loot.LoadData());
-            
-            _progress = .7f;
-
-            await _loot.Subscribe(_lootModel.Set);
-            await _settlement.Subscribe(_settlementModel.Set);
-
-            label.text = $"Init Gold Token...";
-            await _token.LoadData();
-            await _token.Subscribe(null);
-
-            _progress = .8f;
-
-            //ensure hero is created
-            label.text = $"Creating Hero Data... {_player.EntityPda}";
-            await _hero.SetEntityPda(_player.EntityPda, true, true); //set hero to public so others can interact with it
-            var hero = await _hero.LoadData();
-
-            if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
-            {
-                label.text = $"Assigning New Hero to Player...";
-                await _player.AssignHero(
-                    new Dictionary<PublicKey, PublicKey>
-                    {
-                        { new PublicKey(_hero.EntityPda), _hero.GetComponentProgramAddress() },
-                    });
-            }
-
-
-            _progress = .9f;
-
-            label.text = $"Delegating Hero...";
-            if (await _hero.Delegate())
-            {
-                var settlement = _playerModel.Get().Settlements[0];
-                if (hero.X == 0 && hero.Y == 0)
-                    //initial position
-                    await _hero.Move(settlement.X * 96 - 1, settlement.Y * 96 - 1);
+                    _playerModel.Set(await _player.LoadData());
+                }
                 else
-                    await _hero.Move(hero.X, hero.Y); //just clone to rollup
+                    await _settlement.SetSeed($"{settlements[0].X}_{settlements[0].Y}");
+
+
+                _progress = .5f;
+
+                label.text = $"Loading Settlement Data...";
+                //todo make connectors subscribe and don't keep bootstrap alive
+                _settlementModel.Set(await _settlement.LoadData());
+
+                if (await _settlement.Delegate())
+                    await _settlement.CloneToRollup();
+
+                _progress = .6f;
+
+                //load loot
+                label.text = $"Loading Loot Data...";
+                await _loot.SetSeed(LootDistributionConnector.DefaultSeed);
+                _lootModel.Set(await _loot.LoadData());
+
+                _progress = .7f;
+
+                await _loot.Subscribe(_lootModel.Set);
+                await _settlement.Subscribe(_settlementModel.Set);
+
+                label.text = $"Init Gold Token...";
+                await _token.LoadData();
+                await _token.Subscribe(null);
+
+                _progress = .8f;
+
+                //ensure hero is created
+                label.text = $"Creating Hero Data... {_player.EntityPda}";
+                await _hero.SetEntityPda(_player.EntityPda, true, true); //set hero to public so others can interact with it
+                var hero = await _hero.LoadData();
+
+                if (hero.Owner == null || hero.Owner.ToString().All(c => c == '1'))
+                {
+                    label.text = $"Assigning New Hero to Player...";
+                    await _player.AssignHero(
+                        new Dictionary<PublicKey, PublicKey>
+                        {
+                            { new PublicKey(_hero.EntityPda), _hero.GetComponentProgramAddress() },
+                        });
+                }
+
+
+                _progress = .9f;
+
+                label.text = $"Delegating Hero...";
+                if (await _hero.Delegate())
+                {
+                    var settlement = _playerModel.Get().Settlements[0];
+                    if (hero.X == 0 && hero.Y == 0)
+                        //initial position
+                        await _hero.Move(settlement.X * 96 - 1, settlement.Y * 96 - 1);
+                    else
+                        await _hero.Move(hero.X, hero.Y); //just clone to rollup
+                }
+
+                _signedIn = true; // downstream semantics; readiness is gated by _sessionInitialized
+                _loginInProgress = false;
+
+                _progress = 1;
+                //sync time
+                label.text = $"SyncTime...";
+                await Web3Utils.SyncTime();
+                label.text = $"Load Settlement...";
+
+                StartCoroutine(LoadingCompleted());
             }
-
-
-            _progress = 1;
-            //sync time
-            label.text = $"SyncTime...";
-            await Web3Utils.SyncTime();
-            label.text = $"Load Settlement...";
-
-            StartCoroutine(LoadingCompleted());
+            finally
+            {
+                // ensure we don't get stuck if anything throws mid-initialization
+                _loginInProgress = false;
+            }
         }
 
         private IEnumerator LoadingCompleted()
@@ -388,12 +462,12 @@ namespace Utils
             _disclaimerAccepted = true;
             if (disclaimerPanel != null) disclaimerPanel.SetActive(false);
         }
-        
+
         public void DisclaimerExit()
         {
             Application.Quit();
         }
-        
+
         private async Task CreateNewSession()
         {
             if (await UpdateSessionValid())
