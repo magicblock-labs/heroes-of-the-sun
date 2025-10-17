@@ -77,8 +77,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 884f131c1ed444e37a6190745f8a9ca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tileMeshes:
+  - {fileID: 4300000, guid: ae2c87e3d09c70849b410c1e53c82308, type: 3}
+  - {fileID: 4300000, guid: e2bcd16def08fe54ea7282bb8a1b910d, type: 3}
+  - {fileID: 4300000, guid: 54eb5bf413a32cd429c34f91df363eb6, type: 3}
+  - {fileID: 4300000, guid: 9b451fbf7351c554e930f3e858208089, type: 3}
+  - {fileID: 4300000, guid: ae2c87e3d09c70849b410c1e53c82308, type: 3}
+  instancedMat: {fileID: 2100000, guid: ab08612e63d71e8419000749e3c68d16, type: 2}
   tileContainer: {fileID: 6785806108882499535}
-  tile: {fileID: 6772471607029185153, guid: 4552c574c960143c3b628b5ce79ce177, type: 3}
+  tilePrefab: {fileID: 6772471607029185153, guid: 4552c574c960143c3b628b5ce79ce177,
+    type: 3}
   waterMesh: {fileID: 3735886586659515493}
 --- !u!1 &1749529252779537074
 GameObject:

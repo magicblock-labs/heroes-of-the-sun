@@ -34,9 +34,9 @@ pub const INITIAL_FAITH: u8 = 50;
 pub const CHUNK_SIZE: u8 = 24;
 
 pub const INITIAL_TREASURY: ResourceBalance = ResourceBalance {
-    water: 40,
-    food: 80,
-    wood: 200,
+    water: 20,
+    food: 20,
+    wood: 40,
     stone: 10,
 };
 
@@ -291,7 +291,7 @@ pub const QUESTS_CONFIG: [QuestConfig; 15] = [
     QuestConfig {
         id: 0,
         quest_type: QuestType::Build,
-        target_type: BuildingType::FoodStorage as u8,
+        target_type: BuildingType::WaterCollector as u8,
         target_value: 1,
         reward_type: Resource::Wood as u8,
         reward_value: 10,
@@ -318,20 +318,11 @@ pub const QUESTS_CONFIG: [QuestConfig; 15] = [
     QuestConfig {
         id: 3,
         quest_type: QuestType::Build,
-        target_type: BuildingType::WaterCollector as u8,
+        target_type: BuildingType::WoodCollector as u8,
         target_value: 1,
         reward_type: Resource::Water as u8,
         reward_value: 10,
-        depends_on: Some(2), // Depends on completing the previous quest
-    },
-    QuestConfig {
-        id: 14, // New Research building quest
-        quest_type: QuestType::Build,
-        target_type: BuildingType::Research as u8,
-        target_value: 1,
-        reward_type: Resource::Wood as u8,
-        reward_value: 15,
-        depends_on: Some(3), // Depends on completing the previous build quest
+        depends_on: Some(4), // Depends on upgrading Town Hall
     },
     QuestConfig {
         id: 4,
@@ -340,7 +331,7 @@ pub const QUESTS_CONFIG: [QuestConfig; 15] = [
         target_value: 2,
         reward_type: Resource::Wood as u8,
         reward_value: 100,
-        depends_on: None, // Starting upgrade quest
+        depends_on: Some(1), // Gated after building Food Collector
     },
     QuestConfig {
         id: 5,
@@ -349,7 +340,7 @@ pub const QUESTS_CONFIG: [QuestConfig; 15] = [
         target_value: 2,
         reward_type: Resource::Water as u8,
         reward_value: 20,
-        depends_on: Some(4), // Depends on completing the previous upgrade quest
+        depends_on: Some(3), // Depends on building the Wood Collector
     },
     QuestConfig {
         id: 6,
@@ -367,16 +358,16 @@ pub const QUESTS_CONFIG: [QuestConfig; 15] = [
         target_value: 30,
         reward_type: Resource::Stone as u8,
         reward_value: 5,
-        depends_on: Some(1), // MODIFIED: Now depends on building the Food Collector
+        depends_on: Some(1), // Depends on building the Food Collector
     },
     QuestConfig {
         id: 8,
         quest_type: QuestType::Store,
-        target_type: Resource::Water as u8, // MODIFIED: Changed from Wood to Water
+        target_type: Resource::Water as u8,
         target_value: 50,
         reward_type: Resource::Stone as u8,
         reward_value: 5,
-        depends_on: Some(3), // MODIFIED: Now depends on building the Water Collector
+        depends_on: Some(0), // Depends on building the Water Collector (id 0)
     },
     QuestConfig {
         id: 9,
@@ -423,8 +414,16 @@ pub const QUESTS_CONFIG: [QuestConfig; 15] = [
         reward_value: 30,
         depends_on: Some(12), // Depends on completing the previous faith quest
     },
+    QuestConfig {
+        id: 14, // Research building quest
+        quest_type: QuestType::Build,
+        target_type: BuildingType::Research as u8,
+        target_value: 1,
+        reward_type: Resource::Wood as u8,
+        reward_value: 15,
+        depends_on: Some(3), // Depends on building the Wood Collector
+    },
 ];
-
 pub fn get_quest_progress(
     buildings: Vec<Building>,
     treasury: ResourceBalance,

@@ -29,7 +29,7 @@ pub mod claim_quest {
         let quest_opt = QUESTS_CONFIG.iter().find(|q| q.id == args.index as u32);
 
         if let Some(quest) = quest_opt {
-            //todo quest completion checks
+            // quest completion checks
             let progress = get_quest_progress(
                 settlement.buildings.clone(),
                 settlement.treasury,

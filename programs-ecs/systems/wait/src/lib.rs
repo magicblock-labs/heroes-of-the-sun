@@ -21,10 +21,10 @@ pub mod wait {
         let time_to_wait = u16::min(args.time, settlement.time_units as u16);
         settlement.time_units -= time_to_wait as u8;
 
-        let mut water_storage: u16 = 0;
-        let mut food_storage: u16 = 0;
-        let mut wood_storage: u16 = 0;
-        let mut stone_storage: u16 = 0;
+        let mut water_storage: u16 = config::INITIAL_TREASURY.water;
+        let mut food_storage: u16 = config::INITIAL_TREASURY.food;
+        let mut wood_storage: u16 = config::INITIAL_TREASURY.wood;
+        let mut stone_storage: u16 = config::INITIAL_TREASURY.stone;
 
         //calc current storage capacity for all resources
         for building in settlement.buildings.to_vec() {

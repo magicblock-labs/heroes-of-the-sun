@@ -455,7 +455,7 @@ namespace Connectors
             {
                 var tx = await RpcClient.GetTransactionAsync(sendTx.Result, Commitment.Confirmed);
 
-                if (tx.Result.Meta.Error != null)
+                if (tx.Result?.Meta?.Error != null)
                 {
                     var errorMessage =
                         $"Failed At: {RpcClient.NodeAddress.AbsoluteUri} \n{JsonConvert.SerializeObject(tx.Result.Meta.Error)}";
@@ -464,6 +464,9 @@ namespace Connectors
                     return false;
                 }
             }
+
+            var signerWallet = Web3Utils.SessionToken == null || signWithWallet ? Wallet : Web3Utils.SessionWallet;
+            Debug.Log($"Balance: {await signerWallet.GetBalance()}");
 
             return true;
         }

@@ -38,6 +38,7 @@ namespace Model
         public const int STONE_STORAGE_PER_LEVEL = 15;
         public const int GOLD_STORAGE_PER_LEVEL = 5;
 
+        
 
         public const float STORAGE_CAPACITY_RESEARCH_MULTIPLIER = 0.1f;
 
@@ -203,6 +204,14 @@ namespace Model
         public int Height => _buildConfig.height;
         public Dictionary<BuildingType, BuildingConfig> Buildings => _buildConfig.buildings;
 
+        public static StorageCapacity InitialTreasury = new()
+        {
+            Food = 20,
+            Water = 20,
+            Wood = 40,
+            Stone = 10,
+        };
+
         public static Vector3 GetWorldCellPosition(int x, int y)
         {
             return new Vector3(
@@ -233,7 +242,8 @@ namespace Model
             {
                 id = 0,
                 type = QuestType.Build,
-                targetType = (int)BuildingType.FoodStorage,
+                targetType = (int)BuildingType.WaterCollector,
+                targetValue = 1,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 10,
                 dependsOn = null // No dependencies (starting quest)
@@ -243,6 +253,7 @@ namespace Model
                 id = 1,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.FoodCollector,
+                targetValue = 1,
                 rewardType = (int)Resource.Water,
                 rewardValue = 10,
                 dependsOn = 0 // Depends on completing the first quest
@@ -252,6 +263,7 @@ namespace Model
                 id = 2,
                 type = QuestType.Build,
                 targetType = (int)BuildingType.WaterStorage,
+                targetValue = 1,
                 rewardType = (int)Resource.Water,
                 rewardValue = 10,
                 dependsOn = 1 // Depends on completing the previous quest
@@ -260,20 +272,11 @@ namespace Model
             {
                 id = 3,
                 type = QuestType.Build,
-                targetType = (int)BuildingType.WaterCollector,
+                targetType = (int)BuildingType.WoodCollector,
+                targetValue = 1,
                 rewardType = (int)Resource.Water,
                 rewardValue = 10,
-                dependsOn = 2 // Depends on completing the previous quest
-            },
-            // New Research building quest
-            new()
-            {
-                id = 14,
-                type = QuestType.Build,
-                targetType = (int)BuildingType.Research,
-                rewardType = (int)Resource.Wood,
-                rewardValue = 15,
-                dependsOn = 3 // Depends on completing the previous build quest
+                dependsOn = 4 // Depends on upgrading Town Hall
             },
             new()
             {
@@ -283,7 +286,7 @@ namespace Model
                 targetValue = 2,
                 rewardType = (int)Resource.Wood,
                 rewardValue = 100,
-                dependsOn = null // Starting upgrade quest
+                dependsOn = 1 // Gated after building Food Collector
             },
             new()
             {
@@ -293,7 +296,7 @@ namespace Model
                 targetValue = 2,
                 rewardType = (int)Resource.Water,
                 rewardValue = 20,
-                dependsOn = 4 // Depends on completing the previous upgrade quest
+                dependsOn = 3 // Depends on building the Wood Collector
             },
             new()
             {
@@ -323,7 +326,7 @@ namespace Model
                 targetValue = 50,
                 rewardType = (int)Resource.Stone,
                 rewardValue = 5,
-                dependsOn = 3 // MODIFIED: Now depends on building the Water Collector
+                dependsOn = 0 // Depends on building the Water Collector (id 0)
             },
             new()
             {
@@ -372,6 +375,17 @@ namespace Model
                 rewardType = (int)Resource.Stone,
                 rewardValue = 30,
                 dependsOn = 12 // Depends on completing the previous faith quest
+            },
+            // New Research building quest
+            new()
+            {
+                id = 14,
+                type = QuestType.Build,
+                targetType = (int)BuildingType.Research,
+                targetValue = 1,
+                rewardType = (int)Resource.Wood,
+                rewardValue = 15,
+                dependsOn = 3 // Depends on completing the previous build quest
             },
         };
 

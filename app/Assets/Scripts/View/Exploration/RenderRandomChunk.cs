@@ -2,15 +2,48 @@ using System.Collections;
 using System.Collections.Generic;
 using Model;
 using UnityEngine;
+using Utils;
+using Utils.Injection;
 
 namespace View.Exploration
 {
-    public class RenderRandomChunk : MonoBehaviour
+    public class RenderRandomChunk : InjectableBehaviour
     {
+        [Header("Tile meshes")] public Mesh[] tileMeshes;
+
+        [Header("Shared material (Enable GPU Instancing = ON)")]
+        public Material instancedMat;
+
         [SerializeField] private Transform tileContainer;
-        [SerializeField] private RenderTile tile;
+        [SerializeField] private RenderTile tilePrefab;
 
         [SerializeField] private MeshFilter waterMesh;
+        [Inject] private PathfindingModel _pathfinder;
+
+        private MeshDrawer _drawer = new();
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (instancedMat == null)
+            {
+                Debug.LogError("Assign instancedMat");
+                enabled = false;
+                return;
+            }
+
+            if (tileMeshes == null || tileMeshes.Length == 0)
+            {
+                Debug.LogError("Assign tileMeshes");
+                enabled = false;
+                return;
+            }
+
+            instancedMat.enableInstancing = true;
+            
+            _drawer.Init(tileMeshes, instancedMat);
+        }
 
         public void Create(Vector2Int offset, int size, Vector2 scale, bool instant)
         {
@@ -21,6 +54,8 @@ namespace View.Exploration
             GenerateWaterMesh(size, size * ConfigModel.CellSize);
 
             StartCoroutine(GenerateTiles(offset, size, scale, instant));
+
+            _drawer.Invalidate(); // tiles changed; rebuild chunks when ready
         }
 
         private void GenerateWaterMesh(int subdivisions, int scale)
@@ -64,6 +99,8 @@ namespace View.Exploration
 
         private IEnumerator GenerateTiles(Vector2Int offset, int size, Vector2 scale, bool instant)
         {
+            var tileMap = new Dictionary<int, List<Vector3>>();
+
             for (var x = 0; x < size; x++)
             for (var y = 0; y < size; y++)
             {
@@ -71,15 +108,49 @@ namespace View.Exploration
                 var sampleY = (float)(y + offset.y) / size * scale.y;
 
                 var perlinNoiseSample = Mathf.PerlinNoise(sampleX, sampleY);
-                Instantiate(tile, tileContainer).Create(
+                var position = new Vector2Int(x, y);
+                var tile = Instantiate(tilePrefab, tileContainer).Create(
                     offset,
-                    new Vector2Int(x, y),
-                    perlinNoiseSample,
-                    x == 0 || y == 0 || x == size - 1 || y == size - 1);
+                    position);
+
+
+                var yPos = (int)(perlinNoiseSample * tileMeshes.Length * 4) - 6.5f;
+
+                _pathfinder.AddPoint(tile.Location, yPos);
+
+                var tileIndex = Mathf.Min((int)(tileMeshes.Length * perlinNoiseSample), tileMeshes.Length - 1);
+
+                tile.transform.localScale = Vector3.one * 2;
+                tile.transform.localPosition = ConfigModel.GetWorldCellPosition(position.x, position.y) +
+                                               Vector3.up * yPos;
+
+                if (!tileMap.ContainsKey(tileIndex))
+                    tileMap.Add(tileIndex, new List<Vector3>());
+
+                tileMap[tileIndex].Add(ConfigModel.GetWorldCellPosition(position.x + offset.x, position.y + offset.y) +
+                                        Vector3.up * yPos);
+
+                //edge fall
+                if (x == 0 || y == 0 || x == size - 1 || y == size - 1)
+                {
+                    for (var i = 1; i < yPos; i++)
+                        tileMap[tileIndex]
+                            .Add(ConfigModel.GetWorldCellPosition(position.x + offset.x, position.y + offset.y) +
+                                 Vector3.up * (yPos - i));
+                }
 
                 if (!instant)
                     yield return null;
             }
+
+            _drawer.BuildChunksFromTileMap(tileMap);
+            _drawer.UpdateBatchData();
+        }
+
+        private void Update()
+        {
+            _drawer.UpdateBatchData();
+            _drawer.Render();
         }
     }
 }

@@ -11,8 +11,7 @@ pub mod smart_object_init {
     pub fn execute(ctx: Context<Components>, args: SmartObjectInitArgs) -> Result<Components> {
         let smart_object_location = &mut ctx.accounts.smart_object_location;
 
-        //cant init twice?
-
+        //prevent init twice
         if smart_object_location.entity != Pubkey::default() {
             return err!(errors::SmartObjectInitError::AlreadyInitialized);
         }

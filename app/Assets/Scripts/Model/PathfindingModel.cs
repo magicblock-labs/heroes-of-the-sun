@@ -155,5 +155,10 @@ namespace Model
         {
             return _heightmap.GetValueOrDefault(location, 0);
         }
+
+        public bool Has(Vector2Int value)
+        {
+            return _heightmap.ContainsKey(value);
+        }
     }
 }

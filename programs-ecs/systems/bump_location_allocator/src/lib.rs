@@ -13,6 +13,9 @@ pub mod bump_location_allocator {
     const DIRECTION_LEFT: u8 = 3;
 
     pub fn execute(ctx: Context<Components>, _args: EmptyArgs) -> Result<Components> {
+
+//todo safety verify current slot is actally occupied so you dont bump endleslly
+
         let location_allocator = &mut ctx.accounts.location_allocator;
 
         match location_allocator.direction {

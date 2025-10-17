@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Connectors;
 using Model;
 using Notifications;
@@ -37,6 +38,8 @@ public class DisplayQuest : InjectableBehaviour
     [Inject] PlayerSettlementConnector _connector;
 
     [Inject] StartFtueSequence _startFtueSequence;
+    [Inject] ResourceDiffNotification _resourceDiff;
+    [Inject] private PlayAudioClip _play;
 
 
     [SerializeField] private Image typeIcon;
@@ -51,32 +54,42 @@ public class DisplayQuest : InjectableBehaviour
     [SerializeField] private Text claimText;
     [SerializeField] private Image claimResourceIcon;
     [SerializeField] private Sprite[] resourceIcons;
+    [SerializeField] private Transform rewardAnchor;
+    [SerializeField] private AudioClip clip;
 
     private QuestData _data;
+    private uint _progress;
 
     public bool SetData(QuestData data, uint progress)
     {
         _data = data;
-        typeIcon.sprite = questTypeIcons[(int)data.type];
-        title.text = data.type switch
+        _progress = progress;
+
+        return Redraw();
+    }
+
+    private bool Redraw()
+    {
+        typeIcon.sprite = questTypeIcons[(int)_data.type];
+        title.text = _data.type switch
         {
-            QuestType.Build => $"Build a {(BuildingType)data.targetType}",
-            QuestType.Upgrade => $"Upgrade a {(BuildingType)data.targetType}",
-            QuestType.Store => $"Have {data.targetValue} of {(Resource)data.targetType}",
-            QuestType.Research => $"Research {(SettlementModel.ResearchType)data.targetType}",
-            QuestType.Faith => $"Have faith of {data.targetValue}",
+            QuestType.Build => $"Build a {(BuildingType)_data.targetType}",
+            QuestType.Upgrade => $"Upgrade a {(BuildingType)_data.targetType}",
+            QuestType.Store => $"Have {_data.targetValue} of {(Resource)_data.targetType}",
+            QuestType.Research => $"Research {(SettlementModel.ResearchType)_data.targetType}",
+            QuestType.Faith => $"Have faith of {_data.targetValue}",
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        var clampedProgress = Mathf.Clamp(progress, 0, data.targetValue);
-        progressFill.fillAmount = clampedProgress / data.targetValue;
-        progressLabel.text = $"{progress}/{data.targetValue}";
+        var clampedProgress = Mathf.Clamp(_progress, 0, _data.targetValue);
+        progressFill.fillAmount = clampedProgress / _data.targetValue;
+        progressLabel.text = $"{_progress}/{_data.targetValue}";
 
-        claimButton.interactable = progress >= data.targetValue;
-        claimText.text = $"Claim x{data.rewardValue}";
-        claimResourceIcon.sprite = resourceIcons[data.rewardType % 4];
+        claimButton.interactable = _progress >= _data.targetValue;
+        claimText.text = $"Claim x{_data.rewardValue}";
+        claimResourceIcon.sprite = resourceIcons[_data.rewardType % 4];
 
-        return progress >= data.targetValue;
+        return _progress >= _data.targetValue;
     }
 
     public void OnInfoClick()
@@ -86,6 +99,34 @@ public class DisplayQuest : InjectableBehaviour
 
     public void OnClaimClick()
     {
-        _ = _connector.ClaimQuest(_data.id);
+        _ = ClaimAsync();
+    }
+
+    private async Task ClaimAsync()
+    {
+        claimButton.interactable = false;
+        await _connector.ClaimQuest(_data.id);
+        claimButton.interactable = _progress >= _data.targetValue;
+        var diffValue = new ResourceDiff();
+
+        switch (_data.rewardType)
+        {
+            case (int)Resource.Food:
+                diffValue.Food += _data.rewardValue;
+                break;
+            case (int)Resource.Wood:
+                diffValue.Wood += _data.rewardValue;
+                break;
+            case (int)Resource.Water:
+                diffValue.Water += _data.rewardValue;
+                break;
+            case (int)Resource.Stone:
+                diffValue.Stone += _data.rewardValue;
+                break;
+        }
+
+        _resourceDiff.Dispatch(diffValue, 0, rewardAnchor);
+        _play.Dispatch(clip);
+        
     }
 }

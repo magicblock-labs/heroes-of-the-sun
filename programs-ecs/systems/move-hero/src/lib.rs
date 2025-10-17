@@ -7,6 +7,9 @@ pub mod move_hero {
     use hero::Hero;
 
     pub fn execute(ctx: Context<Components>, args: MoveHeroArgs) -> Result<Components> {
+
+        //todo min cooldown?
+
         let hero = &mut ctx.accounts.hero;
         hero.x = args.x;
         hero.y = args.y;

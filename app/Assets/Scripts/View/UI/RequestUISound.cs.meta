@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 07591ffa5746141daba136d38162912e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - clickSound: {fileID: 8300000, guid: f9390048cef5143fab5373e6dd3c429e, type: 3}
+  - uiFlipSound: {fileID: 8300000, guid: 92f3c515d69bb401796ca7ecf47f1e33, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

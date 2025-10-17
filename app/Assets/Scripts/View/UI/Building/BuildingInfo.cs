@@ -23,6 +23,7 @@ namespace View.UI.Building
         [Inject] private ResourceDiffNotification _resourceDiff;
         [Inject] private NextTurnNotification _nextTurn;
         [Inject] private ConfigModel _config;
+        [Inject] private PlayAudioClip _play;
 
         [SerializeField] private TMP_Text nameLabel;
         [SerializeField] private TMP_Text levelLabel;
@@ -30,6 +31,7 @@ namespace View.UI.Building
         [SerializeField] private DeteriorationStatus deteriorationStatus;
         [SerializeField] private WorkerStatus workerStatus;
         [SerializeField] private ExtractionStatus extractionStatus;
+        [SerializeField] private AudioClip uiSfx;
 
         private IBuildingActionButton[] _actionButtons;
         [SerializeField] public GameObject controls;
@@ -138,6 +140,8 @@ namespace View.UI.Building
                 if (value && _actionPositions.TryGetValue(child, out var pos))
                     child.DOAnchorPos(pos, .1f);
             }
+            
+            _play.Dispatch(uiSfx);
         }
 
         private void OnDestroy()

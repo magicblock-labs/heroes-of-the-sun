@@ -15,6 +15,9 @@ namespace View.UI.Building
         [Inject] private ResourceDiffNotification _resourceDiff;
 
         [Inject] private ShowWorkerSelection _showWorkerSelection;
+        [Inject] private PlayAudioClip _play;
+        
+        [SerializeField] private AudioClip buildClip;
 
         public void OnTryDragStart()
         {
@@ -44,6 +47,8 @@ namespace View.UI.Building
                     Wood = -cost.Wood,
                     Stone = -cost.Stone,
                 }, 0, worldAnchor);
+                
+                _play.Dispatch(buildClip);
                 
                 await _connector.Build(
                     (byte)_gridInteraction.CellPosX,

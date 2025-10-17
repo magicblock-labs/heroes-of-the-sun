@@ -8,12 +8,12 @@ namespace View.Exploration
     {
         [SerializeField] private TMP_Text keyLabel;
 
-        public void Create(Settlement.Accounts.Settlement value)
+        public void Create(Settlement.Accounts.Settlement value, Vector2Int offset)
         {
             keyLabel.text = value?.Owner.ToString()[..4] ?? "Unoccupied..";
 
             foreach (var settlementDataRenderer in GetComponentsInChildren<IDisplaySettlementData>())
-                settlementDataRenderer.SetData(value);
+                settlementDataRenderer.SetData(value, offset);
         }
     }
 }

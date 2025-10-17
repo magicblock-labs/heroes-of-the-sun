@@ -2,6 +2,7 @@ using Notifications;
 using Settlement.Types;
 using UnityEngine;
 using Utils.Injection;
+using View.UI;
 
 
 public class DisplayResourceDiffs : InjectableBehaviour

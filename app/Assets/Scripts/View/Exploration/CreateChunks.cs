@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Model;
 using UnityEngine;
 using Utils.Injection;
@@ -14,7 +15,7 @@ namespace View.Exploration
         [SerializeField] private int passes = 2;
         [SerializeField] private RenderGenericChunk prefab;
 
-        private readonly HashSet<Vector2Int> _initialisedChunks = new();
+        private readonly Dictionary<Vector2Int, RenderGenericChunk> _initialisedChunks = new();
 
         private void Update()
         {
@@ -26,6 +27,8 @@ namespace View.Exploration
 
             var pass = 0;
 
+            var allChunks = _initialisedChunks.Keys.ToList();
+
             while (pass <= passes)
             {
                 for (var chunkX = -pass; chunkX <= pass; chunkX++)
@@ -36,11 +39,23 @@ namespace View.Exploration
 
                     var offsetChunkLocation = new Vector2Int(startingChunkX + chunkX, startingChunkY + chunkY);
 
-                    if (_initialisedChunks.Add(offsetChunkLocation))
-                        Instantiate(prefab, transform).Create(offsetChunkLocation, chunkSize, pass < 2);
+                    if (!_initialisedChunks.ContainsKey(offsetChunkLocation))
+                    {
+                        var renderGenericChunk = Instantiate(prefab, transform);
+                        renderGenericChunk.Create(offsetChunkLocation, chunkSize, pass < 2);
+                        _initialisedChunks[offsetChunkLocation] = renderGenericChunk;
+                    }
+                    
+                    allChunks.Remove(offsetChunkLocation);
+                    _initialisedChunks[offsetChunkLocation].gameObject.SetActive(true);
                 }
 
                 pass++;
+            }
+
+            foreach (var chunk in allChunks)
+            {
+                _initialisedChunks[chunk].gameObject.SetActive(false);
             }
         }
     }

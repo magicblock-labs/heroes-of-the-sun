@@ -7,37 +7,40 @@ namespace View.Exploration
 {
     public class DisplayHomePointer : InjectableBehaviour
     {
+        [Inject] private PlayerHeroModel _playerHero;
         [Inject] private PlayerModel _playerModel;
 
-        [SerializeField] private RectTransform _homePointer;
-        [SerializeField] private TMP_Text _distanceLabel;
+        [SerializeField] private RectTransform homePointer;
+        [SerializeField] private RectTransform playerPointer;
+        [SerializeField] private TMP_Text distanceLabel;
 
-        [SerializeField] private Camera _minimapCamera;
+        private Vector2 _settlementPosition;
 
-        private Vector3 _settlementPosition;
-        private Transform _heroTransform;
-
-        void Start()
+        private void Start()
         {
             var settlement = _playerModel.Get().Settlements[0];
-            _settlementPosition = new Vector3(settlement.X * 96 - 1, 0, settlement.Y * 96 - 1);
+            _settlementPosition = new Vector2(settlement.X * 96 - 1, settlement.Y * 96 - 1);
         }
 
         void Update()
         {
-            if (_heroTransform == null)
-            {
-                var hero = FindFirstObjectByType<OwnHeroController>();
-                if (hero != null)
-                    _heroTransform = hero.transform;
-                else
-                    return;
-            }
+            if (_playerHero?.Get() == null)
+                return;
 
-            var viewportPos = _minimapCamera.WorldToViewportPoint(_settlementPosition);
-            _distanceLabel.text = $"{(_heroTransform.position - _settlementPosition).magnitude:0}m";
+            var heroPosition = _playerHero.ImmediatePosition;
 
-            _homePointer.anchoredPosition = new Vector2(Mathf.Clamp(viewportPos.x, 0, 1), Mathf.Clamp(viewportPos.y, 0, 1)) * 256;
+            var diff = _settlementPosition - heroPosition;
+            var diffUnits = diff * ConfigModel.CellSize;
+            
+            distanceLabel.text = $"{diffUnits.magnitude:0}m";
+
+            var maxDimension = Mathf.Max(diffUnits.x, diffUnits.y);
+            var overflow = maxDimension / 128;
+            if (overflow > 1)
+                diffUnits /= overflow;
+            
+            homePointer.anchoredPosition = diffUnits;
+            playerPointer.rotation = Quaternion.AngleAxis(-_playerHero.ImmediateRotation, Vector3.forward);
         }
     }
 }

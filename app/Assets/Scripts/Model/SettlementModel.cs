@@ -110,12 +110,7 @@ namespace Model
 
         private StorageCapacity GetStorageCapacity()
         {
-            var storage = new StorageCapacity()
-            {
-                Water = 0,
-                Food = 0,
-                Wood = 0,
-            };
+            var storage = ConfigModel.InitialTreasury;
 
             //calc current storage capacity for all resources
             foreach (var building in _data.Buildings)
