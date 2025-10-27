@@ -21,5 +21,5 @@ bolt-lang.workspace = true
 anchor-lang.workspace = true
 serde.workspace = true
 player = { version = "0.1.8", path = "../../components/player", features = ["cpi"] }
-settlement = { version = "0.1.8", path = "../../components/settlement", features = ["cpi"] }
+ecs-bundle.workspace = true
 location_allocator = { version = "0.1.8", path = "../../components/location_allocator", features = ["cpi"] }

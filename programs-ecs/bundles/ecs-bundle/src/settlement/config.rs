@@ -1,6 +1,6 @@
 use bolt_lang::*;
 
-use crate::{Building, EnvironmentState, ResourceBalance};
+use crate::settlement::{Building, EnvironmentState, ResourceBalance};
 
 //this enum matches the BUILDINGS_CONFIG array indexes (so we don't need to use a map (BuildingType=>BuildingConfig))
 #[component_deserialize]

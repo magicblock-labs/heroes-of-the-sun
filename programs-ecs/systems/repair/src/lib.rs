@@ -5,7 +5,7 @@ declare_id!("5xPJt6GDcmGphNAs6qU3hWAvzLwXuSqhTco6RtoAR9aY");
 
 #[system]
 pub mod repair {
-    use settlement::{
+    use ecs_bundle::settlement::{
         config::{self, get_construction_cost, get_research_level, ResearchType, BUILDINGS_CONFIG},
         Settlement,
     };

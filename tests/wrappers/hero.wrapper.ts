@@ -7,7 +7,8 @@ import {
   ApplySystem,
   FindComponentPda,
   createDelegateInstruction,
-} from "@magicblock-labs/bolt-sdk"
+  Component,
+} from "../../../bolt/clients/typescript/lib"
 import { Hero } from "../../target/types/hero";
 import { MoveHero } from "../../target/types/move_hero";
 import { ChangeBackpack } from "../../target/types/change_backpack";
@@ -119,7 +120,7 @@ export class HeroWrapper {
   }
 
 
-  async changeBackpack(settlementPDA: PublicKey, settlementProgramID: PublicKey, args: ChangeBackpackArgs) {
+  async changeBackpack(settlementPDA: PublicKey, settlementID: Component, args: ChangeBackpackArgs) {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
@@ -131,7 +132,7 @@ export class HeroWrapper {
         },
         {
           entity: settlementPDA,
-          components: [{ componentId: settlementProgramID }],
+          components: [{ componentId: settlementID }],
         }],
       args,
     });

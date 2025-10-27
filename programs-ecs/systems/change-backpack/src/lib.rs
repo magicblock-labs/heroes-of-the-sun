@@ -8,7 +8,7 @@ const CAPACITY: u16 = 5;
 #[system]
 pub mod change_backpack {
     use hero::Hero;
-    use settlement::Settlement;
+    use ecs_bundle::settlement::Settlement;
 
     pub fn execute(ctx: Context<Components>, args: ChangeBackpackArgs) -> Result<Components> {
         let hero = &mut ctx.accounts.hero;

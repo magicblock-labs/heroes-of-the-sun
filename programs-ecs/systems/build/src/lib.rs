@@ -1,7 +1,7 @@
 mod errors;
 
 use bolt_lang::*;
-use settlement::{
+use ecs_bundle::settlement::{
     config::{
         get_build_time, get_construction_cost, get_extraction_cap, BuildingConfig,
         BUILDINGS_CONFIG, MAP_HEIGHT, MAP_WIDTH,

@@ -19,4 +19,4 @@ idl-build = ["anchor-lang/idl-build"]
 [dependencies]
 bolt-lang.workspace = true
 anchor-lang.workspace = true
-settlement = { version = "0.1.10", path = "../../components/settlement", features = ["cpi"] }
+ecs-bundle.workspace = true

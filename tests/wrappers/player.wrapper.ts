@@ -6,7 +6,8 @@ import {
   AddEntity,
   InitializeComponent,
   ApplySystem,
-} from "@magicblock-labs/bolt-sdk"
+  Component,
+} from "../../../bolt/clients/typescript/lib"
 import { AssignSettlement } from "../../target/types/assign_settlement";
 import { Player } from "../../target/types/player";
 import { AssignHero } from "../../target/types/assign_hero";
@@ -60,7 +61,7 @@ export class PlayerWrapper {
     return await this.playerComponent.account.player.fetch(this.componentPda);
   }
 
-  async assignSettlement(settlementPDA: PublicKey, settlementProgramID: PublicKey, allocatorPDA: PublicKey, allocatorProgramID: PublicKey) {
+  async assignSettlement(settlementPDA: PublicKey, settlementID: Component, allocatorPDA: PublicKey, allocatorProgramID: PublicKey) {
 
     // Run the build system
     const applySystem = await ApplySystem({
@@ -73,7 +74,7 @@ export class PlayerWrapper {
       },
       {
         entity: settlementPDA,
-        components: [{ componentId: settlementProgramID }],
+        components: [{ componentId: settlementID }],
       },
       {
         entity: allocatorPDA,

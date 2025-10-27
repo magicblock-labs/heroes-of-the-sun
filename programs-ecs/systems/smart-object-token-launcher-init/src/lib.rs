@@ -14,7 +14,7 @@ pub mod smart_object_token_launcher_init {
         },
         token::{self, spl_token::instruction::AuthorityType, SetAuthority},
     };
-    use settlement::ResourceBalance;
+    use ecs_bundle::settlement::ResourceBalance;
     use smart_object_token_launcher::SmartObjectTokenLauncher;
 
     pub fn execute(

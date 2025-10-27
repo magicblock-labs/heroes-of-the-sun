@@ -5,7 +5,7 @@ declare_id!("6JwZJNAtkciXVGenFSoa99VBNcxyb2W8mvzcMK1vTWKs");
 
 #[system]
 pub mod sacrifice {
-    use settlement::{
+    use ecs_bundle::settlement::{
         config::{self, get_research_level, ResearchType},
         Settlement,
     };

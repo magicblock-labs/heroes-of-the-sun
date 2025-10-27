@@ -1,4 +1,5 @@
 use bolt_lang::*;
+use ecs_bundle::settlement;
 
 declare_id!("5F9tMTcNhgjL3tWCaF5HwLkQP9z4XJ4nTXmbYeS8UXRW");
 

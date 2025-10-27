@@ -1,5 +1,6 @@
 use bolt_lang::*;
 mod errors;
+use ecs_bundle::settlement;
 
 declare_id!("Csna3V2jUMdQEQKUCxLsQEnYThAGPSWcPCxW9vea1S8d");
 

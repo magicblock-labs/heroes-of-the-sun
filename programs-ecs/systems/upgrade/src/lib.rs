@@ -1,13 +1,13 @@
 mod errors;
 
 use bolt_lang::*;
-use settlement::Settlement;
+use ecs_bundle::settlement::Settlement;
 
 declare_id!("76wsz7SjNtvoFK8aUvojEyfjep5pMSaHQihGVxcjc1EA");
 
 #[system]
 pub mod upgrade {
-    use settlement::config::{get_build_time, get_construction_cost, BUILDINGS_CONFIG};
+    use ecs_bundle::settlement::config::{get_build_time, get_construction_cost, BUILDINGS_CONFIG};
 
     pub fn execute(ctx: Context<Components>, args: BuildArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;

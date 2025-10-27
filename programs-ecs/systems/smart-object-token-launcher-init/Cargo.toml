@@ -22,4 +22,4 @@ anchor-lang.workspace = true
 serde.workspace = true
 anchor-spl.workspace = true
 smart-object-token-launcher = { version = "0.1.8", path = "../../components/smart-object-token-launcher", features = ["cpi"] }
-settlement = { version = "0.1.10", path = "../../components/settlement", features = ["cpi"] }
+ecs-bundle.workspace = true

@@ -4,7 +4,7 @@ declare_id!("3VEXJoAZkYxDXigSWso8FnJY8z6C6inpPxU798vqc9um");
 
 #[system]
 pub mod reset {
-    use settlement::{
+    use ecs_bundle::settlement::{
         config::{self, get_extraction_cap, BuildingType},
         Building, Settlement,
     };

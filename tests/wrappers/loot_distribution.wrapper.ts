@@ -5,7 +5,7 @@ import {
   AddEntity,
   ApplySystem,
   InitializeComponent,
-} from "@magicblock-labs/bolt-sdk"
+} from "../../../bolt/clients/typescript/lib"
 import { LootDistribution } from "../../target/types/loot_distribution";
 import { ClaimLoot } from "../../target/types/claim_loot";
 

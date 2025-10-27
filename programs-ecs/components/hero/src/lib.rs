@@ -1,5 +1,5 @@
 use bolt_lang::*;
-use settlement::ResourceBalance;
+use ecs_bundle::settlement::ResourceBalance;
 
 declare_id!("GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh");
 

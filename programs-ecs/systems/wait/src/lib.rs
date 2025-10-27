@@ -1,7 +1,7 @@
 use bolt_lang::*;
 use std::u16;
 
-use settlement::{
+use ecs_bundle::settlement::{
     self,
     config::{
         self, get_collection_level_multiplier, get_extraction_cap, get_research_level,

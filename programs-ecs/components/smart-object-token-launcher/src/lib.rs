@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use bolt_lang::*;
-use settlement::ResourceBalance;
+use ecs_bundle::settlement::ResourceBalance;
 
 declare_id!("8va4yKEBACkT49C9wo94gS8ZaTdUrq2ipLgZvSNxWbd3");
 

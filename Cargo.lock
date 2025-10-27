@@ -290,10 +290,10 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "location_allocator",
  "player",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -368,21 +368,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "bolt-attribute-bolt-arguments"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22c16838ae264307e5143b0fbc6dfbc77239a00878d7b1f373eeb0d98131abab"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "bolt-attribute-bolt-component"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f9bac8a476c2b037856290bf114d78cc76bcf4321820d2aed859aa97401263d"
+name = "bolt-attribute"
+version = "0.2.6"
 dependencies = [
  "bolt-utils",
  "heck 0.5.0",
@@ -392,33 +379,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "bolt-attribute-bolt-arguments"
+version = "0.2.6"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "bolt-attribute-bolt-bundle"
+version = "0.2.6"
+dependencies = [
+ "bolt-attribute",
+]
+
+[[package]]
+name = "bolt-attribute-bolt-component"
+version = "0.2.6"
+dependencies = [
+ "bolt-attribute",
+]
+
+[[package]]
 name = "bolt-attribute-bolt-component-deserialize"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fae68448ea532bcda1c82398816a715088c6d48a47bef5ee2f0077603fcc44e7"
+version = "0.2.6"
 dependencies = [
  "bolt-utils",
  "proc-macro2",
  "quote",
+ "sha2 0.10.9",
  "syn 1.0.109",
 ]
 
 [[package]]
 name = "bolt-attribute-bolt-component-id"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da3849ebea597f409dd3870d6b9f5a099a488c84ed9752877a01d7b2039e4bf2"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "bolt-attribute-bolt-delegate"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "173e28078c39d86a8222982d19a3d91b761b1f955b3f3b5c939cf9074723dcc2"
+version = "0.2.6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -427,20 +423,7 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-extra-accounts"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "045421855504c380d127e7e3a69b85b1947920b1243a9fdda267a40a9fa8877e"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "bolt-attribute-bolt-program"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a05791690ee2cf30405a0da62f24cd84aa971d70377330e67e9c68f2d1589d7"
+version = "0.2.6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -449,10 +432,9 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-system"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8133bd3c520095d49af9b2c6306bd2718e059ef895cb43a7376569414e92ab33"
+version = "0.2.6"
 dependencies = [
+ "bolt-attribute",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -460,9 +442,7 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-system-input"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2534857108f01623e89a64a196ec86d8e5185f47e41a7ec672bbc5bb87e7f059"
+version = "0.2.6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -470,34 +450,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "bolt-component"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d6af7f19b509a04d8ccec77e17b124d301e3f8f7b38fe13956c1e6eb2de1c8b"
-dependencies = [
- "anchor-lang",
- "bolt-system",
-]
-
-[[package]]
 name = "bolt-lang"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b4135f60d6e08a9534538655cf2caca27da8a6ae40df7c06cf8c5d221c21ea9"
+version = "0.2.6"
 dependencies = [
  "ahash",
  "anchor-lang",
  "bincode",
  "bolt-attribute-bolt-arguments",
+ "bolt-attribute-bolt-bundle",
  "bolt-attribute-bolt-component",
  "bolt-attribute-bolt-component-deserialize",
  "bolt-attribute-bolt-component-id",
- "bolt-attribute-bolt-delegate",
  "bolt-attribute-bolt-extra-accounts",
- "bolt-attribute-bolt-program",
  "bolt-attribute-bolt-system",
  "bolt-attribute-bolt-system-input",
- "bolt-system",
  "ephemeral-rollups-sdk",
  "getrandom 0.1.16",
  "serde",
@@ -509,19 +475,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "bolt-system"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc1dd9ee6993e6d81943cd9d97d6202f487a5a6fca0c42a3f945a373b5bfb48e"
-dependencies = [
- "anchor-lang",
-]
-
-[[package]]
 name = "bolt-utils"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "608d6750b5427fc3ae08840bee4569af94819d50ff591897573d9cbe9d2e9092"
+version = "0.2.6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -611,8 +566,8 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -704,9 +659,9 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "hero",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -739,8 +694,8 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -749,8 +704,8 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -771,6 +726,16 @@ checksum = "e89f72f65e8501878b8a004d5a1afb780987e2ce2b4532c562e367a72c57499f"
 dependencies = [
  "log",
  "web-sys",
+]
+
+[[package]]
+name = "const-crypto"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c06f1eb05f06cf2e380fdded278fbf056a38974299d77960555a311dcf91a52"
+dependencies = [
+ "keccak-const",
+ "sha2-const-stable",
 ]
 
 [[package]]
@@ -881,6 +846,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "ecs-bundle"
+version = "0.2.6"
+dependencies = [
+ "bolt-lang",
+ "serde",
+]
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -945,8 +918,8 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
  "token-minter",
 ]
 
@@ -1062,7 +1035,7 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
- "settlement",
+ "ecs-bundle",
 ]
 
 [[package]]
@@ -1126,6 +1099,12 @@ checksum = "ecc2af9a1119c51f12a14607e783cb977bde58bc069ff0c3da1095e635d70654"
 dependencies = [
  "cpufeatures",
 ]
+
+[[package]]
+name = "keccak-const"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57d8d8ce877200136358e0bbff3a77965875db3af755a11e1fa6b1b3e2df13ea"
 
 [[package]]
 name = "lazy_static"
@@ -1215,7 +1194,7 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
- "settlement",
+ "ecs-bundle",
 ]
 
 [[package]]
@@ -1579,8 +1558,8 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -1589,8 +1568,8 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -1599,8 +1578,8 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -1630,8 +1609,8 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -1728,14 +1707,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "settlement"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
 name = "sha2"
 version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1758,6 +1729,12 @@ dependencies = [
  "cpufeatures",
  "digest 0.10.7",
 ]
+
+[[package]]
+name = "sha2-const-stable"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f179d4e11094a893b82fff208f74d448a7512f99f5a0acbd5c679b705f83ed9"
 
 [[package]]
 name = "sha3"
@@ -1825,7 +1802,7 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
- "settlement",
+ "ecs-bundle",
 ]
 
 [[package]]
@@ -1835,8 +1812,8 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
  "smart-object-token-launcher",
 ]
 
@@ -3264,8 +3241,8 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -3291,8 +3268,8 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
@@ -3454,19 +3431,16 @@ version = "0.1.10"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
+ "ecs-bundle",
  "serde",
- "settlement",
 ]
 
 [[package]]
 name = "world"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61297ef163c795f9360509fc7ec6475637534249bb1b85f7521202d9709674ae"
+version = "0.2.6"
 dependencies = [
  "anchor-lang",
- "bolt-component",
- "bolt-system",
+ "const-crypto",
  "solana-security-txt",
  "tuple-conv",
 ]

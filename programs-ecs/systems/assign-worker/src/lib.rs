@@ -5,7 +5,7 @@ declare_id!("BExuAEwcKxKeqHSN8C1WetUAd6Tm71cZEiP8EBSrH55T");
 
 #[system]
 pub mod assign_worker {
-    use settlement::Settlement;
+    use ecs_bundle::settlement::Settlement;
 
     pub fn execute(ctx: Context<Components>, args: AssignLabourArgs) -> Result<Components> {
         let settlement = &mut ctx.accounts.settlement;

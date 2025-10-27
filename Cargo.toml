@@ -2,6 +2,7 @@
 members = [
     "programs-ecs/components/*",
     "programs-ecs/systems/*",
+    "programs-ecs/bundles/*",
     "programs/*"
 ]
 resolver = "2"
@@ -18,8 +19,10 @@ codegen-units = 1
 [workspace.dependencies]
 anchor-spl = { version = "0.31.1", features = ["metadata"] }
 anchor-lang = { version = "0.31.1", features = [ "init-if-needed" ] }
-bolt-lang = { version = "0.2.4" }
+# bolt-lang = { version = "0.2.4" }
+bolt-lang = { path = "../bolt/crates/bolt-lang" }
 session-keys = "^2"
 serde_json = "^1"
 solana-gpt-oracle = "^0"
 serde = { version = "1.0", features = ["derive"] }
+ecs-bundle = { path = "programs-ecs/bundles/ecs-bundle", features = ["cpi"] }

@@ -7,7 +7,7 @@ const SECONDS_IN_MINUTE: i64 = 60;
 #[system]
 pub mod claim_time {
 
-    use settlement::{
+    use ecs_bundle::settlement::{
         config::{self, get_research_level, ResearchType},
         Settlement,
     };

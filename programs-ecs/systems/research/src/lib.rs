@@ -6,7 +6,7 @@ declare_id!("3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP");
 #[system]
 pub mod research {
 
-    use settlement::{
+    use ecs_bundle::settlement::{
         config::{self, get_research_level_u8, ResearchType, BITS_PER_RESEARCH, RESEARCH_MASK},
         Settlement,
     };

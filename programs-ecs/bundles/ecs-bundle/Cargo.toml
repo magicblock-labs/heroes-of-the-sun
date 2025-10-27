@@ -1,12 +1,12 @@
 [package]
-name = "settlement"
-version = "0.1.10"
+name = "ecs-bundle"
+version = "0.2.6"
 description = "Created with Bolt"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "settlement"
+name = "ecs_bundle"
 
 [features]
 no-entrypoint = []
@@ -14,8 +14,12 @@ no-idl = []
 no-log-ix-name = []
 cpi = ["no-entrypoint"]
 default = []
-idl-build = ["anchor-lang/idl-build"]
+idl-build = ["bolt-lang/idl-build"]
+anchor-debug = ["bolt-lang/anchor-debug"]
+custom-heap = []
+custom-panic = []
+
 
 [dependencies]
 bolt-lang.workspace = true
-anchor-lang.workspace = true
+serde = { version = "1.0", features = ["derive"] }

@@ -4,7 +4,7 @@ import { PublicKey } from "@solana/web3.js";
 import {
   AddEntity,
   InitializeComponent,
-} from "@magicblock-labs/bolt-sdk"
+} from "../../../bolt/clients/typescript/lib"
 import { LocationAllocator } from "../../target/types/location_allocator";
 
 

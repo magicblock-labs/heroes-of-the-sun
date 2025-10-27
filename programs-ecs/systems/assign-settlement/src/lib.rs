@@ -7,7 +7,7 @@ pub mod assign_settlement {
 
     use location_allocator::LocationAllocator;
     use player::{Location, Player};
-    use settlement::Settlement;
+    use ecs_bundle::settlement::Settlement;
 
     const DIRECTION_UP: u8 = 0;
     const DIRECTION_RIGHT: u8 = 1;
