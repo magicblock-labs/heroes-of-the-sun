@@ -22,4 +22,4 @@ anchor-lang.workspace = true
 serde.workspace = true
 
 player = { version = "0.1.8", path = "../../components/player", features = ["cpi"] }
-hero = { version = "0.1.8", path = "../../components/hero", features = ["cpi"] }
+ecs-bundle.workspace = true

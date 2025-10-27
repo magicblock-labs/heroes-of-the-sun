@@ -22,5 +22,5 @@ bolt-lang.workspace = true
 anchor-lang.workspace = true
 serde.workspace = true
 smart-object-token-launcher = { version = "0.1.8", path = "../../components/smart-object-token-launcher", features = ["cpi"] }
-hero = { version = "0.1.10", path = "../../components/hero", features = ["cpi"] }
+ecs-bundle.workspace = true
 anchor-spl.workspace = true

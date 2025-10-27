@@ -11,7 +11,7 @@ declare_id!("DUW1KczxcpeTEY7j9nkvcuAdWGNWoadTeDBKN5Z9xhst");
 pub mod smart_object_token_launcher_interact {
     use anchor_spl::token::{mint_to, spl_token, MintTo};
     use bolt_lang::solana_program::program_pack::Pack;
-    use hero::Hero;
+    use ecs_bundle::hero::Hero;
     use smart_object_token_launcher::SmartObjectTokenLauncher;
 
     pub fn execute(

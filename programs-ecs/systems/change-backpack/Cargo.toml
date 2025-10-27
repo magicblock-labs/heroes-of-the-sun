@@ -21,4 +21,3 @@ bolt-lang.workspace = true
 anchor-lang.workspace = true
 serde.workspace = true
 ecs-bundle.workspace = true
-hero = { version = "0.1.10", path = "../../components/hero", features = ["cpi"] }

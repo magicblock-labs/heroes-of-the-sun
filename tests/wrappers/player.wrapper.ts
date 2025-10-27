@@ -89,7 +89,7 @@ export class PlayerWrapper {
   }
 
 
-  async assignHero(heroPDA: PublicKey, heroProgramID: PublicKey) {
+  async assignHero(heroPDA: PublicKey, heroID: Component) {
 
     // Run the build system
     const applySystem = await ApplySystem({
@@ -102,7 +102,7 @@ export class PlayerWrapper {
       },
       {
         entity: heroPDA,
-        components: [{ componentId: heroProgramID }],
+        components: [{ componentId: heroID }],
       }],
     });
 

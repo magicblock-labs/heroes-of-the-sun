@@ -4,7 +4,7 @@ declare_id!("6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv");
 
 #[system]
 pub mod move_hero {
-    use hero::Hero;
+    use ecs_bundle::hero::Hero;
 
     pub fn execute(ctx: Context<Components>, args: MoveHeroArgs) -> Result<Components> {
 

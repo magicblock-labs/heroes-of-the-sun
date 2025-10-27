@@ -1,6 +1,7 @@
 use bolt_lang::*;
 
 pub mod settlement;
+pub mod hero;
 
 declare_id!("Cjca6tWWGx77ki6rRinErcoZJEvJHNxfPaut8DoKJHQ5");
 
@@ -25,5 +26,15 @@ pub mod ecs_bundle {
 		#[max_len(30, 1)]
 		pub worker_assignment: Vec<i8>, //index is worker unit index, value is building index from /buildings/ array; singed: use -1 for free slot
 		pub quest_claim_status: u64,
+	}
+
+	#[component(delegate)]
+	#[derive(Default)]
+	pub struct Hero {
+		pub x: i32,
+		pub y: i32,
+		pub last_activity: i64,
+		pub owner: Pubkey,
+		pub backpack: ResourceBalance,
 	}
 }

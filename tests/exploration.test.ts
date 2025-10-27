@@ -45,7 +45,7 @@ describe("Exploration and multiplayer tests", async () => {
         await hero.init(await world.getWorldPda())
         await player.assignHero(
             hero.entityPda,
-            hero.heroComponent.programId,
+            new Component(hero.bundle.programId, "hero"),
         );
         const state = await hero.state();
         expect(state.owner.toString()).to.not.be.null;

@@ -8,10 +8,12 @@ import {
   FindComponentPda,
   createDelegateInstruction,
   Component,
+  DelegateComponent,
 } from "../../../bolt/clients/typescript/lib"
 import { Hero } from "../../target/types/hero";
 import { MoveHero } from "../../target/types/move_hero";
 import { ChangeBackpack } from "../../target/types/change_backpack";
+import { EcsBundle } from "../../target/types/ecs_bundle";
 
 export type MoveHeroArgs = {
   x: number,
@@ -35,7 +37,7 @@ export class HeroWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
-  heroComponent: Program<Hero>;
+  bundle: Program<EcsBundle>;
   moveHeroSystem: Program<MoveHero>;
   changeBackpackSystem: Program<ChangeBackpack>;
 
@@ -52,7 +54,7 @@ export class HeroWrapper {
         connection: this.provider.connection,
       });
 
-      this.heroComponent = anchor.workspace.Hero as Program<Hero>;
+      this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
       this.moveHeroSystem = anchor.workspace.MoveHero as Program<MoveHero>;
       this.changeBackpackSystem = anchor.workspace.ChangeBackpack as Program<ChangeBackpack>;
 
@@ -63,7 +65,7 @@ export class HeroWrapper {
       const initializeComponent = await InitializeComponent({
         payer: this.provider.wallet.publicKey,
         entity: this.entityPda,
-        componentId: this.heroComponent.programId,
+        componentId: new Component(this.bundle.programId, "hero"),
       });
       txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
       this.componentPda = initializeComponent.componentPda;
@@ -72,7 +74,7 @@ export class HeroWrapper {
   }
 
   async state() {
-    return await this.heroComponent.account.hero.fetch(this.componentPda);
+    return await this.bundle.account.hero.fetch(this.componentPda);
   }
 
   async moveHero(args: MoveHeroArgs) {
@@ -83,7 +85,7 @@ export class HeroWrapper {
       systemId: this.moveHeroSystem.programId,
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.heroComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "hero") }],
       }],
       args
     });
@@ -97,17 +99,12 @@ export class HeroWrapper {
   async delegate() {
 
 
-    const counterPda = FindComponentPda({
-      componentId: this.heroComponent.programId,
-      entity: this.entityPda,
-    });
-    const delegateIx = createDelegateInstruction({
-      entity: this.entityPda,
-      account: this.componentPda,
-      ownerProgram: this.heroComponent.programId,
+    const delegateIx = await DelegateComponent({
       payer: this.provider.wallet.publicKey,
+      entity: this.entityPda,
+      componentId: new Component(this.bundle.programId, "hero"),
     });
-    const tx = new anchor.web3.Transaction().add(delegateIx);
+    const tx = new anchor.web3.Transaction().add(delegateIx.instruction);
     tx.feePayer = this.provider.wallet.publicKey;
     tx.recentBlockhash = (await this.provider.connection.getLatestBlockhash()).blockhash;
     const txSign = await this.provider.sendAndConfirm(tx, [], { commitment: "confirmed" });
@@ -128,7 +125,7 @@ export class HeroWrapper {
       entities: [
         {
           entity: this.entityPda,
-          components: [{ componentId: this.heroComponent.programId }],
+          components: [{ componentId: new Component(this.bundle.programId, "hero") }],
         },
         {
           entity: settlementPDA,
