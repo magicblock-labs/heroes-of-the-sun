@@ -5,19 +5,12 @@ import {
   AddEntity,
   InitializeComponent,
   ApplySystem,
-  FindComponentPda,
-  createDelegateInstruction,
   Component,
   DelegateComponent,
   System,
 } from "../../../bolt/clients/typescript/lib"
 import { AssignWorker } from "../../target/types/assign_worker";
-import { Repair } from "../../target/types/repair";
-import { Research } from "../../target/types/research";
-import { Reset } from "../../target/types/reset";
 import { Settlement } from "../../target/types/settlement";
-import { Upgrade } from "../../target/types/upgrade";
-import { Wait } from "../../target/types/wait";
 import { Exchange } from "../../target/types/exchange";
 
 import {
@@ -86,12 +79,7 @@ export class SettlementWrapper {
 
   bundle: Program<EcsBundle>;
   settlementComponent: Program<Settlement>;
-  waitSystem: Program<Wait>;
   assignWorkerSystem: Program<AssignWorker>;
-  upgradeSystem: Program<Upgrade>;
-  repairSystem: Program<Repair>;
-  researchSystem: Program<Research>;
-  resetSystem: Program<Reset>;
   exchangeSystem: Program<Exchange>;
 
   async init(worldPda: PublicKey, x: number, y: number) {
@@ -102,12 +90,7 @@ export class SettlementWrapper {
       anchor.setProvider(this.provider);
 
       this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
-      this.waitSystem = anchor.workspace.Wait as Program<Wait>;
       this.assignWorkerSystem = anchor.workspace.AssignWorker as Program<AssignWorker>;
-      this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
-      this.repairSystem = anchor.workspace.Repair as Program<Repair>;
-      this.researchSystem = anchor.workspace.Research as Program<Research>;
-      this.resetSystem = anchor.workspace.Reset as Program<Reset>;
       this.exchangeSystem = anchor.workspace.Exchange as Program<Exchange>;
 
       const addEntity = await AddEntity({
@@ -157,7 +140,7 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.assignWorkerSystem.programId,
+      systemId: new System(this.bundle.programId, "assign_worker"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
@@ -177,7 +160,7 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.upgradeSystem.programId,
+      systemId: new System(this.bundle.programId, "upgrade"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
@@ -195,7 +178,7 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.repairSystem.programId,
+      systemId: new System(this.bundle.programId, "repair"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
@@ -213,7 +196,7 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.researchSystem.programId,
+      systemId: new System(this.bundle.programId, "research"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
@@ -266,7 +249,7 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.waitSystem.programId,
+      systemId: new System(this.bundle.programId, "wait"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "settlement") }],

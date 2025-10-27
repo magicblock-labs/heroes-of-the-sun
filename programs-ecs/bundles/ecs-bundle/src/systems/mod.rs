@@ -4,3 +4,8 @@ pub mod change_backpack;
 pub mod claim_loot;
 pub mod claim_quest;
 pub mod exchange;
+pub mod repair;
+pub mod research;
+pub mod sacrifice;
+pub mod smart_object_init;
+pub mod upgrade;

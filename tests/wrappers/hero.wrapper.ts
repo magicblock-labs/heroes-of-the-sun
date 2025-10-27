@@ -5,13 +5,10 @@ import {
   AddEntity,
   InitializeComponent,
   ApplySystem,
-  FindComponentPda,
-  createDelegateInstruction,
   Component,
   DelegateComponent,
   System,
 } from "../../../bolt/clients/typescript/lib"
-import { MoveHero } from "../../target/types/move_hero";
 import { EcsBundle } from "../../target/types/ecs_bundle";
 
 export type MoveHeroArgs = {
@@ -37,8 +34,7 @@ export class HeroWrapper {
   componentPda: PublicKey;
 
   bundle: Program<EcsBundle>;
-  moveHeroSystem: Program<MoveHero>;
-
+  
   async init(worldPda: PublicKey) {
 
     this.worldPda = worldPda;
@@ -53,7 +49,6 @@ export class HeroWrapper {
       });
 
       this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
-      this.moveHeroSystem = anchor.workspace.MoveHero as Program<MoveHero>;
 
       let txSign = await this.provider.sendAndConfirm(heroEntity.transaction);
       this.entityPda = heroEntity.entityPda;
@@ -79,7 +74,7 @@ export class HeroWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.moveHeroSystem.programId,
+      systemId: new System(this.bundle.programId, "move_hero"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "hero") }],

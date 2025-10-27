@@ -1114,16 +1114,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "move-hero"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
 name = "mpl-token-metadata"
 version = "5.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1434,36 +1424,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
-name = "repair"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
-name = "research"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
-name = "reset"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
 name = "rustc_version"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1483,16 +1443,6 @@ name = "ryu"
 version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
-
-[[package]]
-name = "sacrifice"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
 
 [[package]]
 name = "scopeguard"
@@ -1647,16 +1597,6 @@ dependencies = [
  "anchor-spl",
  "bolt-lang",
  "deity-bot",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
-name = "smart-object-init"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
  "ecs-bundle",
  "serde",
 ]
@@ -3090,16 +3030,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "upgrade"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
 name = "uriparse"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3114,17 +3044,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "wait"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
 
 [[package]]
 name = "wasi"
