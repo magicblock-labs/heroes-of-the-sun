@@ -87,4 +87,27 @@ pub mod ecs_bundle {
 		#[max_len(5)]
 		pub settlements: Vec<Location>,
 	}
+
+	#[system]
+	pub mod assign_hero {
+		pub fn execute(ctx: Context<Components>, _args: EmptyArgs) -> Result<Components> {
+			let hero = &mut ctx.accounts.hero;
+
+			hero.owner = ctx.accounts.player.key();
+
+			//todo safety : verify player PDA to match hero PDA
+
+			Ok(ctx.accounts)
+		}
+
+		#[system_input]
+		pub struct Components {
+			pub player: Player,
+			pub hero: Hero,
+		}
+
+		#[arguments]
+		struct EmptyArgs {}
+	}
+
 }

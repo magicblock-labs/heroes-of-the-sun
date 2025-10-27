@@ -7,10 +7,10 @@ import {
   InitializeComponent,
   ApplySystem,
   Component,
+  System,
 } from "../../../bolt/clients/typescript/lib"
 import { AssignSettlement } from "../../target/types/assign_settlement";
 import { Player } from "../../target/types/player";
-import { AssignHero } from "../../target/types/assign_hero";
 import { EcsBundle } from "../../target/types/ecs_bundle";
 
 
@@ -24,7 +24,6 @@ export class PlayerWrapper {
 
   bundle: Program<EcsBundle>;
   assignSettlementSystem: Program<AssignSettlement>;
-  assignHeroSystem: Program<AssignHero>;
 
   async init(worldPda: PublicKey) {
 
@@ -41,8 +40,7 @@ export class PlayerWrapper {
 
       this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
       this.assignSettlementSystem = anchor.workspace.AssignSettlement as Program<AssignSettlement>;
-      this.assignHeroSystem = anchor.workspace.AssignHero as Program<AssignHero>;
-
+      
       let txSign = await this.provider.sendAndConfirm(playerEntity.transaction);
       this.entityPda = playerEntity.entityPda;
       console.log(`Initialized a new Entity (PDA=${playerEntity.entityPda}). Initialization signature: ${txSign}`);
@@ -96,7 +94,7 @@ export class PlayerWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.assignHeroSystem.programId,
+      systemId: new System(this.bundle.programId, "assign_hero"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "player") }],
