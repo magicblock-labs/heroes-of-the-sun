@@ -6,7 +6,7 @@ declare_id!("64Uk4oF6mNyviUdK2xHXE3VMCtbCMDgRr1DMJk777DJZ");
 #[system]
 pub mod smart_object_init {
 
-    use smart_object_registry::SmartObjectLocation;
+    use ecs_bundle::smart_object_location::SmartObjectLocation;
 
     pub fn execute(ctx: Context<Components>, args: SmartObjectInitArgs) -> Result<Components> {
         let smart_object_location = &mut ctx.accounts.smart_object_location;

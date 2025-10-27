@@ -36,7 +36,7 @@ describe("Exploration and multiplayer tests", async () => {
             settlement.entityPda,
             new Component(settlement.bundle.programId, "settlement"),
             locationAllocator.entityPda,
-            locationAllocator.locationAllocatorComponent.programId,
+            new Component(locationAllocator.bundle.programId, "location_allocator"),
         );
         expect(state.settlements.length).to.gt(0);
     });

@@ -7,7 +7,7 @@ declare_id!("2QPK685TLL7jUG4RYuWXZjv3gw88kUPYw7Aye63cTTjB");
 pub mod smart_object_deity_interact {
 
     use deity_bot::cpi::accounts::InteractAgent;
-    use smart_object_deity::SmartObjectDeity;
+    use ecs_bundle::smart_object_deity::SmartObjectDeity;
 
     pub fn execute(ctx: Context<Components>, args: InteractionArgs) -> Result<Components> {
         // Extract and clone all necessary accounts upfront

@@ -21,4 +21,3 @@ bolt-lang.workspace = true
 anchor-lang.workspace = true
 serde.workspace = true
 ecs-bundle.workspace = true
-location_allocator = { version = "0.1.8", path = "../../components/location_allocator", features = ["cpi"] }

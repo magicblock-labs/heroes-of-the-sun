@@ -3,9 +3,11 @@ import { Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
   AddEntity,
+  Component,
   InitializeComponent,
 } from "../../../bolt/clients/typescript/lib"
 import { LocationAllocator } from "../../target/types/location_allocator";
+import { EcsBundle } from "../../target/types/ecs_bundle";
 
 
 
@@ -16,8 +18,8 @@ export class LocationAllocatorWrapper {
   worldPda: PublicKey;
   entityPda: PublicKey;
   componentPda: PublicKey;
+  bundle: Program<EcsBundle>;
 
-  locationAllocatorComponent: Program<LocationAllocator>;
 
   async init(worldPda: PublicKey) {
 
@@ -33,7 +35,7 @@ export class LocationAllocatorWrapper {
         seed: new Uint8Array(Buffer.from("hots_allocator"))
       });
 
-      this.locationAllocatorComponent = anchor.workspace.LocationAllocator as Program<LocationAllocator>;
+      this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
 
       let txSign = await this.provider.sendAndConfirm(allocatorEntity.transaction);
       this.entityPda = allocatorEntity.entityPda;
@@ -42,7 +44,7 @@ export class LocationAllocatorWrapper {
       const initializeComponent = await InitializeComponent({
         payer: this.provider.wallet.publicKey,
         entity: this.entityPda,
-        componentId: this.locationAllocatorComponent.programId
+        componentId: new Component(this.bundle.programId, "location_allocator")
       });
       txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
       this.componentPda = initializeComponent.componentPda;
@@ -51,7 +53,7 @@ export class LocationAllocatorWrapper {
   }
 
   async state() {
-    return await this.locationAllocatorComponent.account.locationAllocator.fetch(this.componentPda);
+    return await this.bundle.account.locationAllocator.fetch(this.componentPda);
   }
 
 };

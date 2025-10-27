@@ -1,16 +1,7 @@
-use std::str::FromStr;
-
 use bolt_lang::*;
-use ecs_bundle::settlement::ResourceBalance;
-
-declare_id!("8va4yKEBACkT49C9wo94gS8ZaTdUrq2ipLgZvSNxWbd3");
-
-#[component(delegate)]
-pub struct SmartObjectTokenLauncher {
-    pub system: Pubkey,
-    pub mint: Pubkey,
-    pub recipe: ResourceBalance,
-}
+use std::str::FromStr;
+pub use crate::ecs_bundle::{SmartObjectTokenLauncher, SmartObjectTokenLauncherInit};
+use crate::settlement::ResourceBalance;
 
 impl Default for SmartObjectTokenLauncher {
     fn default() -> Self {

@@ -4,10 +4,12 @@ import { AccountMeta, PublicKey } from "@solana/web3.js";
 import {
   AddEntity,
   ApplySystem,
+  Component,
   InitializeComponent,
 } from "../../../bolt/clients/typescript/lib"
 import { LootDistribution } from "../../target/types/loot_distribution";
 import { ClaimLoot } from "../../target/types/claim_loot";
+import { EcsBundle } from "../../target/types/ecs_bundle";
 
 
 
@@ -23,8 +25,8 @@ export class LootDistributionWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
-  lootDistributionComponent: Program<LootDistribution>;
   claimLootSystem: Program<ClaimLoot>;
+  bundle: Program<EcsBundle>;
 
   async init(worldPda: PublicKey) {
 
@@ -41,7 +43,7 @@ export class LootDistributionWrapper {
         seed: new Uint8Array(Buffer.from("hots_loot_distribution"))
       });
 
-      this.lootDistributionComponent = anchor.workspace.LootDistribution as Program<LootDistribution>;
+      this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
 
       let txSign = await this.provider.sendAndConfirm(lootEntity.transaction);
       this.entityPda = lootEntity.entityPda;
@@ -50,16 +52,16 @@ export class LootDistributionWrapper {
       const initializeComponent = await InitializeComponent({
         payer: this.provider.wallet.publicKey,
         entity: this.entityPda,
-        componentId: this.lootDistributionComponent.programId
+        componentId: new Component(this.bundle.programId, "loot_distribution")
       });
       txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
       this.componentPda = initializeComponent.componentPda;
-      console.log(`Initialized the looy component. Initialization signature: ${txSign}`);
+      console.log(`Initialized the loot distribution component. Initialization signature: ${txSign}`);
     }
   }
 
   async state() {
-    return await this.lootDistributionComponent.account.lootDistribution.fetch(this.componentPda);
+    return await this.bundle.account.lootDistribution.fetch(this.componentPda);
   }
 
 
@@ -71,7 +73,7 @@ export class LootDistributionWrapper {
       systemId: this.claimLootSystem.programId,
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.lootDistributionComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "loot_distribution") }],
       }],
       extraAccounts: [
         {

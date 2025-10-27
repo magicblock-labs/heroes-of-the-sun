@@ -290,7 +290,6 @@ dependencies = [
  "anchor-lang",
  "bolt-lang",
  "ecs-bundle",
- "location_allocator",
  "serde",
 ]
 
@@ -574,7 +573,7 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
- "location_allocator",
+ "ecs-bundle",
  "serde",
 ]
 
@@ -679,7 +678,6 @@ dependencies = [
  "anchor-spl",
  "bolt-lang",
  "ecs-bundle",
- "loot-distribution",
  "serde",
  "token-minter",
 ]
@@ -1152,14 +1150,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "location_allocator"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
 name = "lock_api"
 version = "0.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1174,15 +1164,6 @@ name = "log"
 version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
-
-[[package]]
-name = "loot-distribution"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
-]
 
 [[package]]
 name = "memchr"
@@ -1738,14 +1719,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 
 [[package]]
-name = "smart-object-deity"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
 name = "smart-object-deity-interact"
 version = "0.1.8"
 dependencies = [
@@ -1753,8 +1726,8 @@ dependencies = [
  "anchor-spl",
  "bolt-lang",
  "deity-bot",
+ "ecs-bundle",
  "serde",
- "smart-object-deity",
 ]
 
 [[package]]
@@ -1763,25 +1736,8 @@ version = "0.1.8"
 dependencies = [
  "anchor-lang",
  "bolt-lang",
- "serde",
- "smart-object-location",
-]
-
-[[package]]
-name = "smart-object-location"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
-name = "smart-object-token-launcher"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
  "ecs-bundle",
+ "serde",
 ]
 
 [[package]]
@@ -1793,7 +1749,6 @@ dependencies = [
  "bolt-lang",
  "ecs-bundle",
  "serde",
- "smart-object-token-launcher",
 ]
 
 [[package]]
@@ -1805,7 +1760,6 @@ dependencies = [
  "bolt-lang",
  "ecs-bundle",
  "serde",
- "smart-object-token-launcher",
 ]
 
 [[package]]

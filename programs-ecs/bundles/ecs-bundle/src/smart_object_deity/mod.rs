@@ -1,13 +1,6 @@
-use std::str::FromStr;
-
 use bolt_lang::*;
-
-declare_id!("9RfzWgEBYQAM64a46V3dGRPKYsVY8a7YvZszWPMxvBfk");
-
-#[component(delegate)]
-pub struct SmartObjectDeity {
-    pub system: Pubkey,
-}
+pub use crate::ecs_bundle::{SmartObjectDeity, SmartObjectDeityInit};
+use std::str::FromStr;
 
 impl Default for SmartObjectDeity {
     fn default() -> Self {

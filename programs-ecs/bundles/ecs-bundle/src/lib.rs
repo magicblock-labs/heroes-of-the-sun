@@ -3,6 +3,11 @@ use bolt_lang::*;
 pub mod settlement;
 pub mod hero;
 pub mod player;
+pub mod location_allocator;
+pub mod loot_distribution;
+pub mod smart_object_deity;
+pub mod smart_object_location;
+pub mod smart_object_token_launcher;
 
 declare_id!("Cjca6tWWGx77ki6rRinErcoZJEvJHNxfPaut8DoKJHQ5");
 
@@ -10,7 +15,44 @@ declare_id!("Cjca6tWWGx77ki6rRinErcoZJEvJHNxfPaut8DoKJHQ5");
 pub mod ecs_bundle {
 	use crate::settlement::{Building, EnvironmentState, ResourceBalance};
 	use crate::player::Location;
+	use crate::loot_distribution::LootLocation;
+
+	#[component(delegate)]
+	pub struct SmartObjectTokenLauncher {
+		pub system: Pubkey,
+		pub mint: Pubkey,
+		pub recipe: ResourceBalance,
+	}
+
+	#[component(delegate)]
+	#[derive(Default)]
+	pub struct LocationAllocator {
+		pub current_x: i16,
+		pub current_y: i16,
+		pub direction: u8,
+	}	
+
+	#[component(delegate)]
+	#[derive(Default)]
+	pub struct SmartObjectLocation {
+		pub x: i32,
+		pub y: i32,
+		pub entity: Pubkey,
+	}
+
+	#[component(delegate)]
+	pub struct SmartObjectDeity {
+		pub system: Pubkey,
+	}	
+
+	#[component(delegate)]
+	pub struct LootDistribution {
+		pub index: i32,
 	
+		#[max_len(100)]
+		pub loots: Vec<LootLocation>,
+	}	
+
 	#[component(delegate)]
 	pub struct Settlement {
 		#[max_len(20, 6)]

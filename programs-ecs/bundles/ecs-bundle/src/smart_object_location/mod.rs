@@ -1,0 +1,1 @@
+pub use crate::ecs_bundle::{SmartObjectLocation, SmartObjectLocationInit};

@@ -5,7 +5,7 @@ declare_id!("C2H1sb7ZVpgEZFWqXujRK3rx5C2543GNN251wmgfbhUH");
 #[system]
 pub mod bump_location_allocator {
 
-    use location_allocator::LocationAllocator;
+    use ecs_bundle::location_allocator::LocationAllocator;
 
     const DIRECTION_UP: u8 = 0;
     const DIRECTION_RIGHT: u8 = 1;

@@ -5,8 +5,9 @@ declare_id!("4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf");
 
 #[system]
 pub mod claim_loot {
+    use ecs_bundle::loot_distribution;
     // use hero::Hero;
-    use loot_distribution::LootDistribution;
+    use ecs_bundle::loot_distribution::LootDistribution;
     use token_minter::cpi::accounts::MintToken;
 
     pub fn execute(ctx: Context<Components>, args: ClaimLootArgs) -> Result<Components> {

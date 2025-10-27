@@ -1,20 +1,13 @@
 use bolt_lang::*;
-use ecs_bundle::settlement;
 
-declare_id!("5F9tMTcNhgjL3tWCaF5HwLkQP9z4XJ4nTXmbYeS8UXRW");
+pub use crate::ecs_bundle::{LootDistribution, LootDistributionInit};
+use crate::settlement;
 
 #[component_deserialize]
 pub struct LootLocation {
     pub x: i32,
     pub y: i32,
     pub loot_type: i8,
-}
-#[component(delegate)]
-pub struct LootDistribution {
-    pub index: i32,
-
-    #[max_len(100)]
-    pub loots: Vec<LootLocation>,
 }
 
 impl Default for LootDistribution {

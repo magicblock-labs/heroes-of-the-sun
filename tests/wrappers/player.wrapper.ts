@@ -62,7 +62,7 @@ export class PlayerWrapper {
     return await this.bundle.account.player.fetch(this.componentPda);
   }
 
-  async assignSettlement(settlementPDA: PublicKey, settlementID: Component, allocatorPDA: PublicKey, allocatorProgramID: PublicKey) {
+  async assignSettlement(settlementPDA: PublicKey, settlementID: Component, allocatorPDA: PublicKey, allocatorID: Component) {
 
     // Run the build system
     const applySystem = await ApplySystem({
@@ -79,7 +79,7 @@ export class PlayerWrapper {
       },
       {
         entity: allocatorPDA,
-        components: [{ componentId: allocatorProgramID }],
+        components: [{ componentId: allocatorID }],
       }],
     });
 

@@ -5,7 +5,7 @@ declare_id!("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2");
 #[system]
 pub mod assign_settlement {
 
-    use location_allocator::LocationAllocator;
+    use ecs_bundle::location_allocator::LocationAllocator;
     use ecs_bundle::player::{Location, Player};
     use ecs_bundle::settlement::Settlement;
 
