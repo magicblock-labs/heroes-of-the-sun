@@ -9,8 +9,6 @@ import {
   Component,
   System,
 } from "../../../bolt/clients/typescript/lib"
-import { AssignSettlement } from "../../target/types/assign_settlement";
-import { Player } from "../../target/types/player";
 import { EcsBundle } from "../../target/types/ecs_bundle";
 
 
@@ -23,7 +21,6 @@ export class PlayerWrapper {
   componentPda: PublicKey;
 
   bundle: Program<EcsBundle>;
-  assignSettlementSystem: Program<AssignSettlement>;
 
   async init(worldPda: PublicKey) {
 
@@ -39,7 +36,6 @@ export class PlayerWrapper {
       });
 
       this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
-      this.assignSettlementSystem = anchor.workspace.AssignSettlement as Program<AssignSettlement>;
       
       let txSign = await this.provider.sendAndConfirm(playerEntity.transaction);
       this.entityPda = playerEntity.entityPda;
@@ -66,7 +62,7 @@ export class PlayerWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.assignSettlementSystem.programId,
+      systemId: new System(this.bundle.programId, "assign_settlement"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "player") }],
