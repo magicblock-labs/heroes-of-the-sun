@@ -11,6 +11,7 @@ import {
 import { AssignSettlement } from "../../target/types/assign_settlement";
 import { Player } from "../../target/types/player";
 import { AssignHero } from "../../target/types/assign_hero";
+import { EcsBundle } from "../../target/types/ecs_bundle";
 
 
 export class PlayerWrapper {
@@ -21,7 +22,7 @@ export class PlayerWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
-  playerComponent: Program<Player>;
+  bundle: Program<EcsBundle>;
   assignSettlementSystem: Program<AssignSettlement>;
   assignHeroSystem: Program<AssignHero>;
 
@@ -38,7 +39,7 @@ export class PlayerWrapper {
         connection: this.provider.connection,
       });
 
-      this.playerComponent = anchor.workspace.Player as Program<Player>;
+      this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
       this.assignSettlementSystem = anchor.workspace.AssignSettlement as Program<AssignSettlement>;
       this.assignHeroSystem = anchor.workspace.AssignHero as Program<AssignHero>;
 
@@ -49,7 +50,7 @@ export class PlayerWrapper {
       const initializeComponent = await InitializeComponent({
         payer: this.provider.wallet.publicKey,
         entity: this.entityPda,
-        componentId: this.playerComponent.programId,
+        componentId: new Component(this.bundle.programId, "player"),
       });
       txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
       this.componentPda = initializeComponent.componentPda;
@@ -58,7 +59,7 @@ export class PlayerWrapper {
   }
 
   async state() {
-    return await this.playerComponent.account.player.fetch(this.componentPda);
+    return await this.bundle.account.player.fetch(this.componentPda);
   }
 
   async assignSettlement(settlementPDA: PublicKey, settlementID: Component, allocatorPDA: PublicKey, allocatorProgramID: PublicKey) {
@@ -70,7 +71,7 @@ export class PlayerWrapper {
       systemId: this.assignSettlementSystem.programId,
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.playerComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "player") }],
       },
       {
         entity: settlementPDA,
@@ -98,7 +99,7 @@ export class PlayerWrapper {
       systemId: this.assignHeroSystem.programId,
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.playerComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "player") }],
       },
       {
         entity: heroPDA,

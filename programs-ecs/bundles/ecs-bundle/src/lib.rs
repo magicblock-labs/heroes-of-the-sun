@@ -2,13 +2,15 @@ use bolt_lang::*;
 
 pub mod settlement;
 pub mod hero;
+pub mod player;
 
 declare_id!("Cjca6tWWGx77ki6rRinErcoZJEvJHNxfPaut8DoKJHQ5");
 
 #[bundle]
 pub mod ecs_bundle {
 	use crate::settlement::{Building, EnvironmentState, ResourceBalance};
-
+	use crate::player::Location;
+	
 	#[component(delegate)]
 	pub struct Settlement {
 		#[max_len(20, 6)]
@@ -36,5 +38,11 @@ pub mod ecs_bundle {
 		pub last_activity: i64,
 		pub owner: Pubkey,
 		pub backpack: ResourceBalance,
+	}
+
+	#[component(delegate)]
+	pub struct Player {
+		#[max_len(5)]
+		pub settlements: Vec<Location>,
 	}
 }

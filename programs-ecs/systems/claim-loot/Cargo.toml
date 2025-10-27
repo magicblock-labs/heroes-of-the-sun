@@ -22,7 +22,5 @@ anchor-lang.workspace = true
 anchor-spl.workspace = true
 serde.workspace = true
 ecs-bundle.workspace = true
-
-player = { version = "0.1.8", path = "../../components/player", features = ["cpi"] }
 loot-distribution = { version = "0.1.8", path = "../../components/loot-distribution", features = ["cpi"] }
 token-minter = { version = "0.1.0", path = "../../../programs/token-minter", features = ["cpi"] }
