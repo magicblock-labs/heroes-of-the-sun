@@ -9,10 +9,9 @@ import {
   createDelegateInstruction,
   Component,
   DelegateComponent,
+  System,
 } from "../../../bolt/clients/typescript/lib"
-import { Hero } from "../../target/types/hero";
 import { MoveHero } from "../../target/types/move_hero";
-import { ChangeBackpack } from "../../target/types/change_backpack";
 import { EcsBundle } from "../../target/types/ecs_bundle";
 
 export type MoveHeroArgs = {
@@ -39,7 +38,6 @@ export class HeroWrapper {
 
   bundle: Program<EcsBundle>;
   moveHeroSystem: Program<MoveHero>;
-  changeBackpackSystem: Program<ChangeBackpack>;
 
   async init(worldPda: PublicKey) {
 
@@ -56,7 +54,6 @@ export class HeroWrapper {
 
       this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
       this.moveHeroSystem = anchor.workspace.MoveHero as Program<MoveHero>;
-      this.changeBackpackSystem = anchor.workspace.ChangeBackpack as Program<ChangeBackpack>;
 
       let txSign = await this.provider.sendAndConfirm(heroEntity.transaction);
       this.entityPda = heroEntity.entityPda;
@@ -121,7 +118,7 @@ export class HeroWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.changeBackpackSystem.programId,
+      systemId: new System(this.bundle.programId, "change_backpack"),
       entities: [
         {
           entity: this.entityPda,

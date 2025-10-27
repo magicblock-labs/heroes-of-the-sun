@@ -9,9 +9,9 @@ import {
   createDelegateInstruction,
   Component,
   DelegateComponent,
+  System,
 } from "../../../bolt/clients/typescript/lib"
 import { AssignWorker } from "../../target/types/assign_worker";
-import { Build } from "../../target/types/build";
 import { Repair } from "../../target/types/repair";
 import { Research } from "../../target/types/research";
 import { Reset } from "../../target/types/reset";
@@ -87,7 +87,6 @@ export class SettlementWrapper {
   bundle: Program<EcsBundle>;
   settlementComponent: Program<Settlement>;
   waitSystem: Program<Wait>;
-  buildSystem: Program<Build>;
   assignWorkerSystem: Program<AssignWorker>;
   upgradeSystem: Program<Upgrade>;
   repairSystem: Program<Repair>;
@@ -104,7 +103,6 @@ export class SettlementWrapper {
 
       this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
       this.waitSystem = anchor.workspace.Wait as Program<Wait>;
-      this.buildSystem = anchor.workspace.Build as Program<Build>;
       this.assignWorkerSystem = anchor.workspace.AssignWorker as Program<AssignWorker>;
       this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
       this.repairSystem = anchor.workspace.Repair as Program<Repair>;
@@ -142,7 +140,7 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.buildSystem.programId,
+      systemId: new System(this.bundle.programId, "build"),
       entities: [{
         entity: this.entityPda,
         components: [{ componentId: new Component(this.bundle.programId, "settlement") }],

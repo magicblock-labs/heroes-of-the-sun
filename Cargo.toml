@@ -18,6 +18,7 @@ codegen-units = 1
 [workspace.dependencies]
 anchor-spl = { version = "0.31.1", features = ["metadata"] }
 anchor-lang = { version = "0.31.1", features = [ "init-if-needed" ] }
+token-minter = { version = "0.1.0", path = "programs/token-minter", features = ["cpi"] }
 # bolt-lang = { version = "0.2.4" }
 bolt-lang = { path = "../bolt/crates/bolt-lang" }
 session-keys = "^2"

@@ -21,4 +21,4 @@ anchor-lang.workspace = true
 serde_json.workspace = true
 solana-gpt-oracle = { workspace = true, features = ["cpi"] }
 anchor-spl.workspace = true
-token-minter = { version = "0.1.0", path = "../token-minter", features = ["cpi"] }
+token-minter.workspace = true

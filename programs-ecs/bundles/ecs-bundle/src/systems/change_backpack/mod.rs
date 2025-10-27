@@ -1,4 +1,4 @@
-use bolt_lang::error_code;
+use bolt_lang::*;
 
 #[error_code]
 pub enum BackpackError {

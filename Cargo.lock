@@ -538,26 +538,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "build"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
-name = "bump_location_allocator"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -631,16 +611,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
-name = "change-backpack"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
 name = "cipher"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -648,38 +618,6 @@ checksum = "773f3b9af64447d2ce9850330c473515014aa235e6a783b02db81ff39e4a3dad"
 dependencies = [
  "crypto-common",
  "inout",
-]
-
-[[package]]
-name = "claim-loot"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "ecs-bundle",
- "serde",
- "token-minter",
-]
-
-[[package]]
-name = "claim-quest"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
-name = "claim-time"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
 ]
 
 [[package]]
@@ -823,8 +761,11 @@ dependencies = [
 name = "ecs-bundle"
 version = "0.2.6"
 dependencies = [
+ "anchor-lang",
+ "anchor-spl",
  "bolt-lang",
  "serde",
+ "token-minter",
 ]
 
 [[package]]
@@ -3336,16 +3277,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3edebf492c8125044983378ecb5766203ad3b4c2f7a922bd7dd207f6d443e95"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "worker"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "ecs-bundle",
- "serde",
 ]
 
 [[package]]
