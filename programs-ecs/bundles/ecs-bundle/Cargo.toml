@@ -26,3 +26,4 @@ anchor-lang.workspace = true
 anchor-spl.workspace = true
 serde.workspace = true
 token-minter.workspace = true
+deity-bot.workspace = true

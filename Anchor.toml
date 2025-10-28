@@ -56,7 +56,7 @@ cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [workspace]
-members = ["programs-ecs/systems/*", "programs-ecs/bundles/*", "programs/*"]
+members = ["programs-ecs/bundles/*", "programs/*"]
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"

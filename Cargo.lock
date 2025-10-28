@@ -402,6 +402,7 @@ dependencies = [
 name = "bolt-attribute-bolt-extra-accounts"
 version = "0.2.6"
 dependencies = [
+ "heck 0.5.0",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -764,6 +765,7 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "bolt-lang",
+ "deity-bot",
  "serde",
  "token-minter",
 ]
@@ -825,18 +827,6 @@ name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
-
-[[package]]
-name = "exchange"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "ecs-bundle",
- "serde",
- "token-minter",
-]
 
 [[package]]
 name = "feature-probe"
@@ -1588,40 +1578,6 @@ name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
-
-[[package]]
-name = "smart-object-deity-interact"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "deity-bot",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
-name = "smart-object-token-launcher-init"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
-
-[[package]]
-name = "smart-object-token-launcher-interact"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "ecs-bundle",
- "serde",
-]
 
 [[package]]
 name = "solana-account"

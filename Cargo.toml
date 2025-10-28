@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "programs-ecs/systems/*",
     "programs-ecs/bundles/*",
     "programs/*"
 ]
@@ -26,3 +25,4 @@ serde_json = "^1"
 solana-gpt-oracle = "^0"
 serde = { version = "1.0", features = ["derive"] }
 ecs-bundle = { path = "programs-ecs/bundles/ecs-bundle", features = ["cpi"] }
+deity-bot = { version = "0.1.0", path = "programs/deity-bot", features = ["cpi"] }

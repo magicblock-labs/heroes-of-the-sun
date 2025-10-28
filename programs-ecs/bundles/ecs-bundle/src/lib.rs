@@ -453,6 +453,8 @@ pub mod ecs_bundle {
 		use token_minter::cpi::accounts::MintToken;
 	
 		pub fn execute(ctx: Context<Components>, args: ClaimLootArgs) -> Result<Components> {
+			use crate::ecs_bundle::ContextExtensionsExtraAccounts;
+
 			// Extract and clone all necessary accounts upfront
 			let minter_program = ctx
 				.minter_program()
@@ -1312,6 +1314,741 @@ pub mod ecs_bundle {
 		#[arguments]
 		struct WaitArgs {
 			time: u16,
+		}
+	}	
+
+	#[system]
+	pub mod exchange {
+		use token_minter::cpi::accounts::BurnToken;
+	
+		pub fn execute(ctx: Context<Components>, args: ExchangeArgs) -> Result<Components> {
+			use crate::systems::exchange::*;
+
+			let mut total_cost: u64 = 0;
+	
+			total_cost += args.tokens_for_food;
+			total_cost += args.tokens_for_water;
+			total_cost += args.tokens_for_wood;
+			total_cost += args.tokens_for_stone;
+	
+			if total_cost == 0 {
+				return err!(ExchangeError::NoExchange);
+			}
+	
+			msg!("execute exchange!: {}", total_cost);
+	
+			let minter_program = ctx
+				.minter_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?
+				.clone();
+			let mint_account = ctx
+				.mint_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?
+				.clone();
+			msg!("mint_account: {}", mint_account.key);
+			let associated_token_account = ctx
+				.associated_token_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?
+				.clone();
+			msg!("associated_token_account: {}", associated_token_account.key);
+			let token_program = ctx
+				.token_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?
+				.clone();
+			msg!("token_program: {}", token_program.key);
+			let associated_token_program = ctx
+				.associated_token_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?
+				.clone();
+			msg!("associated_token_program: {}", associated_token_program.key);
+			let payer = ctx
+				.signer()
+				.map_err(|_| ProgramError::InvalidAccountData)?
+				.clone();
+			msg!("payer: {}", payer.key);
+	
+			//todo check balance before burning gas on CPI
+	
+			let res = token_minter::cpi::burn_token(
+				CpiContext::new(
+					minter_program,
+					BurnToken {
+						payer,
+						mint_account,
+						associated_token_account,
+						token_program,
+						associated_token_program,
+					},
+				),
+				total_cost,
+			);
+			if !res.is_ok() {
+				return err!(ExchangeError::TokenBurnFailed);
+			}
+			msg!("burn done!: ");
+	
+			let settlement = &mut ctx.accounts.settlement;
+	
+			settlement.treasury.food +=
+				args.tokens_for_food as u16 * settlement::config::EXCHANGE_RATES.food;
+			msg!(
+				"adding food: {}",
+				args.tokens_for_food as u16 * settlement::config::EXCHANGE_RATES.food
+			);
+	
+			settlement.treasury.water +=
+				args.tokens_for_water as u16 * settlement::config::EXCHANGE_RATES.water;
+			msg!(
+				"adding food: {}",
+				args.tokens_for_water as u16 * settlement::config::EXCHANGE_RATES.water
+			);
+	
+			settlement.treasury.wood +=
+				args.tokens_for_wood as u16 * settlement::config::EXCHANGE_RATES.wood;
+			msg!(
+				"adding wood: {}",
+				args.tokens_for_wood as u16 * settlement::config::EXCHANGE_RATES.wood
+			);
+	
+			settlement.treasury.stone +=
+				args.tokens_for_stone as u16 * settlement::config::EXCHANGE_RATES.stone;
+			msg!(
+				"adding stone: {}",
+				args.tokens_for_stone as u16 * settlement::config::EXCHANGE_RATES.stone
+			);
+	
+			Ok(ctx.accounts)
+		}
+	
+		#[system_input]
+		pub struct Components {
+			pub settlement: Settlement,
+		}
+	
+		#[arguments]
+		struct ExchangeArgs {
+			pub tokens_for_food: u64,
+			pub tokens_for_water: u64,
+			pub tokens_for_wood: u64,
+			pub tokens_for_stone: u64,
+		}
+	
+		#[extra_accounts]
+		pub struct ExchangeExtraAccounts {
+			#[account(mut)]
+			signer: Signer<'info>,
+	
+			#[account()]
+			associated_token_account: Account<'info, TokenAccount>,
+	
+			#[account()]
+			mint_account: Account<'info, Mint>,
+	
+			#[account()]
+			minter_program: AccountInfo,
+	
+			#[account()]
+			token_program: Program<'info, Token>,
+	
+			#[account()]
+			associated_token_program: Program<'info, AssociatedToken>,
+	
+			#[account()]
+			system_program: Program<'info, System>,
+		}
+	}	
+
+	#[system]
+	pub mod smart_object_token_launcher_interact {
+		use anchor_spl::token::{mint_to, spl_token, MintTo};
+		use bolt_lang::solana_program::program_pack::Pack;
+		use crate::systems::smart_object_token_launcher_interact::*;
+		use spl_token::state::Mint as SplMint;
+		
+		pub fn execute(
+			ctx: Context<Components>,
+			args: SmartObjectTokenLauncherInteractionArgs,
+		) -> Result<Components> {
+			let mint_account = ctx
+				.mint_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("mint_account: {}", mint_account.key);
+	
+			let mint_authority = ctx
+				.mint_authority()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("mint_authority: {}", mint_authority.key);
+	
+			let associated_token_account = ctx
+				.associated_token_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("associated_token_account: {}", associated_token_account.key);
+	
+			let token_program = ctx
+				.token_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("token_program: {}", token_program.key);
+	
+			let launcher = &mut ctx.accounts.launcher;
+			let hero = &mut ctx.accounts.hero;
+	
+			let mint_account_key = mint_account.key();
+	
+			let mint_data = mint_account.data.borrow();
+	
+			let mint = SplMint::unpack_unchecked(&mint_data[..])
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			drop(mint_data);
+	
+			msg!("SUPPLY: {}", mint.supply);
+	
+			if launcher.mint != mint_account_key {
+				return err!(TokenLauncherInteractError::MintAddressMismatch);
+			}
+	
+			//check positive balance
+	
+			// Calculate costs
+			let food_cost = args.quantity as u64 * launcher.recipe.food as u64;
+			let water_cost = args.quantity as u64 * launcher.recipe.water as u64;
+			let wood_cost = args.quantity as u64 * launcher.recipe.wood as u64;
+			let stone_cost = args.quantity as u64 * launcher.recipe.stone as u64;
+	
+			if launcher.recipe.food > 0 {
+				if (hero.backpack.food as u64) < food_cost {
+					return err!(TokenLauncherInteractError::NotEnoughBackpackResources);
+				}
+			}
+	
+			if launcher.recipe.water > 0 {
+				if (hero.backpack.water as u64) < water_cost {
+					return err!(TokenLauncherInteractError::NotEnoughBackpackResources);
+				}
+			}
+	
+			if launcher.recipe.wood > 0 {
+				if (hero.backpack.wood as u64) < wood_cost {
+					return err!(TokenLauncherInteractError::NotEnoughBackpackResources);
+				}
+			}
+	
+			if launcher.recipe.stone > 0 {
+				if (hero.backpack.stone as u64) < stone_cost {
+					return err!(TokenLauncherInteractError::NotEnoughBackpackResources);
+				}
+			}
+	
+			//subtract
+	
+			hero.backpack.food = hero.backpack.food.wrapping_sub(food_cost as u16);
+			hero.backpack.water = hero.backpack.water.wrapping_sub(water_cost as u16);
+			hero.backpack.wood = hero.backpack.wood.wrapping_sub(wood_cost as u16);
+			hero.backpack.stone = hero.backpack.stone.wrapping_sub(stone_cost as u16);
+	
+			// --- Hard currency transfer to PDA-controlled associated token account based on bonding curve ---
+			// let payment_mint = ctx
+			//     .payment_mint_account()
+			//     .map_err(|_| ProgramError::InvalidAccountData)?;
+			let payment_token_account = ctx
+				.payment_token_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!(
+				"from (payment_token_account): {}",
+				payment_token_account.key()
+			);
+			msg!("from data len: {}", payment_token_account.data_len());
+	
+			let payment_token_authority = ctx
+				.payment_token_authority()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("payment_token_authority: {}", payment_token_authority.key());
+	
+			let full_token_supply = mint.supply / 1_000_000_000;
+			let base_price = 1.0;
+			let coefficient = 0.05;
+			let price_per_token = base_price + coefficient * (full_token_supply as f64).powi(2);
+			let bonding_cost = (price_per_token * 1_000_000_000.0 * args.quantity as f64).ceil() as u64;
+	
+			let payment_token_account_data = anchor_spl::token::TokenAccount::try_deserialize(
+				&mut &**payment_token_account.data.borrow(),
+			)
+			.map_err(|_| ProgramError::InvalidAccountData)?;
+	
+			if payment_token_account_data.amount < bonding_cost {
+				return err!(TokenLauncherInteractError::NotEnoughHardCurrency);
+			}
+	
+			msg!(
+				"Token account authority: {}",
+				payment_token_account_data.owner
+			);
+	
+			let payment_token_program = ctx
+				.token_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let destination_token_account = ctx
+				.destination_token_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!(
+				"to   (destination_token_account): {}",
+				destination_token_account.key()
+			);
+			msg!("to data len: {}", destination_token_account.data_len());
+	
+			let transfer_ctx = CpiContext::new(
+				payment_token_program.to_account_info(),
+				anchor_spl::token::Transfer {
+					from: payment_token_account.to_account_info(),
+					to: destination_token_account.to_account_info(),
+					authority: payment_token_authority.to_account_info(),
+				},
+			);
+	
+			anchor_spl::token::transfer(transfer_ctx, bonding_cost)?;
+	
+			//proceed to minting
+	
+			let (_, bump) = Pubkey::find_program_address(
+				&[
+					b"authority",
+					mint_account_key.as_ref(), // Same seeds as macro
+				],
+				ctx.program_id, // your program's id
+			);
+	
+			// PDA signer seeds
+			let signer_seeds: &[&[u8]] = &[
+				b"authority",
+				mint_account_key.as_ref(),
+				&[bump], // bump always last
+			];
+	
+			// Invoke the mint_to instruction on the token program
+			mint_to(
+				CpiContext::new(
+					token_program.to_account_info(),
+					MintTo {
+						mint: mint_account.to_account_info(),
+						to: associated_token_account.to_account_info(),
+						authority: mint_authority.to_account_info(), // PDA mint authority, required as signer
+					},
+				)
+				.with_signer(&[signer_seeds]), // using PDA to sign
+				args.quantity as u64 * 10u64.pow(9 as u32),
+			)?; //* 10u64.pow(mint_account.decimals as u32), // Mint tokens, adjust for decimals
+	
+			msg!("Token minted successfully.");
+	
+			Ok(ctx.accounts)
+		}
+	
+		#[system_input]
+		pub struct Components {
+			pub launcher: SmartObjectTokenLauncher,
+			pub hero: Hero,
+		}
+	
+		#[arguments]
+		struct SmartObjectTokenLauncherInteractionArgs {
+			pub quantity: u16,
+		}
+	
+		// These accounts are used to transfer payment tokens (hard currency) to a PDA-controlled vault as part of bonding curve pricing.
+		// They are distinct from the minting token accounts used for actual token output.
+		#[extra_accounts]
+		pub struct SmartObjectTokenLauncherInteractExtraAccounts {
+			#[account(mut)]
+			pub payer: Signer<'info>,
+	
+			#[account(
+				init_if_needed,
+				space=spl_token::state::Account::LEN,
+				payer = payer,
+				// associated_token::mint = mint_account,
+				// associated_token::authority = payer,
+			)]
+			associated_token_account: Account<'info, TokenAccount>,
+	
+			// Create mint account
+			#[account()]
+			pub mint_account: Account<'info, Mint>,
+	
+			#[account(
+				mut,
+				seeds = [b"authority", mint_account.key().as_ref()],
+				bump,
+			)]
+			pub mint_authority: UncheckedAccount<'info>,
+	
+			pub token_program: Program<'info, Token>,
+	
+			pub associated_token_program: Program<'info, AssociatedToken>,
+			pub system_program: Program<'info, System>,
+	
+			// --- Hard currency transfer setup ---
+			#[account(mut)]
+			pub payment_mint_account: Account<'info, Mint>,
+	
+			#[account(mut)]
+			pub payment_token_account: Account<'info, TokenAccount>,
+	
+			#[account()]
+			pub payment_token_authority: Signer<'info>,
+	
+			#[account(mut)]
+			pub destination_token_account: Account<'info, TokenAccount>,
+	
+			/// CHECK: Token vault PDA
+			#[account(
+				seeds = [b"vault"],
+				bump
+			)]
+			pub destination_pda: UncheckedAccount<'info>,
+		}
+	}
+
+	#[system]
+	pub mod smart_object_token_launcher_init {
+		use std::str::FromStr;
+
+		use anchor_spl::{
+			metadata::{
+				create_metadata_accounts_v3, mpl_token_metadata::types::DataV2,
+				CreateMetadataAccountsV3,
+			},
+			token::{self, spl_token::instruction::AuthorityType, SetAuthority},
+		};
+		use crate::systems::smart_object_token_launcher_init::*;
+
+		pub fn execute(
+			ctx: Context<Components>,
+			args: SmartObjectTokenLauncherInitArgs,
+		) -> Result<Components> {
+			{
+				let launcher = &ctx.accounts.smart_object_token_launcher;
+				if launcher.mint != Pubkey::default() {
+					return err!(SmartObjectTokenLauncherInitError::AlreadyInitialized);
+				}
+			}
+	
+			msg!("Creating metadata account");
+	
+			// Extract and clone all necessary accounts upfront
+			let mint_account = ctx
+				.mint_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("mint_account: {}", mint_account.key);
+			let mint_authority = ctx
+				.mint_authority()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("mint_authority: {}", mint_authority.key);
+			let metadata_account = ctx
+				.metadata_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("metadata_account: {}", metadata_account.key);
+			let token_program = ctx
+				.token_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let token_metadata_program = ctx
+				.token_metadata_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let system_program = ctx
+				.system_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+	
+			let payer = ctx.payer().map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("payer: {}", payer.key);
+	
+			let rent = ctx.rent().map_err(|_| ProgramError::InvalidAccountData)?;
+			msg!("rent: {}", rent.key);
+	
+			// let session_token = ctx
+			//     .session_token()
+			//     .map_err(|_| ProgramError::InvalidAccountData)?;
+	
+			// msg!("session_token: {}", session_token.key);
+	
+			let mint_account_key = mint_account.key();
+	
+			let (_, bump) = Pubkey::find_program_address(
+				&[
+					b"authority",
+					mint_account_key.as_ref(), // Same seeds as macro
+				],
+				ctx.program_id, // your program's id
+			);
+	
+			// PDA signer seeds
+			let signer_seeds: &[&[u8]] = &[
+				b"authority",
+				mint_account_key.as_ref(),
+				&[bump], // bump always last
+			];
+	
+			msg!(
+				"signer_seeds: {:?} {:?} {:?}",
+				signer_seeds[0],
+				signer_seeds[1],
+				signer_seeds[2]
+			);
+	
+			// Cross Program Invocation (CPI) signed by PDA
+			// Invoking the create_metadata_account_v3 instruction on the token metadata program
+			create_metadata_accounts_v3(
+				CpiContext::new(
+					token_metadata_program.to_account_info(),
+					CreateMetadataAccountsV3 {
+						metadata: metadata_account.to_account_info(),
+						mint: mint_account.to_account_info(),
+						mint_authority: mint_authority.to_account_info(), // PDA is mint authority
+						update_authority: mint_authority.to_account_info(), // PDA is update authority
+						payer: payer.to_account_info(),
+						system_program: system_program.to_account_info(),
+						rent: rent.to_account_info(),
+					},
+				)
+				.with_signer(&[signer_seeds]),
+				DataV2 {
+					name: args.token_name.clone(),
+					symbol: args.token_symbol.clone(),
+					uri: args.token_uri.clone(),
+					seller_fee_basis_points: 0,
+					creators: None,
+					collection: None,
+					uses: None,
+				},
+				true,
+				true,
+				None,
+			)?;
+	
+			msg!("Token created successfully.");
+	
+			let (interaction_pda, _) = Pubkey::find_program_address(
+				&[b"authority", mint_account_key.as_ref()],
+				&Pubkey::from_str("DUW1KczxcpeTEY7j9nkvcuAdWGNWoadTeDBKN5Z9xhst").unwrap(),
+			);
+	
+			token::set_authority(
+				CpiContext::new(
+					token_program.to_account_info(),
+					SetAuthority {
+						account_or_mint: mint_account.to_account_info(), // 🎯 The Mint
+						current_authority: mint_authority.to_account_info(), // 👑 Current authority (PDA signer)
+					},
+				)
+				.with_signer(&[signer_seeds]),
+				AuthorityType::MintTokens,
+				Some(interaction_pda), // the PDA derived with ProgramB::id()
+			)?;
+	
+			let launcher = &mut ctx.accounts.smart_object_token_launcher;
+			launcher.mint = mint_account_key;
+			msg!("mint_account_key {}", mint_account_key);
+			msg!("launcher.mint {}", launcher.mint);
+			msg!("Set launcher mint: {}", launcher.mint);
+	
+			launcher.recipe = ResourceBalance {
+				water: args.recipe_water,
+				food: args.recipe_food,
+				wood: args.recipe_wood,
+				stone: args.recipe_stone,
+			};
+			msg!(
+				"Set recipe: water={} food={} wood={} stone={}",
+				args.recipe_water,
+				args.recipe_food,
+				args.recipe_wood,
+				args.recipe_stone
+			);
+			msg!("launcher.recipe.water: {}", launcher.recipe.water);
+			msg!("launcher.recipe.food: {}", launcher.recipe.food);
+			msg!("launcher.recipe.wood: {}", launcher.recipe.wood);
+			msg!("launcher.recipe.stone: {}", launcher.recipe.stone);
+			Ok(ctx.accounts)
+		}
+	
+		#[system_input]
+		pub struct Components {
+			pub smart_object_token_launcher: SmartObjectTokenLauncher,
+		}
+	
+		#[arguments]
+		struct SmartObjectTokenLauncherInitArgs {
+			pub token_name: String,
+			pub token_symbol: String,
+			pub token_uri: String,
+	
+			pub recipe_food: u16,
+			pub recipe_water: u16,
+			pub recipe_wood: u16,
+			pub recipe_stone: u16,
+		}
+	
+		#[extra_accounts]
+		pub struct SmartObjectTokenLauncherInitExtraAccounts {
+			#[account(mut)]
+			pub payer: Signer<'info>,
+	
+			// Create mint account
+			#[account()]
+			pub mint_account: Account<'info, Mint>,
+	
+			/// CHECK: Validate address by deriving pda
+			#[account(
+			mut,
+			seeds = [b"metadata", token_metadata_program.key().as_ref(), mint_account.key().as_ref()],
+			bump)]
+			pub metadata_account: UncheckedAccount<'info>,
+	
+			/// CHECK: Validate address by deriving pda
+			#[account(
+				mut,
+				seeds = [b"authority", mint_account.key().as_ref()],
+				bump,
+			)]
+			pub mint_authority: UncheckedAccount<'info>,
+	
+			pub token_program: Program<'info, Token>,
+			pub token_metadata_program: Program<'info, Metadata>,
+			pub system_program: Program<'info, System>,
+			pub rent: Sysvar<'info, Rent>,
+		}
+	}		
+
+	#[system]
+	pub mod smart_object_deity_interact {
+	
+		use deity_bot::cpi::accounts::InteractAgent;
+	
+		pub fn execute(ctx: Context<Components>, args: InteractionArgs) -> Result<Components> {
+			// Extract and clone all necessary accounts upfront
+			let deity_bot_program = ctx
+				.deity_bot_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let mint_account = ctx
+				.mint_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let associated_token_account = ctx
+				.associated_token_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let token_program = ctx
+				.token_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let associated_token_program = ctx
+				.associated_token_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let system_program = ctx
+				.system_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let interaction = ctx
+				.interaction()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let agent = ctx.agent().map_err(|_| ProgramError::InvalidAccountData)?;
+			let oracle_program = ctx
+				.oracle_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let minter_program = ctx
+				.minter_program()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let context_account = ctx
+				.context_account()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+			let payer = ctx.signer().map_err(|_| ProgramError::InvalidAccountData)?;
+	
+			let session_token = ctx
+				.session_token()
+				.map_err(|_| ProgramError::InvalidAccountData)?;
+	
+			msg!("payer: {}", payer.key);
+			msg!("deity_bot_program: {}", deity_bot_program.key);
+			msg!("mint_account: {}", mint_account.key);
+			msg!("associated_token_account: {}", associated_token_account.key);
+			msg!("token_program: {}", token_program.key);
+			msg!("associated_token_program: {}", associated_token_program.key);
+			msg!("system_program: {}", system_program.key);
+			msg!("context_account: {}", context_account.key);
+			msg!("interaction: {}", interaction.key);
+			msg!("agent: {}", agent.key);
+			msg!("oracle_program: {}", oracle_program.key);
+			msg!("minter_program: {}", minter_program.key);
+			msg!("session_token: {}", session_token.key);
+	
+			//CPI TO DEITY LLM
+	
+			deity_bot::cpi::interact_agent(
+				CpiContext::new(
+					deity_bot_program.clone(),
+					InteractAgent {
+						payer: payer.clone(),
+						mint_account: mint_account.clone(),
+						associated_token_account: associated_token_account.clone(),
+						token_program: token_program.clone(),
+						associated_token_program: associated_token_program.clone(),
+						system_program: system_program.clone(),
+						session_token: session_token.clone(),
+						interaction: interaction.clone(),
+						agent: agent.clone(),
+						context_account: context_account.clone(),
+						oracle_program: oracle_program.clone(),
+						minter_program: minter_program.clone(),
+					},
+				),
+				args.index,
+			)?;
+	
+			Ok(ctx.accounts)
+		}
+	
+		#[system_input]
+		pub struct Components {
+			pub deity: SmartObjectDeity,
+		}
+	
+		#[arguments]
+		struct InteractionArgs {
+			pub index: u8,
+		}
+	
+		#[extra_accounts]
+		pub struct SmartObjectDeityInteractExtraAccounts {
+			#[account(mut)]
+			signer: Signer<'info>,
+	
+			#[account()]
+			associated_token_account: Account<'info, TokenAccount>,
+	
+			#[account()]
+			mint_account: Account<'info, Mint>,
+	
+			#[account()]
+			minter_program: AccountInfo,
+	
+			#[account()]
+			token_program: Program<'info, Token>,
+	
+			#[account()]
+			associated_token_program: Program<'info, AssociatedToken>,
+	
+			#[account()]
+			system_program: Program<'info, System>,
+			#[account()]
+			pub session_token: Option<Account<'info, SessionToken>>,
+	
+			#[account()]
+			deity_bot_program: AccountInfo,
+	
+			#[account(mut)]
+			interaction: AccountInfo,
+	
+			#[account()]
+			agent: AccountInfo,
+	
+			#[account()]
+			context_account: AccountInfo,
+	
+			#[account()]
+			oracle_program: AccountInfo,
 		}
 	}	
 }

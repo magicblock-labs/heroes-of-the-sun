@@ -9,3 +9,6 @@ pub mod research;
 pub mod sacrifice;
 pub mod smart_object_init;
 pub mod upgrade;
+pub mod smart_object_deity_interact;
+pub mod smart_object_token_launcher_init;
+pub mod smart_object_token_launcher_interact;
