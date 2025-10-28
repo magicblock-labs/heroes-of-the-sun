@@ -19,7 +19,7 @@ anchor-spl = { version = "0.31.1", features = ["metadata"] }
 anchor-lang = { version = "0.31.1", features = [ "init-if-needed" ] }
 token-minter = { version = "0.1.0", path = "programs/token-minter", features = ["cpi"] }
 # bolt-lang = { version = "0.2.4" }
-bolt-lang = { path = "../bolt/crates/bolt-lang" }
+bolt-lang = { git = "https://github.com/magicblock-labs/bolt.git", branch = "feature/bundle" }
 session-keys = "^2"
 serde_json = "^1"
 solana-gpt-oracle = "^0"

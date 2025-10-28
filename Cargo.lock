@@ -347,6 +347,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "bolt-utils",
  "heck 0.5.0",
@@ -358,6 +359,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-arguments"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -367,6 +369,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-bundle"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "bolt-attribute",
 ]
@@ -374,6 +377,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-component"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "bolt-attribute",
 ]
@@ -381,6 +385,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-component-deserialize"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "bolt-utils",
  "proc-macro2",
@@ -392,6 +397,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-component-id"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -401,6 +407,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-extra-accounts"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "heck 0.5.0",
  "proc-macro2",
@@ -411,6 +418,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-system"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "bolt-attribute",
  "proc-macro2",
@@ -421,6 +429,7 @@ dependencies = [
 [[package]]
 name = "bolt-attribute-bolt-system-input"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -430,6 +439,7 @@ dependencies = [
 [[package]]
 name = "bolt-lang"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "ahash",
  "anchor-lang",
@@ -455,6 +465,7 @@ dependencies = [
 [[package]]
 name = "bolt-utils"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3157,6 +3168,7 @@ dependencies = [
 [[package]]
 name = "world"
 version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "anchor-lang",
  "const-crypto",
