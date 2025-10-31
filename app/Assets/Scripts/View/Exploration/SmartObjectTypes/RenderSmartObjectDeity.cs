@@ -58,7 +58,7 @@ namespace View.Exploration.SmartObjectTypes
             }
 
             PlayerPrefs.SetString($"{RenderSmartObject.CachePrefix}:{value}",
-                _connector.GetComponentName());
+                _connector.GetComponentProgramAddress());
             
             OnDataUpdate(smartObjectDeity);
             await _connector.Subscribe(OnDataUpdate);

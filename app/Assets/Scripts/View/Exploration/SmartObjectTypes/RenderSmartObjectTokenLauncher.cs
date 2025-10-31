@@ -140,7 +140,7 @@ namespace View.Exploration.SmartObjectTypes
                 Debug.Log($"[TokenLauncher] Current token price (bonding curve): {price}");
                 
                 PlayerPrefs.SetString($"{RenderSmartObject.CachePrefix}:{_connector.EntityPda}",
-                    _connector.GetComponentName());
+                    _connector.GetComponentProgramAddress());
 
                 tokenInfo.gameObject.SetActive(true);
                 tokenInfo.SetData(metadata, _data.Recipe, price);

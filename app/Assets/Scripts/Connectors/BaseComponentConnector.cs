@@ -421,7 +421,7 @@ namespace Connectors
 
             var ix = Bolt.World.ApplySystem(
                 new PublicKey(WorldPda),
-                new Bolt.System(BundleId, "test"),
+                new Bolt.System(BundleId, systemName),
                 systemInput.ToArray(),
                 args,
                 authority,
