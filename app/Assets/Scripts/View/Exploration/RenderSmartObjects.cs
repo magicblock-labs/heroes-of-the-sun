@@ -43,7 +43,7 @@ namespace View.Exploration
             };
 
             var accounts = (await Web3.Rpc.GetProgramAccountsAsync(
-                _connector.GetComponentProgramAddress(), Commitment.Confirmed, memCmpList: list)).Result;
+                _connector.GetComponentName(), Commitment.Confirmed, memCmpList: list)).Result;
 
             foreach (var account in accounts)
             {

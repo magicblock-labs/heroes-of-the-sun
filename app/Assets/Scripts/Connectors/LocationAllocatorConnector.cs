@@ -20,6 +20,11 @@ namespace Connectors
             return new PublicKey("J7q3dEg2KauPKkMamH9Q5FHhCoFYsSq9ramdutMpPTDc");
         }
 
+        public override string GetComponentName()
+        {
+            return "location_allocator";
+        }
+
         protected override LocationAllocator DeserialiseBytes(byte[] value)
         {
             return LocationAllocator.Deserialize(value);
@@ -53,7 +58,7 @@ namespace Connectors
 
         private async Task<bool> Bump()
         {
-            return await ApplySystem(new PublicKey("C2H1sb7ZVpgEZFWqXujRK3rx5C2543GNN251wmgfbhUH"), new { });
+            return await ApplySystem("bump_location_allocator", new { });
         }
     }
 }

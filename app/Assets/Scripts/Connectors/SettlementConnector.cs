@@ -18,6 +18,12 @@ namespace Connectors
         {
             return new("5bKBE1HgusXC5jVVjpk4CvxUM8UGnVPQyvGt7cB6Jk7W");
         }
+        
+        
+        public override string GetComponentName()
+        {
+            return "settlement";
+        }
 
         protected override Settlement.Accounts.Settlement DeserialiseBytes(byte[] value)
         {

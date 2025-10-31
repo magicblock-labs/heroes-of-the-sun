@@ -50,10 +50,10 @@ namespace View.UI
                 int.Parse(resourceWood.text) - _hero.Get().Backpack.Wood,
                 int.Parse(resourceWater.text) - _hero.Get().Backpack.Water,
                 int.Parse(resourceStone.text) - _hero.Get().Backpack.Stone,
-                new Dictionary<PublicKey, PublicKey>()
+                new Dictionary<PublicKey, Bolt.Component>()
                 {
                     {
-                        new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress()
+                        new PublicKey(_settlement.EntityPda), _settlement.GetComponent()
                     }
                 }
             );

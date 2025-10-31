@@ -27,6 +27,11 @@ namespace Connectors
             return new PublicKey("FDY4hyNT9yaV3oXowH7u4guB2gW3Aj8psvLnGwQ9BuT6");
         }
 
+        public override string GetComponentName()
+        {
+            return "player";
+        }
+
         protected override Player.Accounts.Player DeserialiseBytes(byte[] value)
         {
             return Player.Accounts.Player.Deserialize(value);
@@ -37,17 +42,15 @@ namespace Connectors
             throw new NotImplementedException();
         }
 
-        public async Task<bool> AssignSettlement(Dictionary<PublicKey, PublicKey> extraEntities)
+        public async Task<bool> AssignSettlement(Dictionary<PublicKey, Bolt.Component> extraEntities)
         {
-            return await ApplySystem(new PublicKey("42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"),
-                new { }, extraEntities);
+            return await ApplySystem("assign_settlement", new { }, extraEntities);
         }
 
 
-        public async Task<bool> AssignHero(Dictionary<PublicKey, PublicKey> extraEntities)
+        public async Task<bool> AssignHero(Dictionary<PublicKey, Bolt.Component> extraEntities)
         {
-            return await ApplySystem(new PublicKey("7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"),
-                new { }, extraEntities);
+            return await ApplySystem("assign_hero", new { }, extraEntities);
         }
     }
 }
