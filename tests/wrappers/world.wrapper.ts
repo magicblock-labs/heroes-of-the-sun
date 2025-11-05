@@ -2,7 +2,7 @@ import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import {
   InitializeNewWorld,
-} from "@magicblock-labs/bolt-sdk"
+} from "../../../bolt/clients/typescript/lib"
 
 
 export class WorldWrapper {

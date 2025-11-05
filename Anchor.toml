@@ -1,32 +1,22 @@
 [toolchain]
-channel="nightly"
 
 [features]
 resolution = true
 skip-lint = false
 
 [programs.devnet]
-assign_hero = "7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"
 assign_settlement = "42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"
 build = "fkiWK1Wn6ouGcHb3icX4XGKynef5MpsTQ478ZMdgB1g"
 claim_loot = "4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf"
 claim_time = "4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"
 deity-bot = "62f9zAUjCN5VFqWF43qSUrW6CvivqhsEjDvCHwQ1SjgR"
-hero = "GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh"
-location_allocator = "J7q3dEg2KauPKkMamH9Q5FHhCoFYsSq9ramdutMpPTDc"
-loot_distribution = "5F9tMTcNhgjL3tWCaF5HwLkQP9z4XJ4nTXmbYeS8UXRW"
 move_hero = "6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv"
-player = "FDY4hyNT9yaV3oXowH7u4guB2gW3Aj8psvLnGwQ9BuT6"
 repair = "5xPJt6GDcmGphNAs6qU3hWAvzLwXuSqhTco6RtoAR9aY"
 research = "3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP"
 reset = "3VEXJoAZkYxDXigSWso8FnJY8z6C6inpPxU798vqc9um"
 sacrifice = "6JwZJNAtkciXVGenFSoa99VBNcxyb2W8mvzcMK1vTWKs"
-settlement = "5bKBE1HgusXC5jVVjpk4CvxUM8UGnVPQyvGt7cB6Jk7W"
-smart-object-deity = "9RfzWgEBYQAM64a46V3dGRPKYsVY8a7YvZszWPMxvBfk"
 smart-object-deity-interact = "2QPK685TLL7jUG4RYuWXZjv3gw88kUPYw7Aye63cTTjB"
 smart-object-init = "64Uk4oF6mNyviUdK2xHXE3VMCtbCMDgRr1DMJk777DJZ"
-smart-object-location = "5ewDDvpaTkYvoE7ZJJ9cDmZuqvGQt65hsZSJ9w73Fzr1"
-smart-object-token-launcher = "8va4yKEBACkT49C9wo94gS8ZaTdUrq2ipLgZvSNxWbd3"
 smart-object-token-launcher-init = "AdrPpoYr67ZcDZsQxsPgeosE3sQbZxercbUn8i1dcvap"
 smart-object-token-launcher-interact = "DUW1KczxcpeTEY7j9nkvcuAdWGNWoadTeDBKN5Z9xhst"
 token_minter = "4ZxRnucEWC62kVktmx27cz9d1PzWWNgiZLT5VWFLbfB2"
@@ -35,7 +25,6 @@ wait = "9F6qiZPUWN3bCnr5uVBwSmEDf8QcAFHNSVDH8L7AkZe4"
 worker = "BExuAEwcKxKeqHSN8C1WetUAd6Tm71cZEiP8EBSrH55T"
 
 [programs.localnet]
-assign_hero = "7gBLDn72Cog7dBvN1LWfo6W36Q7vxcv7CqYAeHwfo3Y"
 assign_settlement = "42g6wojVK214btG2oUHg8vziW8UaUiQfPZ6K9kMGTCp2"
 build = "fkiWK1Wn6ouGcHb3icX4XGKynef5MpsTQ478ZMdgB1g"
 bump_location_allocator = "C2H1sb7ZVpgEZFWqXujRK3rx5C2543GNN251wmgfbhUH"
@@ -43,22 +32,15 @@ claim-quest = "7nsn4z8U1nVCVHud9CLmYLy5ZHK2bSMge6u7YgmssdaA"
 claim_loot = "4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf"
 claim_time = "4XXA1mX5aN4Fd62FBgNxCU7FzKDYS3KSxFX3RdJYoWPj"
 deity-bot = "62f9zAUjCN5VFqWF43qSUrW6CvivqhsEjDvCHwQ1SjgR"
+ecs-bundle = "Cjca6tWWGx77ki6rRinErcoZJEvJHNxfPaut8DoKJHQ5"
 exchange = "Csna3V2jUMdQEQKUCxLsQEnYThAGPSWcPCxW9vea1S8d"
-hero = "GBzY8ujNDb1FNkJUXUUjKV5uZPqzi6AoKsPjsqFEHCeh"
-location_allocator = "J7q3dEg2KauPKkMamH9Q5FHhCoFYsSq9ramdutMpPTDc"
-loot_distribution = "5F9tMTcNhgjL3tWCaF5HwLkQP9z4XJ4nTXmbYeS8UXRW"
 move_hero = "6o9i5V3EvT9oaokbcZa7G92DWHxcqJnjXmCp94xxhQhv"
-player = "FDY4hyNT9yaV3oXowH7u4guB2gW3Aj8psvLnGwQ9BuT6"
 repair = "5xPJt6GDcmGphNAs6qU3hWAvzLwXuSqhTco6RtoAR9aY"
 research = "3ZJ7mgXYhqQf7EsM8q5Ea5YJWA712TFyWGvrj9mRL2gP"
 reset = "3VEXJoAZkYxDXigSWso8FnJY8z6C6inpPxU798vqc9um"
 sacrifice = "6JwZJNAtkciXVGenFSoa99VBNcxyb2W8mvzcMK1vTWKs"
-settlement = "5bKBE1HgusXC5jVVjpk4CvxUM8UGnVPQyvGt7cB6Jk7W"
-smart-object-deity = "9RfzWgEBYQAM64a46V3dGRPKYsVY8a7YvZszWPMxvBfk"
 smart-object-deity-interact = "2QPK685TLL7jUG4RYuWXZjv3gw88kUPYw7Aye63cTTjB"
 smart-object-init = "64Uk4oF6mNyviUdK2xHXE3VMCtbCMDgRr1DMJk777DJZ"
-smart-object-location = "5ewDDvpaTkYvoE7ZJJ9cDmZuqvGQt65hsZSJ9w73Fzr1"
-smart-object-token-launcher = "8va4yKEBACkT49C9wo94gS8ZaTdUrq2ipLgZvSNxWbd3"
 smart-object-token-launcher-init = "AdrPpoYr67ZcDZsQxsPgeosE3sQbZxercbUn8i1dcvap"
 smart-object-token-launcher-interact = "DUW1KczxcpeTEY7j9nkvcuAdWGNWoadTeDBKN5Z9xhst"
 token_minter = "4ZxRnucEWC62kVktmx27cz9d1PzWWNgiZLT5VWFLbfB2"
@@ -70,11 +52,11 @@ worker = "BExuAEwcKxKeqHSN8C1WetUAd6Tm71cZEiP8EBSrH55T"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "Localnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [workspace]
-members = ["programs-ecs/components/*", "programs-ecs/systems/*", "programs/*"]
+members = ["programs-ecs/bundles/*", "programs/*"]
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"

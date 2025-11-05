@@ -274,29 +274,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 
 [[package]]
-name = "assign-hero"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "hero",
- "player",
- "serde",
-]
-
-[[package]]
-name = "assign-settlement"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "location_allocator",
- "player",
- "serde",
- "settlement",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -368,21 +345,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "bolt-attribute-bolt-arguments"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22c16838ae264307e5143b0fbc6dfbc77239a00878d7b1f373eeb0d98131abab"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "bolt-attribute-bolt-component"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f9bac8a476c2b037856290bf114d78cc76bcf4321820d2aed859aa97401263d"
+name = "bolt-attribute"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "bolt-utils",
  "heck 0.5.0",
@@ -392,33 +357,47 @@ dependencies = [
 ]
 
 [[package]]
+name = "bolt-attribute-bolt-arguments"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "bolt-attribute-bolt-bundle"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
+dependencies = [
+ "bolt-attribute",
+]
+
+[[package]]
+name = "bolt-attribute-bolt-component"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
+dependencies = [
+ "bolt-attribute",
+]
+
+[[package]]
 name = "bolt-attribute-bolt-component-deserialize"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fae68448ea532bcda1c82398816a715088c6d48a47bef5ee2f0077603fcc44e7"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "bolt-utils",
  "proc-macro2",
  "quote",
+ "sha2 0.10.9",
  "syn 1.0.109",
 ]
 
 [[package]]
 name = "bolt-attribute-bolt-component-id"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "da3849ebea597f409dd3870d6b9f5a099a488c84ed9752877a01d7b2039e4bf2"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "bolt-attribute-bolt-delegate"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "173e28078c39d86a8222982d19a3d91b761b1f955b3f3b5c939cf9074723dcc2"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -427,21 +406,10 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-extra-accounts"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "045421855504c380d127e7e3a69b85b1947920b1243a9fdda267a40a9fa8877e"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "bolt-attribute-bolt-program"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a05791690ee2cf30405a0da62f24cd84aa971d70377330e67e9c68f2d1589d7"
-dependencies = [
+ "heck 0.5.0",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -449,10 +417,10 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-system"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8133bd3c520095d49af9b2c6306bd2718e059ef895cb43a7376569414e92ab33"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
+ "bolt-attribute",
  "proc-macro2",
  "quote",
  "syn 1.0.109",
@@ -460,9 +428,8 @@ dependencies = [
 
 [[package]]
 name = "bolt-attribute-bolt-system-input"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2534857108f01623e89a64a196ec86d8e5185f47e41a7ec672bbc5bb87e7f059"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -470,34 +437,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "bolt-component"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d6af7f19b509a04d8ccec77e17b124d301e3f8f7b38fe13956c1e6eb2de1c8b"
-dependencies = [
- "anchor-lang",
- "bolt-system",
-]
-
-[[package]]
 name = "bolt-lang"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b4135f60d6e08a9534538655cf2caca27da8a6ae40df7c06cf8c5d221c21ea9"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "ahash",
  "anchor-lang",
  "bincode",
  "bolt-attribute-bolt-arguments",
+ "bolt-attribute-bolt-bundle",
  "bolt-attribute-bolt-component",
  "bolt-attribute-bolt-component-deserialize",
  "bolt-attribute-bolt-component-id",
- "bolt-attribute-bolt-delegate",
  "bolt-attribute-bolt-extra-accounts",
- "bolt-attribute-bolt-program",
  "bolt-attribute-bolt-system",
  "bolt-attribute-bolt-system-input",
- "bolt-system",
  "ephemeral-rollups-sdk",
  "getrandom 0.1.16",
  "serde",
@@ -509,19 +463,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "bolt-system"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc1dd9ee6993e6d81943cd9d97d6202f487a5a6fca0c42a3f945a373b5bfb48e"
-dependencies = [
- "anchor-lang",
-]
-
-[[package]]
 name = "bolt-utils"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "608d6750b5427fc3ae08840bee4569af94819d50ff591897573d9cbe9d2e9092"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -606,26 +550,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "build"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
-
-[[package]]
-name = "bump_location_allocator"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "location_allocator",
- "serde",
-]
-
-[[package]]
 name = "bumpalo"
 version = "3.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -699,17 +623,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "613afe47fcd5fac7ccf1db93babcb082c5994d996f20b8b159f2ad1658eb5724"
 
 [[package]]
-name = "change-backpack"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "hero",
- "serde",
- "settlement",
-]
-
-[[package]]
 name = "cipher"
 version = "0.4.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -717,40 +630,6 @@ checksum = "773f3b9af64447d2ce9850330c473515014aa235e6a783b02db81ff39e4a3dad"
 dependencies = [
  "crypto-common",
  "inout",
-]
-
-[[package]]
-name = "claim-loot"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "hero",
- "loot-distribution",
- "player",
- "serde",
- "token-minter",
-]
-
-[[package]]
-name = "claim-quest"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
-
-[[package]]
-name = "claim-time"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
 ]
 
 [[package]]
@@ -771,6 +650,16 @@ checksum = "e89f72f65e8501878b8a004d5a1afb780987e2ce2b4532c562e367a72c57499f"
 dependencies = [
  "log",
  "web-sys",
+]
+
+[[package]]
+name = "const-crypto"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1c06f1eb05f06cf2e380fdded278fbf056a38974299d77960555a311dcf91a52"
+dependencies = [
+ "keccak-const",
+ "sha2-const-stable",
 ]
 
 [[package]]
@@ -881,6 +770,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "ecs-bundle"
+version = "0.2.6"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "bolt-lang",
+ "deity-bot",
+ "serde",
+ "token-minter",
+]
+
+[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -937,18 +838,6 @@ name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
-
-[[package]]
-name = "exchange"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "serde",
- "settlement",
- "token-minter",
-]
 
 [[package]]
 name = "feature-probe"
@@ -1057,15 +946,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
-name = "hero"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "settlement",
-]
-
-[[package]]
 name = "hmac"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1128,6 +1008,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "keccak-const"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "57d8d8ce877200136358e0bbff3a77965875db3af755a11e1fa6b1b3e2df13ea"
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1186,14 +1072,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "location_allocator"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
 name = "lock_api"
 version = "0.4.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1208,15 +1086,6 @@ name = "log"
 version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
-
-[[package]]
-name = "loot-distribution"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "settlement",
-]
 
 [[package]]
 name = "memchr"
@@ -1243,16 +1112,6 @@ dependencies = [
  "keccak",
  "rand_core 0.6.4",
  "zeroize",
-]
-
-[[package]]
-name = "move-hero"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "hero",
- "serde",
 ]
 
 [[package]]
@@ -1389,14 +1248,6 @@ name = "percent-encoding"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
-
-[[package]]
-name = "player"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
 
 [[package]]
 name = "polyval"
@@ -1574,36 +1425,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
-name = "repair"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
-
-[[package]]
-name = "research"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
-
-[[package]]
-name = "reset"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
-
-[[package]]
 name = "rustc_version"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1623,16 +1444,6 @@ name = "ryu"
 version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "28d3b2b1366ec20994f1fd18c3c594f05c5dd4bc44d8bb0c1c632c8d6829481f"
-
-[[package]]
-name = "sacrifice"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
 
 [[package]]
 name = "scopeguard"
@@ -1728,14 +1539,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "settlement"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
 name = "sha2"
 version = "0.9.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1760,6 +1563,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "sha2-const-stable"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5f179d4e11094a893b82fff208f74d448a7512f99f5a0acbd5c679b705f83ed9"
+
+[[package]]
 name = "sha3"
 version = "0.10.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1780,77 +1589,6 @@ name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
-
-[[package]]
-name = "smart-object-deity"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
-name = "smart-object-deity-interact"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "deity-bot",
- "serde",
- "smart-object-deity",
-]
-
-[[package]]
-name = "smart-object-init"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "smart-object-location",
-]
-
-[[package]]
-name = "smart-object-location"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
-]
-
-[[package]]
-name = "smart-object-token-launcher"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "settlement",
-]
-
-[[package]]
-name = "smart-object-token-launcher-init"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "serde",
- "settlement",
- "smart-object-token-launcher",
-]
-
-[[package]]
-name = "smart-object-token-launcher-interact"
-version = "0.1.8"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "hero",
- "serde",
- "smart-object-token-launcher",
-]
 
 [[package]]
 name = "solana-account"
@@ -3259,16 +2997,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "upgrade"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
-
-[[package]]
 name = "uriparse"
 version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3283,17 +3011,6 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
-
-[[package]]
-name = "wait"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "bolt-lang",
- "serde",
- "settlement",
-]
 
 [[package]]
 name = "wasi"
@@ -3449,24 +3166,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "worker"
-version = "0.1.10"
-dependencies = [
- "anchor-lang",
- "bolt-lang",
- "serde",
- "settlement",
-]
-
-[[package]]
 name = "world"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61297ef163c795f9360509fc7ec6475637534249bb1b85f7521202d9709674ae"
+version = "0.2.6"
+source = "git+https://github.com/magicblock-labs/bolt.git?branch=feature%2Fbundle#c3a1583bd54926192a7726ec97cd75d0004b9442"
 dependencies = [
  "anchor-lang",
- "bolt-component",
- "bolt-system",
+ "const-crypto",
  "solana-security-txt",
  "tuple-conv",
 ]

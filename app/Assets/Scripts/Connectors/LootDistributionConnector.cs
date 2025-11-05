@@ -19,6 +19,11 @@ namespace Connectors
             return new PublicKey("5F9tMTcNhgjL3tWCaF5HwLkQP9z4XJ4nTXmbYeS8UXRW");
         }
 
+        public override string GetComponentName()
+        {
+            return "loot_distribution";
+        }
+        
         protected override LootDistribution.Accounts.LootDistribution DeserialiseBytes(byte[] value)
         {
             return LootDistribution.Accounts.LootDistribution.Deserialize(value);
@@ -31,8 +36,7 @@ namespace Connectors
 
         public async Task<bool> Claim(int index)
         {
-            var applySystem = await ApplySystem(new PublicKey("4CjxHvNUpoCYomULBFTvmkTQPaNd9QDHPhZQ6eB9bZEf"),
-                new { index }, null, _token.GetMintExtraAccounts());
+            var applySystem = await ApplySystem("claim_loot", new { index }, null, _token.GetMintExtraAccounts());
 
 
             if (applySystem && Web3Utils.SessionWallet != null)

@@ -5,6 +5,7 @@
 **/*.rs.bk
 node_modules
 test-ledger
+test-ledger-magicblock
 .yarn
 *_DoNotShip
 target/debug

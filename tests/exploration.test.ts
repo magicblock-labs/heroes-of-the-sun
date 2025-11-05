@@ -6,6 +6,7 @@ import { LocationAllocatorWrapper } from "./wrappers/location_allocator.wrapper"
 import { TokenWrapper } from "./wrappers/token.wrapper";
 import { HeroWrapper } from "./wrappers/hero.wrapper";
 import { LootDistributionWrapper } from "./wrappers/loot_distribution.wrapper";
+import { Component } from "../../bolt/clients/typescript/lib";
 
 
 
@@ -33,9 +34,9 @@ describe("Exploration and multiplayer tests", async () => {
         await settlement.init(await world.getWorldPda(), allocatorState.currentX, allocatorState.currentY)
         const state = await player.assignSettlement(
             settlement.entityPda,
-            settlement.settlementComponent.programId,
+            new Component(settlement.bundle.programId, "settlement"),
             locationAllocator.entityPda,
-            locationAllocator.locationAllocatorComponent.programId,
+            new Component(locationAllocator.bundle.programId, "location_allocator"),
         );
         expect(state.settlements.length).to.gt(0);
     });
@@ -44,7 +45,7 @@ describe("Exploration and multiplayer tests", async () => {
         await hero.init(await world.getWorldPda())
         await player.assignHero(
             hero.entityPda,
-            hero.heroComponent.programId,
+            new Component(hero.bundle.programId, "hero"),
         );
         const state = await hero.state();
         expect(state.owner.toString()).to.not.be.null;
@@ -123,7 +124,7 @@ describe("Exploration and multiplayer tests", async () => {
         const heroBefore = await hero.state();
 
         await hero.changeBackpack(settlement.entityPda,
-            settlement.settlementComponent.programId, { water: 0, food: 0, wood: 1, stone: 0 });
+            new Component(settlement.bundle.programId, "settlement"), { water: 0, food: 0, wood: 1, stone: 0 });
 
 
         const settlementAfter = await settlement.state();

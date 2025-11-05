@@ -61,6 +61,11 @@ namespace Connectors
         {
             return new PublicKey("9RfzWgEBYQAM64a46V3dGRPKYsVY8a7YvZszWPMxvBfk");
         }
+        
+        public override string GetComponentName()
+        {
+            return "smart_object_deity";
+        }
 
         public async Task Initialize()
         {
@@ -124,7 +129,9 @@ namespace Connectors
                 return false;
             }
 
-            return await ApplySystem(systemAddress, new { index }, null, 
+            //todo make system name retrieved from smart object account
+            
+            return await ApplySystem("smart_object_deity_interact", new { index }, null, 
                 extraAccounts.Concat(_interactionAccounts).ToArray());
         }
 

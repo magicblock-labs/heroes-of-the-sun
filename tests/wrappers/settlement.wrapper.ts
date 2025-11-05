@@ -5,23 +5,19 @@ import {
   AddEntity,
   InitializeComponent,
   ApplySystem,
-  FindComponentPda,
-  createDelegateInstruction,
-} from "@magicblock-labs/bolt-sdk"
+  Component,
+  DelegateComponent,
+  System,
+} from "../../../bolt/clients/typescript/lib"
 import { AssignWorker } from "../../target/types/assign_worker";
-import { Build } from "../../target/types/build";
-import { Repair } from "../../target/types/repair";
-import { Research } from "../../target/types/research";
-import { Reset } from "../../target/types/reset";
 import { Settlement } from "../../target/types/settlement";
-import { Upgrade } from "../../target/types/upgrade";
-import { Wait } from "../../target/types/wait";
 import { Exchange } from "../../target/types/exchange";
 
 import {
   DELEGATION_PROGRAM_ID,
   GetCommitmentSignature,
 } from "@magicblock-labs/ephemeral-rollups-sdk";
+import { EcsBundle } from "../../target/types/ecs_bundle";
 
 
 export enum BuildingType {
@@ -81,14 +77,9 @@ export class SettlementWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
+  bundle: Program<EcsBundle>;
   settlementComponent: Program<Settlement>;
-  waitSystem: Program<Wait>;
-  buildSystem: Program<Build>;
   assignWorkerSystem: Program<AssignWorker>;
-  upgradeSystem: Program<Upgrade>;
-  repairSystem: Program<Repair>;
-  researchSystem: Program<Research>;
-  resetSystem: Program<Reset>;
   exchangeSystem: Program<Exchange>;
 
   async init(worldPda: PublicKey, x: number, y: number) {
@@ -98,14 +89,8 @@ export class SettlementWrapper {
       this.provider = anchor.AnchorProvider.env();
       anchor.setProvider(this.provider);
 
-      this.settlementComponent = anchor.workspace.Settlement as Program<Settlement>;
-      this.waitSystem = anchor.workspace.Wait as Program<Wait>;
-      this.buildSystem = anchor.workspace.Build as Program<Build>;
+      this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
       this.assignWorkerSystem = anchor.workspace.AssignWorker as Program<AssignWorker>;
-      this.upgradeSystem = anchor.workspace.Upgrade as Program<Upgrade>;
-      this.repairSystem = anchor.workspace.Repair as Program<Repair>;
-      this.researchSystem = anchor.workspace.Research as Program<Research>;
-      this.resetSystem = anchor.workspace.Reset as Program<Reset>;
       this.exchangeSystem = anchor.workspace.Exchange as Program<Exchange>;
 
       const addEntity = await AddEntity({
@@ -121,7 +106,7 @@ export class SettlementWrapper {
       const initializeComponent = await InitializeComponent({
         payer: this.provider.wallet.publicKey,
         entity: this.entityPda,
-        componentId: this.settlementComponent.programId,
+        componentId: new Component(this.bundle.programId, "settlement"),
       });
       txSign = await this.provider.sendAndConfirm(initializeComponent.transaction, [], { skipPreflight: true });
       this.componentPda = initializeComponent.componentPda;
@@ -130,7 +115,7 @@ export class SettlementWrapper {
   }
 
   async state() {
-    return await this.settlementComponent.account.settlement.fetch(this.componentPda);
+    return await this.bundle.account.settlement.fetch(this.componentPda);
   }
 
   async build(args: BuildArgs) {
@@ -138,10 +123,10 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.buildSystem.programId,
+      systemId: new System(this.bundle.programId, "build"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
       }],
       args
     });
@@ -155,10 +140,10 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.assignWorkerSystem.programId,
+      systemId: new System(this.bundle.programId, "assign_worker"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
       }],
       args
     }
@@ -175,10 +160,10 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.upgradeSystem.programId,
+      systemId: new System(this.bundle.programId, "upgrade"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
       }],
       args
     });
@@ -193,10 +178,10 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.repairSystem.programId,
+      systemId: new System(this.bundle.programId, "repair"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
       }],
       args
     });
@@ -211,10 +196,10 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.researchSystem.programId,
+      systemId: new System(this.bundle.programId, "research"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
       }],
       extraAccounts: [
         {
@@ -240,7 +225,7 @@ export class SettlementWrapper {
       systemId: this.exchangeSystem.programId,
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
       }],
       extraAccounts: [
         {
@@ -264,10 +249,10 @@ export class SettlementWrapper {
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.waitSystem.programId,
+      systemId: new System(this.bundle.programId, "wait"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.settlementComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "settlement") }],
       }],
       extraAccounts: [
         {
@@ -310,19 +295,14 @@ export class SettlementWrapper {
   }
 
   async delegate() {
-
-
-    const counterPda = FindComponentPda({
-      componentId: this.settlementComponent.programId,
-      entity: this.entityPda,
-    });
-    const delegateIx = createDelegateInstruction({
-      entity: this.entityPda,
-      account: this.componentPda,
-      ownerProgram: this.settlementComponent.programId,
-      payer: this.provider.wallet.publicKey,
-    });
-    const tx = new anchor.web3.Transaction().add(delegateIx);
+    const delegateIx = await DelegateComponent(
+      {
+        payer: this.provider.wallet.publicKey,
+        entity: this.entityPda,
+        componentId: new Component(this.bundle.programId, "settlement"),
+      }
+    );
+    const tx = new anchor.web3.Transaction().add(delegateIx.instruction);
     tx.feePayer = this.provider.wallet.publicKey;
     tx.recentBlockhash = (await this.provider.connection.getLatestBlockhash()).blockhash;
     const txSign = await this.provider.sendAndConfirm(tx, [], { commitment: "confirmed" });

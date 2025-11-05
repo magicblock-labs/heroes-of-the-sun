@@ -39,12 +39,17 @@ namespace Connectors
         {
             return new PublicKey("8va4yKEBACkT49C9wo94gS8ZaTdUrq2ipLgZvSNxWbd3");
         }
+        
+        public override string GetComponentName()
+        {
+            return "smart_object_token_launcher";
+        }
 
         public async Task<bool> Init(string token_name, string token_symbol, string token_uri, PublicKey mintPublicKey,
             ushort recipe_food, ushort recipe_water, ushort recipe_wood, ushort recipe_stone)
         {
             var initSystemAddress = new PublicKey("AdrPpoYr67ZcDZsQxsPgeosE3sQbZxercbUn8i1dcvap");
-            return await ApplySystem(initSystemAddress,
+            return await ApplySystem("smart_object_token_launcher_init",
                 new { token_name, token_symbol, token_uri, recipe_food, recipe_water, recipe_wood, recipe_stone }, null,
                 _token.GetCreateExtraAccounts(mintPublicKey, initSystemAddress));
         }
@@ -62,11 +67,11 @@ namespace Connectors
 
             var systemAddress = new PublicKey("DUW1KczxcpeTEY7j9nkvcuAdWGNWoadTeDBKN5Z9xhst");
 
-            var result = await ApplySystem(systemAddress,
-                new { quantity }, new Dictionary<PublicKey, PublicKey>()
+            var result = await ApplySystem("smart_object_token_launcher_interact",
+                new { quantity }, new Dictionary<PublicKey, Bolt.Component>()
                 {
                     {
-                        new PublicKey(_hero.EntityPda), _hero.GetComponentProgramAddress()
+                        new PublicKey(_hero.EntityPda), _hero.GetComponent()
                     }
                 }, GetMintExtraAccounts(systemAddress, mint)
                     .Concat(_token.GetTransferExtraAccounts(new(DataAddress))).ToArray(), true);

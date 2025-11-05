@@ -5,7 +5,7 @@ import {
   AddEntity,
   ApplySystem,
   InitializeComponent,
-} from "@magicblock-labs/bolt-sdk"
+} from "../../../bolt/clients/typescript/lib"
 import { SmartObjectLocation } from "../../target/types/smart_object_location";
 import { SmartObjectDeity } from "../../target/types/smart_object_deity";
 import { SmartObjectInit } from "../../target/types/smart_object_init";

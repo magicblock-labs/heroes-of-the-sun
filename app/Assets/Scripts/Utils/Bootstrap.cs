@@ -321,10 +321,10 @@ namespace Utils
                     label.text = $"Assigning Settlement to the Player...";
                     //assign settlement in player
                     await _player.AssignSettlement(
-                        new Dictionary<PublicKey, PublicKey>
+                        new Dictionary<PublicKey, Bolt.Component>
                         {
-                            { new PublicKey(_settlement.EntityPda), _settlement.GetComponentProgramAddress() },
-                            { new PublicKey(_allocator.EntityPda), _allocator.GetComponentProgramAddress() },
+                            { new PublicKey(_settlement.EntityPda), _settlement.GetComponent() },
+                            { new PublicKey(_allocator.EntityPda), _allocator.GetComponent() },
                         });
 
 
@@ -372,9 +372,9 @@ namespace Utils
                 {
                     label.text = $"Assigning New Hero to Player...";
                     await _player.AssignHero(
-                        new Dictionary<PublicKey, PublicKey>
+                        new Dictionary<PublicKey, Bolt.Component>
                         {
-                            { new PublicKey(_hero.EntityPda), _hero.GetComponentProgramAddress() },
+                            { new PublicKey(_hero.EntityPda), _hero.GetComponent() },
                         });
                 }
 

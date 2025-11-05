@@ -6,10 +6,10 @@ import {
   AddEntity,
   InitializeComponent,
   ApplySystem,
-} from "@magicblock-labs/bolt-sdk"
-import { AssignSettlement } from "../../target/types/assign_settlement";
-import { Player } from "../../target/types/player";
-import { AssignHero } from "../../target/types/assign_hero";
+  Component,
+  System,
+} from "../../../bolt/clients/typescript/lib"
+import { EcsBundle } from "../../target/types/ecs_bundle";
 
 
 export class PlayerWrapper {
@@ -20,9 +20,7 @@ export class PlayerWrapper {
   entityPda: PublicKey;
   componentPda: PublicKey;
 
-  playerComponent: Program<Player>;
-  assignSettlementSystem: Program<AssignSettlement>;
-  assignHeroSystem: Program<AssignHero>;
+  bundle: Program<EcsBundle>;
 
   async init(worldPda: PublicKey) {
 
@@ -37,10 +35,8 @@ export class PlayerWrapper {
         connection: this.provider.connection,
       });
 
-      this.playerComponent = anchor.workspace.Player as Program<Player>;
-      this.assignSettlementSystem = anchor.workspace.AssignSettlement as Program<AssignSettlement>;
-      this.assignHeroSystem = anchor.workspace.AssignHero as Program<AssignHero>;
-
+      this.bundle = anchor.workspace.EcsBundle as Program<EcsBundle>;
+      
       let txSign = await this.provider.sendAndConfirm(playerEntity.transaction);
       this.entityPda = playerEntity.entityPda;
       console.log(`Initialized a new Entity (PDA=${playerEntity.entityPda}). Initialization signature: ${txSign}`);
@@ -48,7 +44,7 @@ export class PlayerWrapper {
       const initializeComponent = await InitializeComponent({
         payer: this.provider.wallet.publicKey,
         entity: this.entityPda,
-        componentId: this.playerComponent.programId,
+        componentId: new Component(this.bundle.programId, "player"),
       });
       txSign = await this.provider.sendAndConfirm(initializeComponent.transaction);
       this.componentPda = initializeComponent.componentPda;
@@ -57,27 +53,27 @@ export class PlayerWrapper {
   }
 
   async state() {
-    return await this.playerComponent.account.player.fetch(this.componentPda);
+    return await this.bundle.account.player.fetch(this.componentPda);
   }
 
-  async assignSettlement(settlementPDA: PublicKey, settlementProgramID: PublicKey, allocatorPDA: PublicKey, allocatorProgramID: PublicKey) {
+  async assignSettlement(settlementPDA: PublicKey, settlementID: Component, allocatorPDA: PublicKey, allocatorID: Component) {
 
     // Run the build system
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.assignSettlementSystem.programId,
+      systemId: new System(this.bundle.programId, "assign_settlement"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.playerComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "player") }],
       },
       {
         entity: settlementPDA,
-        components: [{ componentId: settlementProgramID }],
+        components: [{ componentId: settlementID }],
       },
       {
         entity: allocatorPDA,
-        components: [{ componentId: allocatorProgramID }],
+        components: [{ componentId: allocatorID }],
       }],
     });
 
@@ -88,20 +84,20 @@ export class PlayerWrapper {
   }
 
 
-  async assignHero(heroPDA: PublicKey, heroProgramID: PublicKey) {
+  async assignHero(heroPDA: PublicKey, heroID: Component) {
 
     // Run the build system
     const applySystem = await ApplySystem({
       world: this.worldPda,
       authority: this.provider.wallet.publicKey,
-      systemId: this.assignHeroSystem.programId,
+      systemId: new System(this.bundle.programId, "assign_hero"),
       entities: [{
         entity: this.entityPda,
-        components: [{ componentId: this.playerComponent.programId }],
+        components: [{ componentId: new Component(this.bundle.programId, "player") }],
       },
       {
         entity: heroPDA,
-        components: [{ componentId: heroProgramID }],
+        components: [{ componentId: heroID }],
       }],
     });
 

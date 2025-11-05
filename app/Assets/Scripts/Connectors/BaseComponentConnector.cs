@@ -21,8 +21,15 @@ using UnityEngine;
 using Utils;
 using Utils.Injection;
 using World.Program;
+using Component = Bolt.Component;
 using DelegateAccounts = Hero.Program.DelegateAccounts;
 using UndelegateAccounts = Settlement.Program.UndelegateAccounts;
+
+/*
+
+  Make sure directly use all the functions from Bolt (ApplySystem, InitializeComponent, DelegateComponent, DestroyComponent) and not custom client-side code. Replace the ProgramIDs with new System(bundleProgramID, "system_name_in_snake_case") or new Component(bundleProgramID, "component_name")
+
+ */
 
 namespace Connectors
 {
@@ -37,6 +44,7 @@ namespace Connectors
             : Web3.Wallet?.ActiveRpcClient;
 
         private static readonly PublicKey DelegationProgram = new("DELeGGvXpWV2fqJUhqcF5ZSYMS4JTLjteaAMARRSaeSh");
+        private static readonly PublicKey BundleId = new("Cjca6tWWGx77ki6rRinErcoZJEvJHNxfPaut8DoKJHQ5");
 
         //this comes from program deployment
         private const string
@@ -60,6 +68,7 @@ namespace Connectors
         private const string DataAddressCache = nameof(DataAddressCache);
 
         public abstract PublicKey GetComponentProgramAddress();
+        public abstract string GetComponentName();
 
         public async UniTask SetSeed(string value, bool forceCreateEntity = true)
         {
@@ -234,8 +243,8 @@ namespace Connectors
 
             var payer = walletBase.Account;
 
-            _dataAddress =
-                PlayerPrefs.GetString($"{DataAddressCache}:{_entityPda}{GetComponentProgramAddress()}", null);
+            // _dataAddress =
+            //     PlayerPrefs.GetString($"{DataAddressCache}:{_entityPda}{GetComponentProgramAddress()}", null);
             if (string.IsNullOrEmpty(_dataAddress))
             {
                 var entityState = await RpcClient.GetAccountInfoAsync(_entityPda, Commitment.Processed);
@@ -280,22 +289,14 @@ namespace Connectors
                 var componentDataState = await RpcClient.GetAccountInfoAsync(dataAddress, Commitment.Processed);
                 if (componentDataState.Result.Value == null)
                 {
+                    var component = new Bolt.Component(BundleId, GetComponentName());
+                    var initializeComponent = await Bolt.World.InitializeComponent(payer, new PublicKey(_entityPda),
+                        component, "", publicComponent ? new(WorldProgram.ID) : payer.PublicKey);
                     var tx = new Transaction
                     {
                         FeePayer = payer,
                         Instructions = new List<TransactionInstruction>
-                        {
-                            WorldProgram.InitializeComponent(new InitializeComponentAccounts()
-                            {
-                                Payer = payer,
-                                Entity = new PublicKey(_entityPda),
-                                Data = dataAddress,
-                                ComponentProgram = GetComponentProgramAddress(),
-                                SystemProgram = SystemProgram.ProgramIdKey,
-                                Authority = publicComponent ? new(WorldProgram.ID) : payer.PublicKey,
-                                InstructionSysvarAccount = SysVars.InstructionAccount
-                            })
-                        },
+                            { initializeComponent.Instruction },
                         RecentBlockHash = await Web3.BlockHash(commitment: Commitment.Confirmed, useCache: false)
                     };
 
@@ -399,31 +400,42 @@ namespace Connectors
 
         protected abstract T DeserialiseBytes(byte[] value);
 
-        protected virtual async UniTask<bool> ApplySystem(PublicKey systemAddress, object args,
-            Dictionary<PublicKey, PublicKey> extraEntities = null, AccountMeta[] extraAccounts = null,
+        protected virtual async UniTask<bool> ApplySystem(string systemName, object args,
+            Dictionary<PublicKey, Bolt.Component> extraEntities = null, AccountMeta[] extraAccounts = null,
             bool forceMainWalletSigner = false)
         {
-            var systemInput = new List<Bolt.World.EntityType>
-                { new(new PublicKey(_entityPda), new[] { GetComponentProgramAddress() }) };
-
-            if (extraEntities != null)
-                systemInput.AddRange(extraEntities.Select(kv => new Bolt.World.EntityType(kv.Key, new[] { kv.Value })));
-
             var authority = forceMainWalletSigner || Web3Utils.SessionWallet?.Account?.PublicKey == null
                 ? Web3.Wallet.Account.PublicKey
                 : Web3Utils.SessionWallet.Account.PublicKey;
 
-            var ix = Bolt.World.ApplySystem(new PublicKey(WorldPda), systemAddress,
-                systemInput.ToArray(), args, authority,
-                forceMainWalletSigner ? null : Web3Utils.SessionWallet?.SessionTokenPDA);
+            var systemInput = new List<(PublicKey entity, Bolt.Component[] components, string[] seeds)?>
+            {
+                (new PublicKey(_entityPda), new[] { GetComponent() }, Array.Empty<string>())
+            };
 
-            if (extraAccounts != null)
-                foreach (var account in extraAccounts)
-                    ix.Keys.Add(account);
+            if (extraEntities != null)
+                foreach (var (entity, component) in extraEntities)
+                {
+                    systemInput.Add((entity, new[] { component }, Array.Empty<string>()));
+                }
 
-            Debug.Log($"Applying System {systemAddress} with args.. :  {JsonConvert.SerializeObject(args)}");
+            var ix = Bolt.World.ApplySystem(
+                new PublicKey(WorldPda),
+                new Bolt.System(BundleId, systemName),
+                systemInput.ToArray(),
+                args,
+                authority,
+                forceMainWalletSigner ? null : Web3Utils.SessionWallet?.SessionTokenPDA, BundleId, extraAccounts);
+
+            Debug.Log($"Applying System {systemName} with args.. :  {JsonConvert.SerializeObject(args)}");
             return await ExecuteSystemApplicationInstruction(ix, forceMainWalletSigner);
         }
+
+        public Bolt.Component GetComponent()
+        {
+            return new Bolt.Component(BundleId, GetComponentName());
+        }
+
 
         private async UniTask<bool> ExecuteSystemApplicationInstruction(
             TransactionInstruction systemApplicationInstruction, bool signWithWallet)
@@ -473,10 +485,14 @@ namespace Connectors
 
         public async UniTask<Transaction> DelegateTransaction(PublicKey entityPda, PublicKey playerDataPda)
         {
+            
             var feePayer = Web3Utils.SessionToken == null
                 ? Web3.Wallet.Account
                 : Web3Utils.SessionWallet.Account;
 
+            
+            
+            
             var tx = new Transaction()
             {
                 FeePayer = feePayer,
@@ -487,21 +503,8 @@ namespace Connectors
             tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitLimit(75000));
             tx.Instructions.Add(ComputeBudgetProgram.SetComputeUnitPrice(100000));
 
-            // Delegate the player data pda
-            DelegateAccounts delegateAccounts = new()
-            {
-                Payer = feePayer,
-                Entity = entityPda,
-                Account = playerDataPda,
-                DelegationProgram = DelegationProgram,
-                DelegationRecord = FindDelegationProgramPda("delegation", playerDataPda),
-                DelegationMetadata = FindDelegationProgramPda("delegation-metadata", playerDataPda),
-                Buffer = FindBufferPda("buffer", playerDataPda, GetComponentProgramAddress()),
-                OwnerProgram = GetComponentProgramAddress(),
-                SystemProgram = SystemProgram.ProgramIdKey
-            };
-            var ixDelegate = HeroProgram.Delegate(delegateAccounts, 3000, null, GetComponentProgramAddress());
-            tx.Add(ixDelegate);
+            var delegateComponent = await Bolt.World.DelegateComponent(feePayer, entityPda, new Component(BundleId, GetComponentName()));
+            tx.Add(delegateComponent.Instruction);
 
             return tx;
         }

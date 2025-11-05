@@ -28,12 +28,18 @@ namespace Connectors
         {
             return new PublicKey("5ewDDvpaTkYvoE7ZJJ9cDmZuqvGQt65hsZSJ9w73Fzr1");
         }
+        
+        
+        
+        public override string GetComponentName()
+        {
+            return "smart_object_location";
+        }
 
         public async Task<bool> Init(int x, int y)
         {
             var entity = new PublicKey(EntityPda).KeyBytes.Select(b => (int)b).ToArray();
-            return await ApplySystem(new PublicKey("64Uk4oF6mNyviUdK2xHXE3VMCtbCMDgRr1DMJk777DJZ"),
-                new { x, y, entity });
+            return await ApplySystem("smart_object_init", new { x, y, entity });
         }
     }
 }
